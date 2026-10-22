@@ -1,0 +1,47 @@
+name: Users API Documentation
+api:
+  name: users
+  directory: ucc_cms/api/users/
+  endpoints:
+    - name: login
+      file: login.php
+      path: ucc_cms/api/users/login.php
+      description: Authenticates a user using their credentials
+      request:
+        method: POST
+        source: body
+        fields:
+          - name: username
+            type: string
+            required: true
+            description: User's username
+          - name: password
+            type: string
+            required: true
+            description: User's password
+      response:
+        content_type: application/json
+        http_code:
+          success: 200
+          client_error: ~400 | ~500
+          server_error: ~500
+        fields:
+          - name: message
+            type: string
+            required: true
+            description: A message describing the outcome of the request, including success confirmations or error details
+          - name: data
+            type: array | object
+            required: false
+            description: Contains the data returned by the endpoint
+            properties:
+              - name: redoPassword
+                type: bool
+                required: false
+                description: Indicates whether password input should be re-inputted
+                condition: returned when the username or password is incorrect
+              - name: redirect
+                type: string
+                required: false
+                description: Location redirect after login
+                condition: returned after successful login
