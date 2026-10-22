@@ -1,4 +1,4 @@
-# UCC Content Management System
-Website: https://bscs-projects.com/ucc-cms/
-Description:
-  A Content Management System for University of Caloocan City
+# UCC Content Management System  
+
+**Website:** https://bscs-projects.com/ucc-cms/  
+Description: A Content Management System for University of Caloocan City
