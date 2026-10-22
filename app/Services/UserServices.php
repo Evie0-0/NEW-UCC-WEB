@@ -1,0 +1,54 @@
+<?php
+declare(strict_types=1);
+
+namespace Serv;
+
+use Core\Database;
+use Repo\UserRepository;
+
+final class UserServices {
+    public function login(): void {
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        if ($username === '') {
+            jsonResponse(422, 'Username cannot be empty.');
+        }
+
+        if ($password === '') {
+            jsonResponse(422, 'Password cannot be empty.');
+        }
+
+        $repo = new UserRepository(Database::connect());
+        $fetchedUser = $repo->findByUsername($username);
+        $returnedPassword = null;
+
+        if ($fetchedUser === false) {
+            jsonResponse(404, 'User does not exist');
+        }
+
+        $returnedPassword = $fetchedUser['password'];
+
+        if (!password_verify($password, $returnedPassword)) {
+            jsonResponse(401, 'Incorrect username or password.', [
+                'redoPassword' => true
+            ]);
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        session_regenerate_id(true);
+
+        $_SESSION['user_id'] = $fetchedUser['id'];
+        $_SESSION['username'] = $fetchedUser['username'];
+        $_SESSION['role'] = $fetchedUser['role'];
+
+        session_write_close();
+
+        jsonResponse(200, 'Successful, logging in.', [
+            'redirect' => 'index.php'
+        ]);
+    }
+}
