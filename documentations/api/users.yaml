@@ -1,4 +1,4 @@
-name: Users API Documentation
+title: Users API Documentation
 api:
   name: users
   directory: ucc_cms/api/users/
@@ -6,6 +6,7 @@ api:
     - name: login
       file: login.php
       path: ucc_cms/api/users/login.php
+      with_alert: true
       description: Authenticates a user using their credentials
       request:
         method: POST

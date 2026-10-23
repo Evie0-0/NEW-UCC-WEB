@@ -76,7 +76,20 @@ function jsonResponse(int $statusCode = 200, string $message = 'An unexpected er
     echo json_encode([
         'message' => $message,
         'data' => $data,
-    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+    );
+
+    exit;
+}
+
+function jsonDataResponse(array $data = []): never {
+    http_response_code(200);
+    header('Content-Type: application/json; charset=utf-8');
+
+    echo json_encode(
+        $data,
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+    );
 
     exit;
 }

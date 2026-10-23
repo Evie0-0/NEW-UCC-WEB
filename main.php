@@ -23,12 +23,12 @@ declare(strict_types=1);
             responseElement.textContent = 'Loading...';
 
             try {
-                const response = await fetch('api/users/login.php', {
-                    method: 'POST',
-                    body: new URLSearchParams({
-                        username: 'mky',
-                        password: 'admin123'
-                    })
+                const params = new URLSearchParams({
+                    class: 'university-posts'
+                })
+
+                const response = await fetch(`api/categories/by-class.php?${params}`, {
+                    method: 'GET',
                 });
 
                 const result = await response.json();

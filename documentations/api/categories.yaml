@@ -1,0 +1,33 @@
+title: Categories API Documentation
+api:
+  - name: by-class
+    directory: ucc_cms/api/categories/
+    endpoints:
+      - name: by-class
+        file: by-class.php
+        path: ucc_cms/api/categories/by-class.php
+        with_alert: false
+        description: Get categories by class
+        request:
+          method: GET
+          source: query
+          fields:
+            - name: class
+              type: string
+              required: true
+              description: Class of category
+        response:
+          content_type: application/json
+          http_code:
+            all: 200
+          fields:
+            - name: id
+              type: int
+              required: false
+              description: ID value of a category
+              condition: returned after successful request
+            - name: name
+              type: string
+              required: false
+              description: Name of category
+              condition: returned after successful request

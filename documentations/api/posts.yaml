@@ -1,0 +1,6 @@
+title: Posts API Documentation
+api:
+  name: posts
+  directory: ucc_cms/api/posts/
+  endpoints:
+    - name: save
