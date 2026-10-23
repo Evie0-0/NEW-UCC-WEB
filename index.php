@@ -1,5 +1,4 @@
 <?php
 declare(strict_types=1);
 
-header('Location: index.php');
-?>
+header('Location: public/index.php');

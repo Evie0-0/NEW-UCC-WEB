@@ -9,7 +9,7 @@ final class Database {
     public static function connect(): PDO {
         $host = $_ENV['DB_HOST'] ?? 'localhost';
         $name = $_ENV['DB_NAME'] ?? 'ucc_cms';
-        $user = $_ENV['DB_USER'] ?? 'mky';
+        $user = $_ENV['DB_USERNAME'] ?? 'mky';
         $password = $_ENV['DB_PASSWORD'] ?? 'admin';
 
         $pdo = new PDO('mysql:host=' . $host . ';dbname=' . $name . ';charset=utf8mb4', $user, $password, [
