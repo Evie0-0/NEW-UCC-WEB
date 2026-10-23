@@ -30,7 +30,12 @@ declare(strict_types=1);
                         password: 'admin123'
                     })
                 });
+                const result = await response.text();
 
+                console.log('HTTP status:', response.status);
+                console.log('Content-Type:', response.headers.get('content-type'));
+                console.log('Response body:', result);
+                return;
                 const result = await response.json();
 
                 responseElement.textContent =
