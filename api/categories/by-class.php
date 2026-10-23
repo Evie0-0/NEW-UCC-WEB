@@ -14,10 +14,19 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 $class = trim($_GET['class'] ?? '');
 
 if ($class === '') {
-    jsonDataResponse([]);
+    jsonDataResponse(422, []);
 }
 
-$serv = new CategoryRepository(Database::connect());
-$fetchedCategories = $serv->fetchItemsByClass($class);
+try {
+    $serv = new CategoryRepository(Database::connect());
+    $fetchedCategories = $serv->fetchItemsByClass($class);
 
-jsonDataResponse($fetchedCategories);
+    jsonDataResponse(200, $fetchedCategories);
+} catch (Throwable $e) {
+    logError($e, 'Failed to fetch categories.', 'ERROR', [
+        'action' => 'fetch categories',
+        'endpoint' => 'categories/by-class'
+    ]);
+
+    jsonDataResponse(500, []);
+}

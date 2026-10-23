@@ -15,7 +15,7 @@ try {
     $serv->login();
 } catch (Throwable $e) {
     logError($e, 'Failed to process login request.', 'ERROR', [
-        'action' => 'login',
+        'action' => 'login user',
         'endpoint' => 'users/login',
     ]);
 

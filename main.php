@@ -12,12 +12,17 @@ declare(strict_types=1);
 </head>
 <body>
     <h1>Test PHP Endpoint</h1>
+    <input
+        type="file"
+        id="imageFile"
+    >
     <button id="testButton" type="button">Test Endpoint</button>
     <pre id="response">Response will appear here.</pre>
 
     <script>
         const testButton = document.getElementById('testButton');
         const responseElement = document.getElementById('response');
+        const imageInput = document.getElementById('imageFile');
 
         testButton.addEventListener('click', async () => {
             responseElement.textContent = 'Loading...';
@@ -25,10 +30,14 @@ declare(strict_types=1);
             try {
                 const params = new URLSearchParams({
                     class: 'university-posts'
-                })
+                });
 
-                const response = await fetch(`api/categories/by-class.php?${params}`, {
-                    method: 'GET',
+                const formData = new FormData();
+                formData.append('image', imageInput.files[0]);
+
+                const response = await fetch(`api/posts/save.php`, {
+                    method: 'POST',
+                    body: formData
                 });
 
                 const result = await response.json();

@@ -14,7 +14,7 @@ final class CategoryRepository {
 
     /** @return list<array<string, mixed>> */
     public function fetchItemsByClass(string $class): array {
-        $query = 'SELECT * FROM categories
+        $query = 'SELECT id, name FROM categories
             WHERE class = ?
             AND active = 1';
         $stmt = $this->conn->prepare($query);
