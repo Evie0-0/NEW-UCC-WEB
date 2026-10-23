@@ -36,11 +36,12 @@ declare(strict_types=1);
                 console.log('Content-Type:', response.headers.get('content-type'));
                 console.log('Response body:', result);
                 return;
-                const result = await response.json();
 
-                responseElement.textContent =
-                    `HTTP Status: ${response.status}\n` +
-                    `Response:\n${JSON.stringify(result, null, 2)}`;
+                //const result = await response.json();
+
+                //responseElement.textContent =
+                  //  `HTTP Status: ${response.status}\n` +
+                  //  `Response:\n${JSON.stringify(result, null, 2)}`;
 
                 if (!response.ok) {
                     await showAlert(false, result.message);
