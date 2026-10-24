@@ -82,7 +82,7 @@ function jsonResponse(int $statusCode = 200, string $message = 'An unexpected er
 }
 
 // Returns a status code and data (not for alerts)
-function jsonDataResponse(int $statusCode = 200, array $data = []): never {
+function jsonDataResponse(int $statusCode = 200, array $data = ['data' => []]): never {
     http_response_code($statusCode);
     header('Content-Type: application/json; charset=utf-8');
 

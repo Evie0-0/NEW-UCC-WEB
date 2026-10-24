@@ -9,8 +9,7 @@ $dotenv->load();
 date_default_timezone_set('Asia/Manila');
 
 // Error log configuration
-$logDirectory = __DIR__ . '/storage/logs';
-$logFile = $logDirectory . '/error.log';
+$logDirectory = __DIR__ . '/storage/logs/';
 
 if (!is_dir($logDirectory)) {
     if (!mkdir($logDirectory, 0755, true) && !is_dir($logDirectory)) {
@@ -19,7 +18,7 @@ if (!is_dir($logDirectory)) {
 }
 
 ini_set('log_errors', '1');
-ini_set('error_log', $logFile);
+ini_set('error_log', $logDirectory . 'error.log');
 error_reporting(E_ALL);
 
 // REMINDER: Delete these before going live

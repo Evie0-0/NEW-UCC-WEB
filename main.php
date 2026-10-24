@@ -1,5 +1,11 @@
 <?php
 declare(strict_types=1);
+
+use Core\Token;
+
+require_once __DIR__ . '/bootstrap.php';
+
+session_start();
 ?>
 
 <!DOCTYPE html>
@@ -12,10 +18,8 @@ declare(strict_types=1);
 </head>
 <body>
     <h1>Test PHP Endpoint</h1>
-    <input
-        type="file"
-        id="imageFile"
-    >
+    <input type="file" id="imageFile">
+    <input type="hidden" id="csrfKey" value="<?= Token::generate() ?>">
     <button id="testButton" type="button">Test Endpoint</button>
     <pre id="response">Response will appear here.</pre>
 
@@ -23,17 +27,27 @@ declare(strict_types=1);
         const testButton = document.getElementById('testButton');
         const responseElement = document.getElementById('response');
         const imageInput = document.getElementById('imageFile');
+        const csrfKey = document.getElementById('csrfKey');
 
         testButton.addEventListener('click', async () => {
             responseElement.textContent = 'Loading...';
 
             try {
                 const params = new URLSearchParams({
-                    class: 'university-posts'
+                    csrf_key: csrfKey.value
                 });
 
                 const formData = new FormData();
-                formData.append('image', imageInput.files[0]);
+                formData.append('csrf_key', csrfKey.value);
+                formData.append('id', 0);
+                formData.append('title', 'Title');
+                formData.append('excerpt', 'Excerpt');
+                formData.append('content', 'Content');
+                formData.append('featured_image', imageInput.files[0]);
+                formData.append('category', 1);
+                formData.append('status', 'draft');
+                formData.append('publish_date', '2026-10-25');
+                formData.append('expiration_date', '2026-10-25');
 
                 const response = await fetch(`api/posts/save.php`, {
                     method: 'POST',

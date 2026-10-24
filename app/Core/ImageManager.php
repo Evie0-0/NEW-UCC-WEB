@@ -100,7 +100,7 @@ final class ImageManager {
 
         if (!is_dir(self::UPLOAD_DIRECTORY)) {
             if (!mkdir(self::UPLOAD_DIRECTORY, 0755, true) && !is_dir(self::UPLOAD_DIRECTORY)) {
-                throw new RuntimeException('Failed to create the image storage directory.');
+                throw new RuntimeException('Failed to create thes storage uploads directory.');
             }
         }
 

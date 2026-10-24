@@ -8,8 +8,8 @@ use Repo\UserRepository;
 
 final class UserServices {
     public function login(): void {
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
+        $username = trim(validateString($_POST['username'] ?? '', 'Username'));
+        $password = validateString($_POST['password'] ?? '', 'Password');
 
         if ($username === '') {
             jsonResponse(422, 'Username cannot be empty.');
@@ -31,11 +31,11 @@ final class UserServices {
 
         if (!password_verify($password, $returnedPassword)) {
             jsonResponse(401, 'Incorrect username or password.', [
-                'redoPassword' => true
+                'redo_password' => true
             ]);
         }
 
-        if (session_status() === PHP_SESSION_NONE) {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
 

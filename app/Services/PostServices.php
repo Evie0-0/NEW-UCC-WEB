@@ -7,7 +7,10 @@ use Core\Database;
 use Core\ImageManager;
 use DateTimeImmutable;
 use DateTimeZone;
+use Repo\AuditTrailRepository;
+use Repo\CategoryRepository;
 use Repo\PostRepository;
+use Throwable;
 
 final class PostServices {
     private const STATUS_KEYS = ['draft', 'published'];
@@ -17,7 +20,7 @@ final class PostServices {
         $excerpt = trim(validateString($_POST['excerpt'] ?? '', 'Excerpt'));
         $content = trim(validateString($_POST['content'] ?? '', 'Content'));
         $featuredImage = $_FILES['featured_image'] ?? null;
-        $category = $_POST['category'] ?? '';
+        $category = filter_var($_POST['category'] ?? null, FILTER_VALIDATE_INT);
         $status = $_POST['status'] ?? '';
         $publishDate = validateDate($_POST['publish_date'] ?? '', 'Publish date');
         $expirationDate = validateDate($_POST['expiration_date'] ?? '', 'Expiration date');
@@ -41,8 +44,12 @@ final class PostServices {
             $tempFeaturedImage = $imageHandler->verify($featuredImage);
         }
 
-        $repo = new PostRepository(Database::connect());
-        $fetchedCategories = $repo->fetchCategories();
+        if ($category === false) {
+            jsonResponse(422, 'Invalid category.');
+        }
+
+        $repo = new CategoryRepository(Database::connect());
+        $fetchedCategories = $repo->fetchItemsByClass('university-posts');
 
         if (!in_array($category, array_column($fetchedCategories, 'id'), true)) {
            jsonResponse(422, 'Invalid category selection.');
@@ -72,7 +79,54 @@ final class PostServices {
            $featuredImageFile = $imageHandler->store($tempFeaturedImage);
        }
 
-       // REMINDER: store in repo
+       session_start();
+
+       $authorId = $_SESSION['user_id'] ?? 1;
+       $editorId = $_SESSION['user_id'] ?? 1;
+
+       session_write_close();
+
+       $data = [
+           'title' => $title,
+           'excerpt' => $excerpt,
+           'content' => $content,
+           'featured_image' => $featuredImage,
+           'category_id' => $category,
+           'status' =>  $status,
+           'author_id' => $authorId,
+           'editor_id' => $editorId,
+           'published_at' => $publishDate,
+           'expires_at' => $expirationDate
+       ];
+
+       try {
+           $conn = Database::connect();
+           $conn->beginTransaction();
+
+           $repo = new PostRepository($conn);
+           $insertedPost = $repo->insertItem($data);
+
+           $data = [
+               'action' => 'CREATE',
+               'description' => "Created a new post titled: $title",
+               'entity_type' => 'University Post',
+               'entity_id' => $insertedPost,
+               'user_id' => $authorId
+           ];
+
+           $repo = new AuditTrailRepository($conn);
+           $repo->insertItem($data);
+
+           $conn->commit();
+       } catch (Throwable $e) {
+           if ($conn->inTransaction()) {
+               $conn->rollBack();
+           }
+
+           throw $e;
+       }
+
+       jsonResponse(201, 'Post successfully created.');
     }
 
     public function update(): void {

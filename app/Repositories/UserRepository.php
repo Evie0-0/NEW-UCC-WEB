@@ -13,7 +13,7 @@ final class UserRepository {
     }
 
     public function findByUsername(string $username): array|false {
-        $query = 'SELECT * FROM users
+        $query = 'SELECT id, username, email, password, role FROM users
             WHERE username = ?
             AND active = 1';
         $stmt = $this->conn->prepare($query);

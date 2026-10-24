@@ -11,12 +11,29 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     jsonResponse(405, 'Invalid request method.');
 }
 
-# if (!Token::verify($_POST['csrf_key'] ?? null)) {
-#    jsonResponse(403, 'Invalid CSRF token.');
-#}
+session_start();
+
+if (!Token::verify($_POST['csrf_key'] ?? null)) {
+    jsonResponse(403, 'Invalid CSRF token.');
+}
+
+session_write_close();
+
+$postId = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+
+if ($postId === false) {
+    jsonResponse(422, 'Invalid post id.');
+}
 
 try {
+
     $serv = new PostServices();
+
+    if ($postId !== 0) {
+        $serv->update();
+    } else {
+        $serv->create();
+    }
 } catch (Throwable $e) {
     logError($e, 'Failed to process save request.', 'ERROR', [
         'action' => 'save post',

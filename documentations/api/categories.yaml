@@ -1,35 +1,45 @@
 title: Categories API Documentation
 api:
   - name: by-class
-    directory: ucc_cms/api/categories/
+    directory: api/categories/
     endpoints:
       - name: by-class
         file: by-class.php
-        path: ucc_cms/api/categories/by-class.php
+        path: api/categories/by-class.php
         with_alert: false
-        description: Get categories by class
+        description: retrieve category values by class
         request:
           method: GET
-          source: query
+          source: URLSearchParams
           fields:
             - name: class
               type: string
               required: true
-              description: Class of category
+              description: class of category = refer to db
         response:
           content_type: application/json
           http_code:
             success: 200
-            client_error: ~400
-            server_error: ~500
+            error: ~400-~500
           fields:
-            - name: id
-              type: int
-              required: false
-              description: ID value of a category
-              condition: returned after successful request
-            - name: name
-              type: string
-              required: false
-              description: Name of category
-              condition: returned after successful request
+            - name: data
+              type: object
+              returned: always
+              description: contains the data returned by the endpoint
+              conditions:
+                - after a successful request
+              properties:
+                - name: id
+                  type: int
+                  returned: sometimes
+                  description: id of the category
+                  conditions:
+                    - after successful request
+                    - if result exists
+                - name: name
+                  type: string
+                  returned: somtimes
+                  description: name of the category
+                  conditions:
+                    - after successful request
+                    - if result exists

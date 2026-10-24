@@ -12,13 +12,25 @@ final class PostRepository {
         $this->conn = $db;
     }
 
-    /** @return list<array<string, mixed>> */
-    public function fetchCategories(): array {
-        $query = "SELECT * FROM categories
-            WHERE class = 'university-posts'
-            AND active = 1";
-        $stmt = $this->conn->query($query);
+    /** @param array<string, mixed> $data  */
+    public function insertItem(array $data): string {
+        $query = 'INSERT INTO posts (title, excerpt, content, featured_image, category_id,
+            status, author_id, editor_id, published_at, expires_at)
+            VALUES (?,?,?,?,?,?,?,?,?,?)';
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([
+            $data['title'],
+            $data['excerpt'],
+            $data['content'],
+            $data['featured_image'],
+            $data['category_id'],
+            $data['status'],
+            $data['author_id'],
+            $data['editor_id'],
+            $data['published_at'],
+            $data['expires_at']
+        ]);
 
-        return $stmt->fetchAll();
+        return $this->conn->lastInsertId();
     }
 }

@@ -1,48 +1,54 @@
 title: Users API Documentation
 api:
   name: users
-  directory: ucc_cms/api/users/
+  directory: api/users/
   endpoints:
     - name: login
       file: login.php
-      path: ucc_cms/api/users/login.php
+      path: api/users/login.php
       with_alert: true
-      description: Authenticates a user using their credentials
+      description: authenticates a user using their credentials
       request:
         method: POST
-        source: body
+        source: FormData
         fields:
           - name: username
             type: string
             required: true
-            description: User's username
+            description: user's username
           - name: password
             type: string
             required: true
-            description: User's password
+            description: user's password
       response:
         content_type: application/json
         http_code:
           success: 200
-          client_error: ~400 | ~500
-          server_error: ~500
+          errors: ~400 - ~500
         fields:
           - name: message
             type: string
-            required: true
-            description: A message describing the outcome of the request, including success confirmations or error details
+            returned: always
+            description: a message describing the outcome of the request
+            conditions:
+              - after a successful or unsuccessful operation
           - name: data
-            type: array | object
-            required: false
-            description: Contains the data returned by the endpoint
+            type: object
+            returned: sometimes
+            description: contains the data returned by the endpoint
+            conditions:
+              - when username or password is incorrect
+              - after successful login
             properties:
-              - name: redoPassword
+              - name: redo_password
                 type: bool
-                required: false
-                description: Indicates whether password input should be re-inputted
-                condition: returned when the username or password is incorrect
+                returned: sometimes
+                description: indicates whether password input should be re-inputted
+                conditions:
+                  - when username or password is incorrect
               - name: redirect
                 type: string
-                required: false
-                description: Location redirect after login
-                condition: returned after successful login
+                returned: sometimes
+                description: location to redirect to after login
+                conditions:
+                  - after successful login
