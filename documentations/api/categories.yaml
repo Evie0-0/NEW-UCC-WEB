@@ -13,8 +13,9 @@ api:
           source: URLSearchParams
           fields:
             - name: class
-              type: string
+              type: string (from text)
               required: true
+              source: form
               description: class of category = refer to db
         response:
           content_type: application/json
@@ -24,7 +25,7 @@ api:
           fields:
             - name: data
               type: object
-              returned: always
+              returned: always (can be empty)
               description: contains the data returned by the endpoint
               conditions:
                 - after a successful request

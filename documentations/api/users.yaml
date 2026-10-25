@@ -13,12 +13,14 @@ api:
         source: FormData
         fields:
           - name: username
-            type: string
+            type: string (from text)
             required: true
+            source: form
             description: user's username
           - name: password
-            type: string
+            type: string (from text)
             required: true
+            source: form
             description: user's password
       response:
         content_type: application/json
@@ -34,7 +36,7 @@ api:
               - after a successful or unsuccessful operation
           - name: data
             type: object
-            returned: sometimes
+            returned: always (can be empty)
             description: contains the data returned by the endpoint
             conditions:
               - when username or password is incorrect
