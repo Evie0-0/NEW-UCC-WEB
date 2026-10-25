@@ -15,7 +15,7 @@ use Throwable;
 final class PostServices {
     private const STATUS_KEYS = ['draft', 'published'];
     private const FILTER_KEYS = ['all', 'draft', 'published', 'pending', 'expired'];
-    private const SORT_KEYS = ['created-desc', 'created-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiration-desc', 'expiration-asc'];
+    private const SORT_KEYS = ['create-desc', 'create-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiry-desc', 'expiry-asc'];
 
     public function create(): void {
         $title = trim(validateString($_POST['title'] ?? '', 'Title'));

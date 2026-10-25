@@ -109,7 +109,7 @@ function validateString(mixed $value, string $field): string {
 function validateId(mixed $value, string $field): int {
     $id = filter_var($value, FILTER_VALIDATE_INT);
 
-    if ($id === false || $id < 1) {
+    if ($id === false || $id === null || $id < 1) {
         jsonResponse(422, "Invalid $field.");
     }
 

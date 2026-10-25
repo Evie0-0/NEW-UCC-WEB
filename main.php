@@ -67,19 +67,17 @@ session_start();
             try {
                 const params = new URLSearchParams({
                     csrf_key: csrfKey.value,
-                    search: 'Title',
+                    search: 'T',
                     filter: 'all',
-                    sort: 'created-asc'
+                    sort: 'expiry-asc'
                 });
 
                 const formData = new FormData();
                 formData.append('csrf_key', csrfKey.value);
-                formData.append('id', 8);
-                formData.append('category', 1);
+                formData.append('id', '12');
 
-                const response = await fetch(`api/archive/delete.php`, {
-                    method: 'POST',
-                    body: formData
+                const response = await fetch(`api/posts/filter.php?${params}`, {
+                    method: 'GET'
                 });
 
                 const result = await response.json();

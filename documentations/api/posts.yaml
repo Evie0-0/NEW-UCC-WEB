@@ -14,9 +14,15 @@ api:
         method: POST
         source: FormData
         fields:
+          - name: csrf_key
+            type: string (from hidden)
+            required: true
+            source: js (append)
+            description: csrf token to avoid cross scripting
+            note: use Token::generate() on hidden input
           - name: id
             type: int (from text or number)
-            required: false (to determine whether to edit or create post)
+            required: true (to determine whether to edit or create post)
             source: form or js (append)
             description: id of post when editing
           - name: title
@@ -127,14 +133,14 @@ api:
             source: js (url)
             description: sort items
             values:
-              - created-desc
-              - created-asc
+              - create-desc
+              - create-asc
               - title-desc
               - title-asc
               - publish-desc
               - publish-asc
-              - expiration-desc
-              - expiration-asc
+              - expiry-desc
+              - expiry-asc
         response:
           content_type: application/json
           http_code:
@@ -224,6 +230,12 @@ api:
         method: POST
         source: FormData
         fields:
+          - name: csrf_key
+            type: string (from hidden)
+            required: true
+            source: js (append)
+            description: csrf token to avoid cross scripting
+            note: use Token::generate() on hidden input
           - name: id
             type: int (from text or hidden)
             required: true

@@ -32,4 +32,13 @@ final class CategoryRepository {
 
         return $stmt->fetch();
     }
+
+    /** @return list<array<string, mixed>> */
+    public function fetchItems(): array {
+        $query = 'SELECT * FROM categories
+            WHERE active = 1';
+        $stmt = $this->conn->query($query);
+
+        return $stmt->fetchAll();
+    }
 }

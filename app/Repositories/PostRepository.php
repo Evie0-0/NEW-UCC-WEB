@@ -98,17 +98,17 @@ final class PostRepository {
             'draft' => "status = 'draft'",
             'published' => "
                 status = 'published'
-                AND published_at <= CURRENT_TIMESTAMP
-                AND expires_at > CURRENT_TIMESTAMP
+                AND published_at <= CURRENT_DATE
+                AND expires_at >= CURRENT_DATE
             ",
             'pending' => "
                 status = 'published'
-                AND published_at > CURRENT_TIMESTAMP,
-                AND expires_at > CURRENT_TIMESTAMP
+                AND published_at > CURRENT_DATE
+                AND expires_at > CURRENT_DATE
             ",
             'expired' => "
                 status = 'published'
-                AND expires_at <= CURRENT_TIMESTAMP
+                AND expires_at <= CURRENT_DATE
             ",
             'all' => '1 = 1',
             default => throw new InvalidArgumentException('Invalid post filter.')
@@ -117,18 +117,18 @@ final class PostRepository {
         $conditions[] = $filterCondition;
 
         $orderBy = match ($data['sort']) {
-            'created-desc' => 'created_at DESC',
-            'created-asc' => 'created_at ASC',
+            'create-desc' => 'created_at DESC',
+            'create-asc' => 'created_at ASC',
             'title-desc' => 'title DESC',
             'title-asc' => 'title ASC',
             'publish-desc' => 'published_at DESC',
             'publish-asc' => 'published_at ASC',
-            'expiration-desc' => 'expires_at DESC',
-            'expiration-asc' => 'expires_at ASC',
-
+            'expiry-desc' => 'expires_at DESC',
+            'expiry-asc' => 'expires_at ASC',
             default => throw new InvalidArgumentException('Invalid post sort.')
         };
 
+        $where = implode(' AND ', $conditions);
         $query = "SELECT *,
             CASE
                 WHEN status = 'published'
@@ -140,8 +140,9 @@ final class PostRepository {
                 ELSE status
             END AS display_status
             FROM posts
-            WHERE " . implode(' AND ', $conditions) . '
-            ORDER BY ' . $orderBy;
+            WHERE $where
+            ORDER BY $orderBy
+        ";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute($params);

@@ -4,10 +4,38 @@ declare(strict_types=1);
 namespace Serv;
 
 use Core\Database;
+use Repo\ArchiveRepository;
 use Repo\CategoryRepository;
 
 final class ArchiveServices {
+    private const SORT_KEYS = ['archive-desc', 'archive-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiry-desc', 'expiry-asc'];
+
     public function filter(): void {
+        $search = trim(validateString($_GET['search'] ?? '', 'Search'));
+        $filter = $_GET['filter'] ?? '';
+        $sort = $_GET['sort'] ?? '';
+
+        $repo = new CategoryRepository(Database::connect());
+        $fetchedCategories = $repo->fetchItems();
+
+        if ($fetchedCategories === [] && $filter === 'all') {
+            jsonResponse(422, 'Invalid filter selection.');
+        }
+
+        if (!in_array($sort, self::SORT_KEYS, true)) {
+            jsonResponse(422, 'Invalid sort selection.');
+        }
+
+        $data = [
+            'search' => $search,
+            'filter' => $filter,
+            'sort' => $sort
+        ];
+
+        $repo = new ArchiveRepository(Database::connect());
+        $posts = $repo->filter($data);
+
+        jsonResponse(200, 'Successfully filtered posts items.', $posts);
     }
 
     public function unarchive(): void {

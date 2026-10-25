@@ -14,6 +14,12 @@ api:
         method: POST
         source: FormData
         fields:
+          - name: csrf_key
+            type: string (from hidden)
+            required: true
+            source: js (append)
+            description: csrf token to avoid cross scripting
+            note: use Token::generate() on hidden input
           - name: id
             type: int (from text or number)
             required: true
@@ -60,6 +66,12 @@ api:
         method: POST
         source: FormData
         fields:
+          - name: csrf_key
+            type: string (from hidden)
+            required: true
+            source: js (append)
+            description: csrf token to avoid cross scripting
+            note: use Token::generate() on hidden input
           - name: id
             type: int (from text or number)
             required: true
@@ -95,3 +107,66 @@ api:
                 - unsuccessful request (empty)
               properties:
                 - None
+    - name: filter
+      file: filter.php
+      path: api/archive/filter.php
+      use_alerts:
+        success: false
+        failure: true
+      description: retrieve filtered posts items from posts, unit posts, and program posts
+      request:
+        method: GET
+        source: URLSearchParams
+        fields:
+          - name: search
+            type: string (from search)
+            required: false
+            source: js (url)
+            description: searches for post titles
+          - name: filter
+            type: string (from selection)
+            required: true
+            source: js (url)
+            description: filter status of items
+            values:
+              - all
+              - 1 - ~12
+              - refer to categories table (id table) of db for the updated
+          - name: sort
+            type: string (from selection)
+            required: true
+            source: js (url)
+            description: sort items
+            values:
+              - archive-desc
+              - archive-asc
+              - title-desc
+              - title-asc
+              - publish-desc
+              - publish-asc
+              - expiry-desc
+              - expiry-asc
+        response:
+          content_type: application/json
+          http_code:
+            success: 200
+            errors: ~400 - ~500
+          fields:
+            - name: message
+              type: string
+              returned: always
+              description: a message describing the outcome of the request
+              conditions:
+                - after a successful or unsuccessful operation
+              note:
+               - do not include for alert upon success
+            - name: data
+              type: object
+              returned: always (can be empty)
+              direct_access: false (in array)
+              description: contains the data returned by the endpoint
+              conditions:
+                - successful request
+                - unsuccessful request (empty)
+              properties:
+               - every column existing on posts table
