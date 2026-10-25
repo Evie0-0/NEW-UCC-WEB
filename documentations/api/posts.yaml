@@ -49,11 +49,19 @@ api:
             required: true
             source: form
             description: category of post
+            values:
+              - 1
+              - 2
+              - 3
+              - refer to categories table (id table) of db for the updated
           - name: status
             type: string (from selection)
             required: true
             source: form
             description: status of post
+            values:
+              - draft
+              - published
           - name: publish_date
             type: string (from date)
             required: true
@@ -107,11 +115,26 @@ api:
             required: true
             source: js (url)
             description: filter status of items
+            values:
+              - all
+              - draft
+              - published
+              - pending
+              - expired
           - name: sort
             type: string (from selection)
             required: true
             source: js (url)
             description: sort items
+            values:
+              - created-desc
+              - created-asc
+              - title-desc
+              - title-asc
+              - publish-desc
+              - publish-asc
+              - expiration-desc
+              - expiration-asc
         response:
           content_type: application/json
           http_code:

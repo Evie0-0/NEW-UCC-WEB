@@ -19,6 +19,11 @@ api:
               required: true
               source: js (url)
               description: class of category = refer to db
+              values:
+                - university-posts
+                - unit-posts
+                - program-posts
+                - refer to categories table (class column) of db for the updated
         response:
           content_type: application/json
           http_code:

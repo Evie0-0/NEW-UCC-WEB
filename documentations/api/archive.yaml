@@ -24,6 +24,9 @@ api:
             required: true
             source: js (append)
             description: category of post to unarchive
+            values:
+              - 1 - ~12
+              - refer to categories table (id table) of db for the updated
         response:
           content_type: application/json
           http_code:
@@ -67,6 +70,9 @@ api:
             required: true
             source: js (append)
             description: category of post to delete
+            values:
+              - 1 - ~12
+              - refer to categories table (id table) of db for the updated
         response:
           content_type: application/json
           http_code:
