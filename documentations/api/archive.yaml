@@ -1,11 +1,11 @@
-title: General API Documentation
+title: Archive API Documentation
 api:
-  name: general
-  directory: api/general/
+  name: archive
+  directory: api/archive/
   endpoints:
-    - name: unarchive-post
-      file: unarchive-post.php
-      path: api/general/unarchive-post.php
+    - name: unarchive
+      file: unarchive.php
+      path: api/archive/unarchive.php
       use_alerts:
         success: true
         failure: true
@@ -46,9 +46,9 @@ api:
                 - unsuccessful request (empty)
               properties:
                 - None
-    - name: delete-post
-      file: delete-post.php
-      path: api/general/delete-post.php
+    - name: delete
+      file: delete.php
+      path: api/archive/delete.php
       use_alerts:
         success: true
         failure: true
