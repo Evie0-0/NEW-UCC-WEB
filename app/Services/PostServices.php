@@ -14,13 +14,15 @@ use Throwable;
 
 final class PostServices {
     private const STATUS_KEYS = ['draft', 'published'];
+    private const FILTER_KEYS = ['draft', 'published', 'pending', 'expired'];
+    private const SORT_KEYS = ['created-desc', 'created-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiration-desc', 'expiration-asc'];
 
     public function create(): void {
         $title = trim(validateString($_POST['title'] ?? '', 'Title'));
         $excerpt = trim(validateString($_POST['excerpt'] ?? '', 'Excerpt'));
         $content = trim(validateString($_POST['content'] ?? '', 'Content'));
         $featuredImage = $_FILES['featured_image'] ?? null;
-        $category = validateId($_POST['category'] ?? null, 'category');
+        $category = validateId($_POST['category'] ?? null, 'category id');
         $status = $_POST['status'] ?? '';
         $publishDate = validateDate($_POST['publish_date'] ?? '', 'Publish date');
         $expirationDate = validateDate($_POST['expiration_date'] ?? '', 'Expiration date');
@@ -78,9 +80,8 @@ final class PostServices {
 
        session_start();
 
-       // REMINDER:: remove ?? 1
-       $authorId = $_SESSION['user_id'] ?? 1;
-       $editorId = $_SESSION['user_id'] ?? 1;
+       $authorId = $_SESSION['user_id'];
+       $editorId = $_SESSION['user_id'];
 
        session_write_close();
 
@@ -134,7 +135,7 @@ final class PostServices {
         $content = trim(validateString($_POST['content'] ?? '', 'Content'));
         $removeFeaturedImage = validateBool($_POST['remove_featured_image'] ?? false, 'Remove featured image flag');
         $featuredImage = $_FILES['featured_image'] ?? null;
-        $category = validateId($_POST['category'] ?? null, 'category');
+        $category = validateId($_POST['category'] ?? null, 'category id');
         $status = $_POST['status'] ?? '';
         $publishDate = validateDate($_POST['publish_date'] ?? '', 'Publish date');
         $expirationDate = validateDate($_POST['expiration_date'] ?? '', 'Expiration date');
@@ -210,8 +211,7 @@ final class PostServices {
 
         session_start();
 
-        // REMINDER:: remove ?? 1
-        $editorId = $_SESSION['user_id'] ?? 1;
+        $editorId = $_SESSION['user_id'];
 
         session_write_close();
 
@@ -283,6 +283,228 @@ final class PostServices {
     }
 
     public function filter(): void {
+        $search = trim(validateString($_GET['search'] ?? '', 'Search'));
+        $filter = $_GET['filter'] ?? '';
+        $sort = $_GET['sort'] ?? '';
 
+        if (!in_array($filter, self::FILTER_KEYS, true)) {
+            jsonResponse(422, 'Invalid filter selection.');
+        }
+
+        if (!in_array($sort, self::SORT_KEYS, true)) {
+            jsonResponse(422, 'Invalid sort selection.');
+        }
+
+        $data = [
+            'search' => $search,
+            'filter' => $filter,
+            'sort' => $sort
+        ];
+
+        $repo = new PostRepository(Database::connect());
+        $posts = $repo->filter($data);
+
+        jsonResponse(200, 'Successfully filtered post items.', $posts);
+    }
+
+    public function item(): void {
+        $id = validateId($_GET['id'] ?? null, 'post id');
+
+        $repo = new PostRepository(Database::connect());
+        $post = $repo->fetchItemById($id);
+
+        if ($post === false) {
+            jsonResponse(404, 'Post does not exist.');
+        }
+
+        jsonResponse(200, 'Post successfully fetched.', $post);
+    }
+
+    public function archive(): void {
+        $id = validateId($_POST['id'] ?? null, 'post id');
+
+        $repo = new PostRepository(Database::connect());
+        $post = $repo->fetchItemById($id);
+
+        if ($post === false) {
+            jsonResponse(404, 'Post does not exist.');
+        }
+
+        $archivedAt = $post['archived_at'];
+
+        if ($archivedAt !== null) {
+            jsonResponse(422, 'Post is already archived.');
+        }
+
+        $title = $post['title'];
+        $category = $post['category_id'];
+
+        $repo = new CategoryRepository(Database::connect());
+        $fetchedCategories = $repo->fetchItemsByClass('university-posts');
+        $categoryName = array_column($fetchedCategories, 'name', 'id')[$category] ?? null;
+
+        session_start();
+
+        $editorId = $_SESSION['user_id'];
+
+        session_write_close();
+
+        $data = [
+            'editor_id' => $editorId,
+            'id' => $id
+        ];
+
+        try {
+            $conn = Database::connect();
+            $conn->beginTransaction();
+
+            $repo = new PostRepository($conn);
+            $repo->archiveItem($data);
+
+            $data = [
+                'action' => 'ARCHIVE',
+                'description' => "Archived the post titled: $title",
+                'entity_type' => "University Post - $categoryName",
+                'entity_id' => $id,
+                'user_id' => $editorId
+            ];
+
+            $repo = new AuditTrailRepository($conn);
+            $repo->insertItem($data);
+
+            $conn->commit();
+        } catch (Throwable $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+
+            throw $e;
+        }
+
+        jsonResponse(200, 'Post successfully archived.');
+    }
+
+    public function unarchive(): void {
+        $id = validateId($_POST['id'] ?? null, 'post id');
+
+        $repo = new PostRepository(Database::connect());
+        $post = $repo->fetchItemById($id);
+
+        if ($post === false) {
+            jsonResponse(404, 'Post does not exist.');
+        }
+
+        $archivedAt = $post['archived_at'];
+
+        if ($archivedAt === null) {
+            jsonResponse(422, 'Post is already not archived.');
+        }
+
+        $title = $post['title'];
+        $category = $post['category_id'];
+
+        $repo = new CategoryRepository(Database::connect());
+        $fetchedCategories = $repo->fetchItemsByClass('university-posts');
+        $categoryName = array_column($fetchedCategories, 'name', 'id')[$category] ?? null;
+
+        session_start();
+
+        $editorId = $_SESSION['user_id'];
+
+        session_write_close();
+
+        $data = [
+            'editor_id' => $editorId,
+            'id' => $id
+        ];
+
+        try {
+            $conn = Database::connect();
+            $conn->beginTransaction();
+
+            $repo = new PostRepository($conn);
+            $repo->unarchiveItem($data);
+
+            $data = [
+                'action' => 'UNARCHIVE',
+                'description' => "Unarchived the post titled: $title",
+                'entity_type' => "University Post - $categoryName",
+                'entity_id' => $id,
+                'user_id' => $editorId
+            ];
+
+            $repo = new AuditTrailRepository($conn);
+            $repo->insertItem($data);
+
+            $conn->commit();
+        } catch (Throwable $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+
+            throw $e;
+        }
+    }
+
+    public function delete(): void {
+        $id = validateId($_POST['id'] ?? null, 'post id');
+
+        $repo = new PostRepository(Database::connect());
+        $post = $repo->fetchItemById($id);
+
+        if ($post === false) {
+            jsonResponse(404, 'Post does not exist.');
+        }
+
+        $active = $post['active'];
+
+        if ($active === 0) {
+            jsonResponse(422, 'Post is already deleted.');
+        }
+
+        $title = $post['title'];
+        $category = $post['category_id'];
+
+        $repo = new CategoryRepository(Database::connect());
+        $fetchedCategories = $repo->fetchItemsByClass('university-posts');
+        $categoryName = array_column($fetchedCategories, 'name', 'id')[$category] ?? null;
+
+        session_start();
+
+        $editorId = $_SESSION['user_id'] ?? 1;
+
+        session_write_close();
+
+        $data = [
+            'editor_id' => $editorId,
+            'id' => $id
+        ];
+
+        try {
+            $conn = Database::connect();
+            $conn->beginTransaction();
+
+            $repo = new PostRepository($conn);
+            $repo->deleteItem($data);
+
+            $data = [
+                'action' => 'DELETE',
+                'description' => "Deleted the post titled: $title",
+                'entity_type' => "University Post - $categoryName",
+                'entity_id' => $id,
+                'user_id' => $editorId
+            ];
+
+            $repo = new AuditTrailRepository($conn);
+            $repo->insertItem($data);
+
+            $conn->commit();
+        } catch (Throwable $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+
+            throw $e;
+        }
     }
 }

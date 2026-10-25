@@ -2,33 +2,31 @@
 declare(strict_types=1);
 
 use Core\Database;
-use Repo\CategoryRepository;
+use Serv\CategoryServices;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
+
+session_start();
+
+if (!isInAllowedRoles()) {
+    jsonResponse(401, 'You are unauthorized to make this request.');
+}
+
+session_write_close();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     jsonResponse(405, 'Invalid request method.');
 }
 
-$class = trim($_GET['class'] ?? '');
-
-if ($class === '') {
-    jsonDataResponse(422);
-}
-
 try {
-    $serv = new CategoryRepository(Database::connect());
-    $fetchedCategories = $serv->fetchItemsByClass($class);
-
-    jsonDataResponse(200, [
-        'data' => $fetchedCategories
-    ]);
+    $serv = new CategoryServices();
+    $serv->byClass();
 } catch (Throwable $e) {
     logError($e, 'Failed to fetch categories.', 'ERROR', [
         'action' => 'fetch categories',
         'endpoint' => 'categories/by-class'
     ]);
 
-    jsonDataResponse(500);
+    jsonResponse(500);
 }

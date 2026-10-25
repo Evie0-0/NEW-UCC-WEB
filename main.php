@@ -34,23 +34,18 @@ session_start();
 
             try {
                 const params = new URLSearchParams({
-                    csrf_key: csrfKey.value
+                    csrf_key: csrfKey.value,
+                    search: 'Title',
+                    filter: 'draft',
+                    sort: 'created-asc'
                 });
 
                 const formData = new FormData();
                 formData.append('csrf_key', csrfKey.value);
-                formData.append('id', 8);
-                formData.append('title', 'Title 2');
-                formData.append('excerpt', 'Excerpt 2');
-                formData.append('content', 'Content 2');
-                formData.append('featured_image', imageInput.files[0]);
+                formData.append('id', 7);
                 formData.append('category', 1);
-                formData.append('status', 'draft');
-                formData.append('publish_date', '2026-10-25');
-                formData.append('expiration_date', '2026-10-25');
-                formData.append('remove_featured_image', false);
 
-                const response = await fetch(`api/posts/save.php`, {
+                const response = await fetch(`api/general/delete-post.php`, {
                     method: 'POST',
                     body: formData
                 });

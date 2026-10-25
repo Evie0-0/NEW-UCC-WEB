@@ -6,7 +6,9 @@ api:
       - name: by-class
         file: by-class.php
         path: api/categories/by-class.php
-        with_alert: false
+        use_alerts:
+          success: false
+          failure: false
         description: retrieve category values by class
         request:
           method: GET
@@ -15,7 +17,7 @@ api:
             - name: class
               type: string (from text)
               required: true
-              source: form
+              source: js (url)
               description: class of category = refer to db
         response:
           content_type: application/json
@@ -23,24 +25,21 @@ api:
             success: 200
             error: ~400-~500
           fields:
+            - name: message
+              type: string
+              returned: always
+              description: a message describing the outcome of the request
+              conditions:
+                - after a successful or unsuccessful operation
+              note:
+                - do not include for alert upon success or unsuccess
             - name: data
               type: object
               returned: always (can be empty)
+              direct_access: false (in array)
               description: contains the data returned by the endpoint
               conditions:
-                - after a successful request
+                - successful request
+                - unsuccessful request (empty)
               properties:
-                - name: id
-                  type: int
-                  returned: sometimes
-                  description: id of the category
-                  conditions:
-                    - after successful request
-                    - if result exists
-                - name: name
-                  type: string
-                  returned: somtimes
-                  description: name of the category
-                  conditions:
-                    - after successful request
-                    - if result exists
+               - every column in posts table

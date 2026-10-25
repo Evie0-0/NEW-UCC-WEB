@@ -14,7 +14,7 @@ final class CategoryRepository {
 
     /** @return list<array<string, mixed>> */
     public function fetchItemsByClass(string $class): array {
-        $query = 'SELECT id, name FROM categories
+        $query = 'SELECT * FROM categories
             WHERE class = ?
             AND active = 1';
         $stmt = $this->conn->prepare($query);
@@ -24,7 +24,7 @@ final class CategoryRepository {
     }
 
     public function fetchItemById(int $id): array|false {
-        $query = 'SELECT id, name FROM categories
+        $query = 'SELECT * FROM categories
             WHERE id = ?
             AND active = 1';
         $stmt = $this->conn->prepare($query);

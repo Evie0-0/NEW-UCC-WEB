@@ -6,7 +6,9 @@ api:
     - name: login
       file: login.php
       path: api/users/login.php
-      with_alert: true
+      use_alerts:
+        success: true
+        failure: true
       description: authenticates a user using their credentials
       request:
         method: POST
@@ -37,10 +39,11 @@ api:
           - name: data
             type: object
             returned: always (can be empty)
+            direct_access: true
             description: contains the data returned by the endpoint
             conditions:
-              - when username or password is incorrect
-              - after successful login
+              - successful request
+              - unsuccessful request
             properties:
               - name: redo_password
                 type: bool

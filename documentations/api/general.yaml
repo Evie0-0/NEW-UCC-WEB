@@ -1,0 +1,91 @@
+title: General API Documentation
+api:
+  name: general
+  directory: api/general/
+  endpoints:
+    - name: unarchive-post
+      file: unarchive-post.php
+      path: api/general/unarchive-post.php
+      use_alerts:
+        success: true
+        failure: true
+      description: unarchives a post (university post, unit post or program post)
+      request:
+        method: POST
+        source: FormData
+        fields:
+          - name: id
+            type: int (from text or number)
+            required: true
+            source: js (append)
+            description: id of post to unarchive
+          - name: category
+            type: int (from selection)
+            required: true
+            source: js (append)
+            description: category of post to unarchive
+        response:
+          content_type: application/json
+          http_code:
+            success: 200
+            error: ~400 - ~500
+          fields:
+            - name: message
+              type: string
+              returned: always
+              description: a message describing the outcome of the request
+              conditions:
+                - after a successful or unsuccessful operation
+            - name: data
+              type: object
+              returned: always (can be empty - empty in this case)
+              direct_access: true (empty)
+              description: contains the data returned by the endpoint
+              conditions:
+                - successful request
+                - unsuccessful request (empty)
+              properties:
+                - None
+    - name: delete-post
+      file: delete-post.php
+      path: api/general/delete-post.php
+      use_alerts:
+        success: true
+        failure: true
+      description: delete a post (university post, unit post or program post)
+      request:
+        method: POST
+        source: FormData
+        fields:
+          - name: id
+            type: int (from text or number)
+            required: true
+            source: js (append)
+            description: id of post to delete
+          - name: category
+            type: int (from selection)
+            required: true
+            source: js (append)
+            description: category of post to delete
+        response:
+          content_type: application/json
+          http_code:
+            success: 200
+            error: ~400 - ~500
+          fields:
+            - name: message
+              type: string
+              returned: always
+              description: a message describing the outcome of the request
+              conditions:
+                - after a successful or unsuccessful operation
+            - name: data
+              type: object
+              returned: always (can be empty - empty in this case)
+              direct_access: true (empty)
+              description: contains the data returned by the endpoint
+              conditions:
+                - successful request
+                - unsuccessful request (empty)
+              properties:
+                - None

@@ -81,19 +81,6 @@ function jsonResponse(int $statusCode = 200, string $message = 'An unexpected er
     exit;
 }
 
-// Returns a status code and data (not for alerts)
-function jsonDataResponse(int $statusCode = 200, array $data = ['data' => []]): never {
-    http_response_code($statusCode);
-    header('Content-Type: application/json; charset=utf-8');
-
-    echo json_encode(
-        $data,
-        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
-    );
-
-    exit;
-}
-
 function validateDate(mixed $value, string $field): string {
     if (!is_string($value)) {
         jsonResponse(422, "$field must be a valid date.");
@@ -141,4 +128,8 @@ function validateBool(mixed $value, string $field): bool {
 
 function isSuperadmin(): bool {
     return (isset($_SESSION['user_id'], $_SESSION['role']) && $_SESSION['role'] === 'superadmin');
+}
+
+function isInAllowedRoles(): bool {
+    return (isset($_SESSION['user_id'], $_SESSION['role']) && in_array($_SESSION['role'], ['superadmin', 'dean', 'program head'], true));
 }
