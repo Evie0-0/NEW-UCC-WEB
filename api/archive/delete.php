@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use Core\Token;
-use Serv\GeneralServices;
+use Serv\ArchiveServices;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
@@ -28,12 +28,12 @@ if (!Token::verify($_POST['csrf_key'] ?? null)) {
 session_write_close();
 
 try {
-    $serv = new GeneralServices();
-    $serv->deletePost();
-} catch (Thowable $e) {
+    $serv = new ArchiveServices();
+    $serv->delete();
+} catch (Throwable $e) {
     logError($e, 'Failed to process delete request.', 'ERROR', [
         'action' => 'delete post',
-        'endpoint' => 'general/delete-post'
+        'endpoint' => 'archive/delete'
     ]);
 
     jsonResponse(500);

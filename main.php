@@ -24,51 +24,6 @@ session_start();
     <pre id="response">Response will appear here.</pre>
 
     <script>
-        const testButton = document.getElementById('testButton');
-        const responseElement = document.getElementById('response');
-        const imageInput = document.getElementById('imageFile');
-        const csrfKey = document.getElementById('csrfKey');
-
-        testButton.addEventListener('click', async () => {
-            responseElement.textContent = 'Loading...';
-
-            try {
-                const params = new URLSearchParams({
-                    csrf_key: csrfKey.value,
-                    search: 'Title',
-                    filter: 'draft',
-                    sort: 'created-asc'
-                });
-
-                const formData = new FormData();
-                formData.append('csrf_key', csrfKey.value);
-                formData.append('id', 7);
-                formData.append('category', 1);
-
-                const response = await fetch(`api/general/delete-post.php`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                responseElement.textContent =
-                    `HTTP Status: ${response.status}\n` +
-                    `Response:\n${JSON.stringify(result, null, 2)}`;
-
-                if (!response.ok) {
-                    await showAlert(false, result.message);
-                    return;
-                }
-
-                await showAlert(true, result.message);
-                return;
-            } catch (error) {
-                responseElement.textContent = `Request failed: ${error.message}`;
-                await showUnexpectedError(error);
-            }
-        });
-
         async function showAlert(ok, message) {
             await Swal.fire({
                 icon: ok ? 'success' : 'error',
@@ -100,6 +55,51 @@ session_start();
                 text: 'Unable to communicate with the server.'
             });
         }
+
+        const testButton = document.getElementById('testButton');
+        const responseElement = document.getElementById('response');
+        const imageInput = document.getElementById('imageFile');
+        const csrfKey = document.getElementById('csrfKey');
+
+        testButton.addEventListener('click', async () => {
+            responseElement.textContent = 'Loading...';
+
+            try {
+                const params = new URLSearchParams({
+                    csrf_key: csrfKey.value,
+                    search: 'Title',
+                    filter: 'all',
+                    sort: 'created-asc'
+                });
+
+                const formData = new FormData();
+                formData.append('csrf_key', csrfKey.value);
+                formData.append('id', 8);
+                formData.append('category', 1);
+
+                const response = await fetch(`api/archive/delete.php`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                responseElement.textContent =
+                    `HTTP Status: ${response.status}\n` +
+                    `Response:\n${JSON.stringify(result, null, 2)}`;
+
+                if (!response.ok) {
+                    await showAlert(false, result.message);
+                    return;
+                }
+
+                await showAlert(true, result.message);
+                return;
+            } catch (error) {
+                responseElement.textContent = `Request failed: ${error.message}`;
+                await showUnexpectedError(error);
+            }
+        });
     </script>
 </body>
 </html>

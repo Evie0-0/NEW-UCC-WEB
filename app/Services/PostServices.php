@@ -14,7 +14,7 @@ use Throwable;
 
 final class PostServices {
     private const STATUS_KEYS = ['draft', 'published'];
-    private const FILTER_KEYS = ['draft', 'published', 'pending', 'expired'];
+    private const FILTER_KEYS = ['all', 'draft', 'published', 'pending', 'expired'];
     private const SORT_KEYS = ['created-desc', 'created-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiration-desc', 'expiration-asc'];
 
     public function create(): void {
@@ -386,6 +386,7 @@ final class PostServices {
 
     public function unarchive(): void {
         $id = validateId($_POST['id'] ?? null, 'post id');
+        $category = validateId($_POST['category'] ?? null, 'category id');
 
         $repo = new PostRepository(Database::connect());
         $post = $repo->fetchItemById($id);
@@ -397,11 +398,14 @@ final class PostServices {
         $archivedAt = $post['archived_at'];
 
         if ($archivedAt === null) {
-            jsonResponse(422, 'Post is already not archived.');
+            jsonResponse(422, 'Post is already unarchived.');
         }
 
         $title = $post['title'];
-        $category = $post['category_id'];
+
+        if ($category !== $post['category_id']) {
+            jsonResponse(422, 'Misleading category.');
+        }
 
         $repo = new CategoryRepository(Database::connect());
         $fetchedCategories = $repo->fetchItemsByClass('university-posts');
@@ -448,6 +452,7 @@ final class PostServices {
 
     public function delete(): void {
         $id = validateId($_POST['id'] ?? null, 'post id');
+        $category = validateId($_POST['category'] ?? null, 'category id');
 
         $repo = new PostRepository(Database::connect());
         $post = $repo->fetchItemById($id);
@@ -456,14 +461,17 @@ final class PostServices {
             jsonResponse(404, 'Post does not exist.');
         }
 
-        $active = $post['active'];
+        $archivedAt = $post['archived_at'];
 
-        if ($active === 0) {
-            jsonResponse(422, 'Post is already deleted.');
+        if ($archivedAt === null) {
+            jsonResponse(422, 'Post is not archived. Cannot be deleted.');
         }
 
         $title = $post['title'];
-        $category = $post['category_id'];
+
+        if ($category !== $post['category_id']) {
+            jsonResponse(422, 'Misleading category.');
+        }
 
         $repo = new CategoryRepository(Database::connect());
         $fetchedCategories = $repo->fetchItemsByClass('university-posts');

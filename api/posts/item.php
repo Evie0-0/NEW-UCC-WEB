@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use Core\Database;
 use Serv\PostServices;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';

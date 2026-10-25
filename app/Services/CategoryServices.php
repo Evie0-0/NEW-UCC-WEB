@@ -7,7 +7,7 @@ use Core\Database;
 use Repo\CategoryRepository;
 
 final class CategoryServices {
-    public function byClass() {
+    public function byClass(): void {
         $class = trim(validateString($_GET['class'] ?? '', 'Class'));
 
         if ($class === '') {

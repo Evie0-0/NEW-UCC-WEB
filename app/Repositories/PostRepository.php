@@ -110,6 +110,7 @@ final class PostRepository {
                 status = 'published'
                 AND expires_at <= CURRENT_TIMESTAMP
             ",
+            'all' => '1 = 1',
             default => throw new InvalidArgumentException('Invalid post filter.')
         };
 

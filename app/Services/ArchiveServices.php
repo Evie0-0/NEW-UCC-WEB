@@ -6,8 +6,11 @@ namespace Serv;
 use Core\Database;
 use Repo\CategoryRepository;
 
-final class GeneralServices {
-    public function unarchivePost(): void {
+final class ArchiveServices {
+    public function filter(): void {
+    }
+
+    public function unarchive(): void {
         $id = validateId($_POST['id'] ?? null, 'id');
         $category = validateId($_POST['category'] ?? null, 'category id');
 
@@ -23,9 +26,9 @@ final class GeneralServices {
         if ($categoryClass === 'university-posts') {
             $serv = new PostServices();
             $serv->unarchive($id);
-        } elseif ($categoryName === 'unit-posts') {
+        } elseif ($categoryClass === 'unit-posts') {
 
-        } elseif ($categoryName === 'program-posts') {
+        } elseif ($categoryClass === 'program-posts') {
 
         } else {
             jsonResponse(422, 'Invalid category class.');
@@ -34,7 +37,7 @@ final class GeneralServices {
         jsonResponse(200, 'Post successfully unarchived. Its status has been set to draft by default.');
     }
 
-    public function deletePost(): void {
+    public function delete(): void {
         $id = validateId($_POST['id'] ?? null, 'id');
         $category = validateId($_POST['category'] ?? null, 'category id');
 
@@ -50,14 +53,14 @@ final class GeneralServices {
         if ($categoryClass === 'university-posts') {
             $serv = new PostServices();
             $serv->delete($id);
-        } elseif ($categoryName === 'unit-posts') {
+        } elseif ($categoryClass === 'unit-posts') {
 
-        } elseif ($categoryName === 'program-posts') {
+        } elseif ($categoryClass === 'program-posts') {
 
         } else {
             jsonResponse(422, 'Invalid category class.');
         }
 
-        jsonResponse(200, 'Post successfully deleted. If this was unintentional, please contact the administrator for assistance.');
+        jsonResponse(200, 'Post successfully deleted.');
     }
 }
