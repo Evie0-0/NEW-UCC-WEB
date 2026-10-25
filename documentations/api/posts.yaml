@@ -14,7 +14,7 @@ api:
         fields:
           - name: id
             type: int (from text or number)
-            required: false
+            required: false (to determine whether to edit or create post)
             source: form or js (append)
             description: id of post when editing
           - name: title
@@ -34,12 +34,12 @@ api:
             description: content of post
           - name: remove_featured_image
             type: bool (from hidden)
-            required: false
+            required: false (to determine whether to remove or use existing image)
             source: form or js (append)
             description: determines whether stored image should be removed
           - name: featured_image
             type: file (from hidden)
-            required: false
+            required: false (optional)
             source: form or js (append)
             description: image of post
           - name: category

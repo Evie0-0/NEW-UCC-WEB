@@ -138,3 +138,7 @@ function validateBool(mixed $value, string $field): bool {
 
     return $bool;
 }
+
+function isSuperadmin(): bool {
+    return (isset($_SESSION['user_id'], $_SESSION['role']) && $_SESSION['role'] === 'superadmin');
+}

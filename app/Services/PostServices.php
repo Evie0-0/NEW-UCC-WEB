@@ -78,6 +78,7 @@ final class PostServices {
 
        session_start();
 
+       // REMINDER:: remove ?? 1
        $authorId = $_SESSION['user_id'] ?? 1;
        $editorId = $_SESSION['user_id'] ?? 1;
 
@@ -196,16 +197,20 @@ final class PostServices {
             jsonResponse(422, 'Expiration date cannot be earlier than the publish date.');
         }
 
-        $featuredImageFile = $fetchedPost['featured_image'] ?? null;
+        $oldFeaturedImage = $fetchedPost['featured_image'] ?? null;
+        $featuredImageFile = $oldFeaturedImage;
+        $newFeaturedImageFile = null;
 
-        if ($removeFeaturedImage) {
-            $feauredImageFile = null;
+        if ($removeFeaturedImage === true) {
+            $featuredImageFile = null;
         } elseif ($tempFeaturedImage !== null) {
-            $featuredImageFile = $imageHandler->store($tempFeaturedImage);
+            $newFeaturedImageFile = $imageHandler->store($tempFeaturedImage);
+            $featuredImageFile = $newFeaturedImageFile;
         }
 
         session_start();
 
+        // REMINDER:: remove ?? 1
         $editorId = $_SESSION['user_id'] ?? 1;
 
         session_write_close();
@@ -247,9 +252,37 @@ final class PostServices {
                 $conn->rollBack();
             }
 
+            if ($newFeaturedImageFile !== null) {
+                try {
+                    $imageHandler->delete($newFeaturedImageFile);
+                } catch (Throwable $e1) {
+                    logError($e1, 'Failed to delete new featured image after a database failure.', 'ERROR', [
+                        'action' => 'save post - update',
+                        'endpoint' => 'posts/save',
+                        'id' => $id
+                    ]);
+                }
+            }
+
             throw $e;
         }
 
+        if (is_string($oldFeaturedImage) && $oldFeaturedImage !== '' && $oldFeaturedImage !== $featuredImageFile) {
+            try {
+                $imageHandler->delete($oldFeaturedImage);
+            } catch (Throwable $e) {
+                logError($e, 'Failed to delete old featured image.', 'ERROR', [
+                    'action' => 'save post - update',
+                    'endpoint' => 'posts/save',
+                    'id' => $id
+                ]);
+            }
+        }
+
         jsonResponse(200, 'Post successfully updated.');
+    }
+
+    public function filter(): void {
+
     }
 }

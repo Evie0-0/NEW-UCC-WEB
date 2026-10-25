@@ -12,12 +12,22 @@ final class UserRepository {
         $this->conn = $db;
     }
 
-    public function findByUsername(string $username): array|false {
+    public function fetchItemByUsername(string $username): array|false {
         $query = 'SELECT id, username, email, password, role FROM users
             WHERE username = ?
             AND active = 1';
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$username]);
+
+        return $stmt->fetch();
+    }
+
+    public function fetchItemById(int $id): array|false {
+        $query = 'SELECT id, username, email, password, role FROM users
+            WHERE id = ?
+            AND active = 1';
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$id]);
 
         return $stmt->fetch();
     }

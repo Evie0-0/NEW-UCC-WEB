@@ -20,7 +20,7 @@ final class UserServices {
         }
 
         $repo = new UserRepository(Database::connect());
-        $fetchedUser = $repo->findByUsername($username);
+        $fetchedUser = $repo->fetchItemByUsername($username);
         $returnedPassword = null;
 
         if ($fetchedUser === false) {

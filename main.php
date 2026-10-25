@@ -39,7 +39,7 @@ session_start();
 
                 const formData = new FormData();
                 formData.append('csrf_key', csrfKey.value);
-                formData.append('id', 4);
+                formData.append('id', 8);
                 formData.append('title', 'Title 2');
                 formData.append('excerpt', 'Excerpt 2');
                 formData.append('content', 'Content 2');
