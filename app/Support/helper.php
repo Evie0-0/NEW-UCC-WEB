@@ -118,3 +118,23 @@ function validateString(mixed $value, string $field): string {
 
     return $value;
 }
+
+function validateId(mixed $value, string $field): int {
+    $id = filter_var($value, FILTER_VALIDATE_INT);
+
+    if ($id === false || $id < 1) {
+        jsonResponse(422, "Invalid $field.");
+    }
+
+    return $id;
+}
+
+function validateBool(mixed $value, string $field): bool {
+    $bool = filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+
+    if ($bool === null || $bool !== true && $bool !== false) {
+        jsonResponse(422, "$field is not a valid indicator.");
+    }
+
+    return $bool;
+}

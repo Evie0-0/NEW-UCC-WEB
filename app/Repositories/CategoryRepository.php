@@ -22,4 +22,14 @@ final class CategoryRepository {
 
         return $stmt->fetchAll();
     }
+
+    public function fetchItemById(int $id): array|false {
+        $query = 'SELECT id, name FROM categories
+            WHERE id = ?
+            AND active = 1';
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$id]);
+
+        return $stmt->fetch();
+    }
 }

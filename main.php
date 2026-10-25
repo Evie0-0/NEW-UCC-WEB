@@ -39,15 +39,16 @@ session_start();
 
                 const formData = new FormData();
                 formData.append('csrf_key', csrfKey.value);
-                formData.append('id', 0);
-                formData.append('title', 'Title');
-                formData.append('excerpt', 'Excerpt');
-                formData.append('content', 'Content');
+                formData.append('id', 4);
+                formData.append('title', 'Title 2');
+                formData.append('excerpt', 'Excerpt 2');
+                formData.append('content', 'Content 2');
                 formData.append('featured_image', imageInput.files[0]);
                 formData.append('category', 1);
                 formData.append('status', 'draft');
                 formData.append('publish_date', '2026-10-25');
                 formData.append('expiration_date', '2026-10-25');
+                formData.append('remove_featured_image', false);
 
                 const response = await fetch(`api/posts/save.php`, {
                     method: 'POST',
