@@ -287,6 +287,8 @@ final class PostServices {
         $filter = $_GET['filter'] ?? '';
         $sort = $_GET['sort'] ?? '';
 
+        // REMINDER: add offset
+
         if (!in_array($filter, self::FILTER_KEYS, true)) {
             jsonResponse(422, 'Invalid filter selection.');
         }
