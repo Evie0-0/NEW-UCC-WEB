@@ -80,12 +80,12 @@ final class PostRepository {
     }
 
     /** @param array<string, mixed> $data */
-    /** @return list<array<string, mixed>> */
-    public function filter(array $data): array {
+    /** @return array{0: string, 1: array<string, mixed>} */
+    private function buildWhere(array $data): array {
         $conditions = [
-            'active = 1',
-            'archived_at IS NULL'
-        ];
+             'active = 1',
+             'archived_at IS NULL'
+         ];
 
         $params = [];
 
@@ -115,6 +115,30 @@ final class PostRepository {
         };
 
         $conditions[] = $filterCondition;
+        $where = implode(' AND ', $conditions);
+
+        return [$where, $params];
+    }
+
+    /** @param array<string, mixed> $data */
+    public function countFiltered(array $data): int {
+        [$where, $params] = $this->buildWhere($data);
+
+        $query = "SELECT COUNT(*)
+            FROM posts
+            WHERE $where
+        ";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** @param array<string, mixed> $data */
+    /** @return array<int, array<string, mixed>> */
+    public function filter(array $data): array {
+        [$where, $params] = $this->buildWhere($data);
 
         $orderBy = match ($data['sort']) {
             'create-desc' => 'created_at DESC',
@@ -128,24 +152,32 @@ final class PostRepository {
             default => throw new InvalidArgumentException('Invalid post sort.')
         };
 
-        $where = implode(' AND ', $conditions);
         $query = "SELECT *,
             CASE
                 WHEN status = 'published'
                     AND expires_at <= CURRENT_TIMESTAMP
                 THEN 'expired'
+
                 WHEN status = 'published'
                     AND published_at > CURRENT_TIMESTAMP
                 THEN 'pending'
+
                 ELSE status
             END AS display_status
             FROM posts
             WHERE $where
-            ORDER BY $orderBy
+            ORDER BY $orderBy, id DESC
+            LIMIT 10 OFFSET :offset
         ";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->execute($params);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":$key", $value, PDO::PARAM_STR);
+        }
+
+        $stmt->bindValue(':offset', $data['offset'], PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }

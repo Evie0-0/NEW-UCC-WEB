@@ -67,14 +67,18 @@ session_start();
             try {
                 const params = new URLSearchParams({
                     csrf_key: csrfKey.value,
-                    class: 'university-posts'
+                    search: '',
+                    filter: 'all',
+                    sort: 'create-desc',
+                    page: 1,
+                    id: 11
                 });
 
                 const formData = new FormData();
                 formData.append('csrf_key', csrfKey.value);
                 formData.append('class', 'university-posts');
 
-                const response = await fetch(`api/categories/by-class.php?${params}`, {
+                const response = await fetch(`api/posts/item.php?${params}`, {
                     method: 'GET'
                 });
 

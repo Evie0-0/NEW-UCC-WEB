@@ -100,17 +100,21 @@ function validateDate(mixed $value, string $field): string {
 
 function validateString(mixed $value, string $field): string {
     if (!is_string($value)) {
-        jsonResponse(422, "$field must be a string.");
+        jsonResponse(422, "$field must be a valid string.");
     }
 
     return $value;
 }
 
 function validateInt(mixed $value, string $field): int {
-    $integer = filter_var($value, FILTER_VALIDATE_INT);
+    $integer = filter_var($value, FILTER_VALIDATE_INT, [
+        'options' => [
+            'min_range' => 0
+        ]
+    ]);
 
     if ($integer === false || $integer === null) {
-        jsonResponse(422, "Invalid $field identification.");
+        jsonResponse(422, "Invalid $field.");
     }
 
     return $integer;

@@ -7,6 +7,7 @@ use Core\Database;
 use Core\ImageManager;
 use DateTimeImmutable;
 use DateTimeZone;
+use InvalidArgumentException;
 use Repo\AuditTrailRepository;
 use Repo\CategoryRepository;
 use Repo\PostRepository;
@@ -16,6 +17,7 @@ final class PostServices {
     private const STATUS_KEYS = ['draft', 'published'];
     private const FILTER_KEYS = ['all', 'draft', 'published', 'pending', 'expired'];
     private const SORT_KEYS = ['create-desc', 'create-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiry-desc', 'expiry-asc'];
+    private const PER_PAGE = 10;
 
     public function create(): void {
         $title = trim(validateString($_POST['title'] ?? '', 'Title'));
@@ -283,12 +285,20 @@ final class PostServices {
     }
 
     public function filter(): void {
-        $search = trim(validateString($_GET['search'] ?? '', 'Search'));
+        $search = $_GET['search'] ?? '';
         $filter = $_GET['filter'] ?? '';
         $sort = $_GET['sort'] ?? '';
-        $offet =
+        $page = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT, [
+            'options' => [
+                'min_range' => 1
+            ]
+        ]);
 
-        // REMINDER: add offset
+        if (!is_string($search)) {
+            jsonResponse(422, 'Search must be a valid string.');
+        }
+
+        $search = trim($search);
 
         if (!in_array($filter, self::FILTER_KEYS, true)) {
             jsonResponse(422, 'Invalid filter selection.');
@@ -298,6 +308,10 @@ final class PostServices {
             jsonResponse(422, 'Invalid sort selection.');
         }
 
+        if ($page === false) {
+            jsonResponse(422, 'Invalid page number.');
+        }
+
         $data = [
             'search' => $search,
             'filter' => $filter,
@@ -305,13 +319,37 @@ final class PostServices {
         ];
 
         $repo = new PostRepository(Database::connect());
-        $posts = $repo->filter($data);
+        $totalPosts = $repo->countFiltered($data);
+        $totalPages = (int) ceil($totalPosts / self::PER_PAGE);
 
-        jsonResponse(200, 'Successfully filtered post items.', $posts);
+        if ($page > max(1, $totalPages)) {
+            jsonResponse(422, 'Requested page does not exist.');
+        }
+
+        $offset = ($page - 1) * self::PER_PAGE;
+        $posts = $repo->filter([
+            ...$data,
+            'offset' => $offset
+        ]);
+
+        jsonResponse(200, 'Successfully filtered post items.', [
+            'posts' => $posts,
+            'current_page' => $page,
+            'total_posts' => $totalPosts,
+            'total_pages' => $totalPages
+        ]);
     }
 
     public function item(): void {
-        $id = validateId($_GET['id'] ?? null, 'post id');
+        $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT, [
+            'options' => [
+                'min_range' => 1
+            ]
+        ]);
+
+        if ($id === false) {
+            throw new InvalidArgumentException('Invalid post id.');
+        }
 
         $repo = new PostRepository(Database::connect());
         $post = $repo->fetchItemById($id);
@@ -320,7 +358,9 @@ final class PostServices {
             jsonResponse(404, 'Post does not exist.');
         }
 
-        jsonResponse(200, 'Post successfully fetched.', $post);
+        jsonResponse(200, 'Post successfully fetched.', [
+            'post' => $post
+        ]);
     }
 
     public function archive(): void {
