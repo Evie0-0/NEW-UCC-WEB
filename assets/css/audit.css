@@ -1,0 +1,34 @@
+.posts-tools-left input[type="date"].posts-filter {
+    min-height: 42px;
+    padding: 0 12px;
+    border: 1px solid #e8e3d8;
+    border-radius: 13px;
+    background: #fff;
+    color: #0d2a21;
+    font: 400 14px "DM Sans", sans-serif;
+    cursor: pointer;
+}
+.posts-tools-left input[type="date"].posts-filter:focus {
+    outline: none;
+    border-color: #c9a227;
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18);
+}
+
+.posts-table th:nth-child(1) { width: 130px; }
+.posts-table th:nth-child(2) { width: auto; }
+.posts-table th:nth-child(3) { width: 200px; }
+.posts-table th:nth-child(4) { width: 200px; }
+
+.posts-table td:nth-child(2) .cell-ellipsis {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.posts-table tbody tr { cursor: default; }
+
+@media (max-width: 700px) {
+    .posts-tools-left input[type="date"].posts-filter { width: 100%; }
+}
