@@ -106,14 +106,14 @@ function validateString(mixed $value, string $field): string {
     return $value;
 }
 
-function validateId(mixed $value, string $field): int {
-    $id = filter_var($value, FILTER_VALIDATE_INT);
+function validateInt(mixed $value, string $field): int {
+    $integer = filter_var($value, FILTER_VALIDATE_INT);
 
-    if ($id === false || $id === null || $id < 1) {
-        jsonResponse(422, "Invalid $field.");
+    if ($integer === false || $integer === null) {
+        jsonResponse(422, "Invalid $field identification.");
     }
 
-    return $id;
+    return $integer;
 }
 
 function validateBool(mixed $value, string $field): bool {

@@ -286,6 +286,7 @@ final class PostServices {
         $search = trim(validateString($_GET['search'] ?? '', 'Search'));
         $filter = $_GET['filter'] ?? '';
         $sort = $_GET['sort'] ?? '';
+        $offet =
 
         // REMINDER: add offset
 

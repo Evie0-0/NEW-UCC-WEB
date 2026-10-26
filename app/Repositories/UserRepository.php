@@ -13,7 +13,7 @@ final class UserRepository {
     }
 
     public function fetchItemByUsername(string $username): array|false {
-        $query = 'SELECT id, username, email, password, role FROM users
+        $query = 'SELECT * FROM users
             WHERE username = ?
             AND active = 1';
         $stmt = $this->conn->prepare($query);

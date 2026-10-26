@@ -44,6 +44,8 @@ final class UserServices {
         $_SESSION['user_id'] = $fetchedUser['id'];
         $_SESSION['username'] = $fetchedUser['username'];
         $_SESSION['role'] = $fetchedUser['role'];
+        $_SESSION['unit_id'] = $fetchedUser['unit_id'];
+        $_SESSION['program_id'] = $fetchedUser['program_id'];
 
         session_write_close();
 
