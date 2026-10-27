@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Serv;
 
 use Core\Database;
+use InvalidArgumentException;
 use Repo\ArchiveRepository;
 use Repo\CategoryRepository;
 
@@ -39,8 +40,16 @@ final class ArchiveServices {
     }
 
     public function unarchive(): void {
-        $id = validateId($_POST['id'] ?? null, 'id');
-        $category = validateId($_POST['category'] ?? null, 'category id');
+        $id = validateInt($_POST['id'] ?? null, 1, null);
+        $category = validateInt($_POST['category'] ?? null, 1, null);
+
+        if ($id === false) {
+            throw new InvalidArgumentException('Invalid post id.');
+        }
+
+        if ($category === false) {
+            throw new InvalidArgumentException('Invalid category id.');
+        }
 
         $repo = new CategoryRepository(Database::connect());
         $fetchedCategory = $repo->fetchItemById($category);
@@ -66,8 +75,16 @@ final class ArchiveServices {
     }
 
     public function delete(): void {
-        $id = validateId($_POST['id'] ?? null, 'id');
-        $category = validateId($_POST['category'] ?? null, 'category id');
+        $id = validateInt($_POST['id'] ?? null, 1, null);
+        $category = validateInt($_POST['category'] ?? null, 1, null);
+
+        if ($id === false) {
+            throw new InvalidArgumentException('Invalid post id.');
+        }
+
+        if ($category === false) {
+            throw new InvalidArgumentException('Invalid category id.');
+        }
 
         $repo = new CategoryRepository(Database::connect());
         $fetchedCategory = $repo->fetchItemById($category);

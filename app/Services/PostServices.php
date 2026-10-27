@@ -464,8 +464,16 @@ final class PostServices {
     }
 
     public function unarchive(): void {
-        $id = validateId($_POST['id'] ?? null, 'post id');
-        $category = validateId($_POST['category'] ?? null, 'category id');
+        $id = validateInt($_POST['id'] ?? null, 1, null);
+        $category = validateInt($_POST['category'] ?? null, 1, null);
+
+        if ($id === false) {
+            throw new InvalidArgumentException('Invalid post id.');
+        }
+
+        if ($category === false) {
+            throw new InvalidArgumentException('Invalid category id.');
+        }
 
         $repo = new PostRepository(Database::connect());
         $post = $repo->fetchItemById($id);
@@ -530,8 +538,16 @@ final class PostServices {
     }
 
     public function delete(): void {
-        $id = validateId($_POST['id'] ?? null, 'post id');
-        $category = validateId($_POST['category'] ?? null, 'category id');
+        $id = validateInt($_POST['id'] ?? null, 1, null);
+        $category = validateInt($_POST['category'] ?? null, 1, null);
+
+        if ($id === false) {
+            throw new InvalidArgumentException('Invalid post id.');
+        }
+
+        if ($category === false) {
+            throw new InvalidArgumentException('Invalid category id.');
+        }
 
         $repo = new PostRepository(Database::connect());
         $post = $repo->fetchItemById($id);
