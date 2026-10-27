@@ -72,4 +72,16 @@ final class UserServices {
             'redirect' => 'index.php'
         ]);
     }
+
+    public static function isLoggedIn(): bool {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $isLoggedIn = isset($_SESSION['user_id']);
+
+        session_write_close();
+
+        return $isLoggedIn;
+    }
 }
