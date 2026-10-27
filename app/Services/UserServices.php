@@ -53,7 +53,7 @@ final class UserServices {
         session_regenerate_id(true);
 
         $_SESSION[self::USER_ID_KEY] = $fetchedUser['id'];
-        $_SESSION[self::USERNAME_KEY]] = $fetchedUser['username'];
+        $_SESSION[self::USERNAME_KEY] = $fetchedUser['username'];
         $_SESSION[self::ROLE_KEY] = $fetchedUser['role'];
         $_SESSION[self::UNIT_ID_KEY] = $fetchedUser['unit_id'];
         $_SESSION[self::PROGRAM_ID_KEY] = $fetchedUser['program_id'];
