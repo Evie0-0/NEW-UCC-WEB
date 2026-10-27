@@ -23,7 +23,7 @@ final class UserRepository {
     }
 
     public function fetchItemById(int $id): array|false {
-        $query = 'SELECT id, username, email, password, role FROM users
+        $query = 'SELECT * FROM users
             WHERE id = ?
             AND active = 1';
         $stmt = $this->conn->prepare($query);
