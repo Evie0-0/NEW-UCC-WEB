@@ -11,7 +11,7 @@ if (!UserServices::isAuthenticated()) {
     exit;
 }
 
-if (!UserServices::isAuthorized(UserServices::DEAN_KEY)) {
+if (!UserServices::isAuthorized()) {
     header('Location: login.php?error=403');
     exit;
 }
@@ -30,6 +30,7 @@ $pageTitle = "Dashboard";
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="assets/js/index.js"></script>
     <link rel="stylesheet" href="assets/css/style.css">
@@ -135,7 +136,6 @@ $pageTitle = "Dashboard";
             </section>
         </main>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script src="assets/js/dashboard.js?v=2"></script>
+    <script src="assets/js/dashboard.js?v=2"></script>
 </body>
 </html>

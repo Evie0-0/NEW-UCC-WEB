@@ -1,6 +1,8 @@
 import { showAlert, showUnexpectedError } from "./common.js";
 
-lucide.createIcons();
+if (window.lucide) {
+    window.lucide.createIcons();
+}
 
 // Unauthenticated or unauthorized error handling
 async function userErrorHandler() {

@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+use Serv\UserServices;
+
+require_once dirname(__DIR__, 3) . '/bootstrap.php';
 require_once dirname(__DIR__, 3) . '/app/Support/helper.php';
 
 $currentPage = strtolower(basename($_SERVER['SCRIPT_NAME'] ?? ''));
@@ -85,6 +88,7 @@ $renderGroup = static function (array $links, string $label, string $icon) use (
     <div class="gold-line"></div>
     <nav class="sidebar-nav" aria-label="Admin navigation">
         <?php
+        if (UserServices::isAuthorized([UserServices::SUPERADMIN_KEY])) {
             $renderLink('index.php', 'Dashboard', 'house');
             $renderLink('posts.php', 'Posts', 'newspaper');
             $renderGroup($academicsLinks, 'Academics', 'graduation-cap');
@@ -92,14 +96,21 @@ $renderGroup = static function (array $links, string $label, string $icon) use (
             $renderGroup($componentsLinks, 'Components', 'building-2');
             $renderLink('users.php', 'User Management', 'user');
             $renderLink('audit.php', 'Audit Trail', 'scroll-text');
+        } elseif (UserServices::isAuthorized([UserServices::DEAN_KEY])) {
+            $renderLink('index.php', 'Dashboard', 'house');
+            $renderLink('unit-info.php', 'Unit Information', 'book-open-text');
+            $renderLink('unit-posts.php', 'Unit Posts', 'newspaper');
+        } elseif (UserServices::isAuthorized([UserServices::PROGRAM_HEAD_KEY])) {
+            $renderLink('index.php', 'Dashboard', 'house');
+            $renderLink('program-posts.php', 'Program Posts', 'newspaper');
+        }
         ?>
     </nav>
     <div class="sidebar-bottom">
-        <?php $renderLink('password.php', 'Password', 'lock'); ?>
-        <a href="logout.php">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
-        </a>
+        <?php
+            $renderLink('password.php', 'Password', 'lock');
+            $renderLink('logout.php', 'Logout', 'log-out');
+        ?>
     </div>
     <div class="sidebar-art"></div>
 </aside>

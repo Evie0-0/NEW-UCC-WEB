@@ -1,15 +1,20 @@
 <?php
-if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+declare(strict_types=1);
+
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['action'] ?? '') === 'logout') {
 	session_start();
 	$_SESSION = [];
+
 	if (ini_get('session.use_cookies')) {
-		$p = session_get_cookie_params();
-		setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+		$params = session_get_cookie_params();
+		setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
 	}
+
 	session_destroy();
 	http_response_code(204);
 	exit;
 }
+
 $pageTitle = "Logout";
 ?>
 <!DOCTYPE html>
@@ -23,6 +28,7 @@ $pageTitle = "Logout";
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
 	<script src="https://unpkg.com/lucide@latest"></script>
+	<script type="module" src="assets/js/logout.js"></script>
 	<style>
 		* {
 			box-sizing: border-box;
@@ -211,39 +217,5 @@ $pageTitle = "Logout";
 		<h2>Logout Successful</h2>
 		<p>You have been logged out successfully.</p>
 	</div>
-	<script>
-		if (window.lucide) {
-			window.lucide.createIcons();
-		}
-		const backgroundPage = document.getElementById("backgroundPage");
-		const logoutOverlay = document.getElementById("logoutOverlay");
-		const logoutSuccess = document.getElementById("logoutSuccess");
-		const confirmLogout = document.getElementById("confirmLogout");
-		const cancelLogout = document.getElementById("cancelLogout");
-		const currentPage = document.referrer;
-		if (currentPage && !currentPage.endsWith("/logout.php") && !currentPage.endsWith("/Logout_Final.php")) {
-			backgroundPage.src = currentPage;
-		} else {
-			backgroundPage.src = "dashboard.php";
-		}
-		cancelLogout.addEventListener("click", () => {
-			if (window.history.length > 1) {
-				window.history.back();
-			} else {
-				window.location.href = "dashboard.php";
-			}
-		});
-		confirmLogout.addEventListener("click", () => {
-			logoutOverlay.style.display = "none";
-			logoutSuccess.classList.add("show");
-			fetch("Logout.php?action=logout", { credentials: "same-origin" })
-				.catch(() => {})
-				.finally(() => {
-					setTimeout(() => {
-						window.location.href = "login.php";
-					}, 1200);
-				});
-		});
-	</script>
 </body>
 </html>
