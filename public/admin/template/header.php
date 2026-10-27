@@ -3,7 +3,7 @@ $pageTitle = $pageTitle ?? 'Admin';
 ?>
 <header class="top-header">
     <div class="header-left">
-        <h1 id="pageTitle"><?= htmlspecialchars($pageTitle) ?></h1>
+        <h1 id="pageTitle"><?= e($pageTitle) ?></h1>
     </div>
     <div class="header-right">
         <a href="homepage.php" class="visit-website-btn">
