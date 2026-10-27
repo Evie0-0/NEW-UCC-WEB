@@ -9,6 +9,15 @@ use Repo\UserRepository;
 use Throwable;
 
 final class UserServices {
+    public const SUPERADMIN_KEY = 'superadmin';
+    public const DEAN_KEY = 'dean';
+    public const PROGRAM_HEAD_KEY = 'program head';
+    public const USER_ID_KEY = 'user_id';
+    public const USERNAME_KEY = 'username';
+    public const ROLE_KEY = 'role';
+    public const UNIT_ID_KEY = 'unit_id';
+    public const PROGRAM_ID_KEY = 'program_id';
+
     public function login(): void {
         $username = trim(validateString($_POST['username'] ?? '', 'Username'));
         $password = validateString($_POST['password'] ?? '', 'Password');
@@ -43,11 +52,11 @@ final class UserServices {
 
         session_regenerate_id(true);
 
-        $_SESSION['user_id'] = $fetchedUser['id'];
-        $_SESSION['username'] = $fetchedUser['username'];
-        $_SESSION['role'] = $fetchedUser['role'];
-        $_SESSION['unit_id'] = $fetchedUser['unit_id'];
-        $_SESSION['program_id'] = $fetchedUser['program_id'];
+        $_SESSION[self::USER_ID_KEY] = $fetchedUser['id'];
+        $_SESSION[self::USERNAME_KEY]] = $fetchedUser['username'];
+        $_SESSION[self::ROLE_KEY] = $fetchedUser['role'];
+        $_SESSION[self::UNIT_ID_KEY] = $fetchedUser['unit_id'];
+        $_SESSION[self::PROGRAM_ID_KEY] = $fetchedUser['program_id'];
 
         session_write_close();
 
@@ -73,41 +82,20 @@ final class UserServices {
         ]);
     }
 
-    public static function isAuthenticated(): bool {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $isLoggedIn = isset($_SESSION['user_id']);
-
-        session_write_close();
-
-        return $isLoggedIn;
-    }
-
-    /** @param list<string> $allowedRoles */
-    public static function isAuthorized(array $allowedRoles): bool {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $role = $_SESSION['role'] ?? null;
-
-        session_write_close();
-
-        return is_string($role) && in_array($role, $allowedRoles, true);
-    }
-
     public static function getUsername(): string {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        $username = $_SESSION['username'] ?? null;
+        try {
+            $username = $_SESSION[self::USERNAME_KEY] ?? null;
 
-        session_write_close();
-
-        return is_string($username) ? $username : '';
+            return is_string($username) ? $username : '';
+        } finally {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
+        }
     }
 
     public static function getRole(): string {
@@ -115,10 +103,33 @@ final class UserServices {
             session_start();
         }
 
-        $role = $_SESSION['role'] ?? null;
+        try {
+            $role = $_SESSION[self::ROLE_KEY] ?? null;
 
-        session_write_close();
+            return is_string($role) ? $role : '';
+        } finally {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
+        }
+    }
 
-        return is_string($role) ? $role : '';
+    public static function isAuthenticated(): bool {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        try {
+            return isset($_SESSION[self::USER_ID_KEY]);
+        } finally {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
+        }
+    }
+
+    /** @param list<string> $allowedRoles */
+    public static function isAuthorized(array $allowedRoles = [self::SUPERADMIN_KEY, self::DEAN_KEY, self::PROGRAM_HEAD_KEY]): bool {
+        return in_array(self::getRole(), $allowedRoles, true);
     }
 }
