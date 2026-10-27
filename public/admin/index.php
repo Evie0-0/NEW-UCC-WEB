@@ -1,8 +1,20 @@
 <?php
 declare(strict_types=1);
 
+use Serv\UserServices;
+
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
+
+if (!UserServices::isAuthenticated()) {
+    header('Location: login.php?error=unauthenticated');
+    jsonResponse(401, 'Please login first.');
+}
+
+if (!UserServices::isAuthorized(['superadmin', 'dean', 'program head'])) {
+    header('Location: login.php?error=forbidden');
+    jsonResponse(403, 'You are unauthorized to access the page. Please use an appropriate account.');
+}
 
 $pageTitle = "Dashboard";
 ?>
