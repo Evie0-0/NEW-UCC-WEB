@@ -103,10 +103,22 @@ final class UserServices {
             session_start();
         }
 
-        $username = $_SESSION['username'] ?? 'Username not found';
+        $username = $_SESSION['username'] ?? null;
 
         session_write_close();
 
-        return $username;
+        return is_string($username) ? $username : '';
+    }
+
+    public static function getRole(): string {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $role = $_SESSION['role'] ?? null;
+
+        session_write_close();
+
+        return is_string($role) ? $role : '';
     }
 }
