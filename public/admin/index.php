@@ -11,7 +11,7 @@ if (!UserServices::isAuthenticated()) {
     exit;
 }
 
-if (!UserServices::isAuthorized(['superadmin', 'dean', 'program head'])) {
+if (!UserServices::isAuthorized(UserServices::DEAN_KEY)) {
     header('Location: login.php?error=403');
     exit;
 }
