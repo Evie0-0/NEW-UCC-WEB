@@ -2,6 +2,26 @@ import { showAlert, showUnexpectedError } from "./common.js";
 
 lucide.createIcons();
 
+// Unauthenticated or unauthorized error handling
+async function userErrorHandler() {
+    const params = new URLSearchParams(window.location.search);
+    const errorValue = params.get('error');
+
+    const errorMessages = {
+        401: 'Plese log in to your account to continue.',
+        403: 'Your account does not have permission to access this page. Please use an authorized account or contact your administrator.'
+    };
+
+    const errorMessage = errorMessages[errorValue];
+
+    if (errorMessage) {
+        await showAlert(false, errorMessage);
+        history.replaceState(null, '', window.location.pathname);
+    }
+}
+
+await userErrorHandler();
+
 // Auto select when page loads
 const usernameInput = document.querySelector('[name="username"]');
 

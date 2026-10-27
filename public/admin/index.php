@@ -7,13 +7,13 @@ require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
 
 if (!UserServices::isAuthenticated()) {
-    header('Location: login.php?error=unauthenticated');
-    jsonResponse(401, 'Please login first.');
+    header('Location: login.php?error=401');
+    exit;
 }
 
 if (!UserServices::isAuthorized(['superadmin', 'dean', 'program head'])) {
-    header('Location: login.php?error=forbidden');
-    jsonResponse(403, 'You are unauthorized to access the page. Please use an appropriate account.');
+    header('Location: login.php?error=403');
+    exit;
 }
 
 $pageTitle = "Dashboard";
@@ -29,19 +29,17 @@ $pageTitle = "Dashboard";
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="assets/js/index.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body data-page-title="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
     <div class="dashboard-layout">
         <?php include __DIR__ . '/template/sidebar.php'; ?>
-
         <main class="main-content">
-
             <?php include __DIR__ . '/template/header.php'; ?>
-
             <section class="content-area">
-
                 <div class="heading-row">
                     <div>
                         <h2>Good day, Admin!</h2>

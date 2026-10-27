@@ -6,7 +6,7 @@ use Serv\UserServices;
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
 
-if (UserServices::isLoggedIn()) {
+if (UserServices::isAuthenticated()) {
     header('Location: index.php');
 }
 
