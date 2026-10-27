@@ -1,8 +1,14 @@
 <?php
 declare(strict_types=1);
 
+use Serv\UserServices;
+
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
+
+if (UserServices::isLoggedIn()) {
+    header('Location: index.php');
+}
 
 $pageTitle = "Login";
 ?>
