@@ -73,7 +73,7 @@ final class UserServices {
         ]);
     }
 
-    public static function isLoggedIn(): bool {
+    public static function isAuthenticated(): bool {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
