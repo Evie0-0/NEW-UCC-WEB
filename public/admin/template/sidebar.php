@@ -1,98 +1,101 @@
 <?php
-$currentPage = strtolower(basename($_SERVER['SCRIPT_NAME']));
+declare(strict_types=1);
+
+require_once dirname(__DIR__, 3) . '/app/Support/helper.php';
+
+$currentPage = strtolower(basename($_SERVER['SCRIPT_NAME'] ?? ''));
+
+$isActive = static fn (string $file): bool => strtolower($file) === $currentPage;
 
 $academicsLinks = [
     'units.php'        => 'Units',
     'programs.php'     => 'Programs',
-    'unitinfo.php'     => 'Unit Information',
-    'unitpost.php'     => 'Unit Posts',
-    'programposts.php' => 'Program Posts',
+    'unit-info.php'     => 'Unit Information',
+    'unit-post.php'     => 'Unit Posts',
+    'program-posts.php' => 'Program Posts',
 ];
 $officialsLinks = [
     'executive.php' => 'Executive Officials',
     'regents.php'   => 'Board of Regents',
 ];
 $componentsLinks = [
-    'campuses.php'  => 'Campuses',
-    'contact.php'   => 'Contact Information',
-    'about.php'     => 'About UCC',
-    'eservices.php' => 'E-Services',
-    'archive.php'   => 'Archive',
-    'quicklinks.php' => 'Quick Links',
-    'calendar.php'  => 'Calendar',
+    'campuses.php'   => 'Campuses',
+    'contact.php'    => 'Contact Information',
+    'about.php'      => 'About UCC',
+    'eservices.php'  => 'E-Services',
+    'archive.php'    => 'Archive',
+    'quick-links.php' => 'Quick Links',
+    'calendar.php'   => 'Calendar',
 ];
 
-$isActive = function (string $file) use ($currentPage): bool {
-    return strtolower($file) === $currentPage;
-};
-$groupHasActive = function (array $links) use ($currentPage): bool {
-    foreach (array_keys($links) as $file) {
-        if (strtolower($file) === $currentPage) {
-            return true;
-        }
-    }
-    return false;
-};
-$renderGroup = function (string $icon, string $label, array $links) use ($isActive, $groupHasActive): void {
-    $open = $groupHasActive($links);
+$renderLink = static function (string $file, string $label, string $icon = '') use ($isActive): void {
+    $active = $isActive($file);
+
     ?>
-        <div class="menu-group<?= $open ? ' open' : '' ?>">
-            <button class="menu-title<?= $open ? ' active' : '' ?>" type="button" aria-expanded="<?= $open ? 'true' : 'false' ?>">
-                <div>
-                    <i data-lucide="<?= $icon ?>"></i>
-                    <span><?= htmlspecialchars($label) ?></span>
-                </div>
-                <i data-lucide="chevron-down" class="arrow"></i>
-            </button>
-            <div class="submenu">
-                <?php foreach ($links as $file => $text): ?>
-                <a href="<?= $file ?>"<?= $isActive($file) ? ' class="active"' : '' ?>><?= htmlspecialchars($text) ?></a>
-                <?php endforeach; ?>
+
+    <a href="<?= e($file) ?>"<?= $active ? ' class="active" aria-current="page"' : '' ?>>
+        <?php if ($icon !== ''): ?>
+            <i data-lucide="<?= e($icon) ?>"></i>
+        <?php endif; ?>
+
+        <span><?= e($label) ?></span>
+    </a>
+
+    <?php
+};
+
+$renderGroup = static function (array $links, string $label, string $icon) use ($currentPage): void {
+    $open = in_array($currentPage, array_map('strtolower', array_keys($links)), true);
+    $groupId = 'menu-' . preg_replace('/[^a-z0-9-]/', '-', strtolower($label));
+
+    ?>
+
+    <div class="menu-group<?= $open ? ' open' : '' ?>">
+        <button class="menu-title<?= $open ? ' active' : '' ?>" type="button"
+                aria-expanded="<?= $open ? 'true' : 'false' ?>" aria-controls="<?= e($groupId) ?>">
+            <div>
+                <i data-lucide="<?= e($icon) ?>"></i>
+                <span><?= e($label) ?></span>
             </div>
+            <i data-lucide="chevron-down" class="arrow"></i>
+        </button>
+        <div class="submenu" id="<?= e($groupId) ?>">
+            <?php foreach ($links as $file => $text): $active = strtolower($file) === $currentPage; ?>
+                <a href="<?= e($file) ?>"<?= $active ? ' class="active" aria-current="page"' : '' ?>>
+                    <?= e($text) ?>
+                </a>
+            <?php endforeach; ?>
         </div>
+    </div>
+
     <?php
 };
 ?>
+
 <aside class="sidebar">
     <div class="sidebar-top">
         <div class="logo-wrap">
             <img src="assets/images/ucc-LOGO.png" alt="UCC Logo">
             <div>
-                <h2>UCC Admin</h2>
-                <p>University of Caloocan City</p>
+                <h2 style="cursor: default;">UCC Admin</h2>
+                <p style="cursor: default;">University of Caloocan City</p>
             </div>
         </div>
     </div>
     <div class="gold-line"></div>
-    <nav class="sidebar-nav">
-        <a href="dashboard.php"<?= $isActive('dashboard.php') ? ' class="active"' : '' ?>>
-            <i data-lucide="house"></i>
-            <span>Dashboard</span>
-        </a>
-
-        <a href="posts.php"<?= $isActive('posts.php') ? ' class="active"' : '' ?>>
-            <i data-lucide="newspaper"></i>
-            <span>Posts</span>
-        </a>
-
-        <?php $renderGroup('graduation-cap', 'Academics', $academicsLinks); ?>
-        <?php $renderGroup('users', 'Officials', $officialsLinks); ?>
-        <?php $renderGroup('building-2', 'Components', $componentsLinks); ?>
-
-        <a href="users.php"<?= $isActive('users.php') ? ' class="active"' : '' ?>>
-            <i data-lucide="user"></i>
-            <span>User Management</span>
-        </a>
-        <a href="audit.php"<?= $isActive('audit.php') ? ' class="active"' : '' ?>>
-            <i data-lucide="scroll-text"></i>
-            <span>Audit Trail</span>
-        </a>
+    <nav class="sidebar-nav" aria-label="Admin navigation">
+        <?php
+            $renderLink('index.php', 'Dashboard', 'house');
+            $renderLink('posts.php', 'Posts', 'newspaper');
+            $renderGroup($academicsLinks, 'Academics', 'graduation-cap');
+            $renderGroup($officialsLinks, 'Officials', 'users');
+            $renderGroup($componentsLinks, 'Components', 'building-2');
+            $renderLink('users.php', 'User Management', 'user');
+            $renderLink('audit.php', 'Audit Trail', 'scroll-text');
+        ?>
     </nav>
     <div class="sidebar-bottom">
-        <a href="password.php"<?= $isActive('password.php') ? ' class="active"' : '' ?>>
-            <i data-lucide="lock"></i>
-            <span>Password</span>
-        </a>
+        <?php $renderLink('password.php', 'Password', 'lock'); ?>
         <a href="logout.php">
             <i data-lucide="log-out"></i>
             <span>Logout</span>
@@ -100,20 +103,17 @@ $renderGroup = function (string $icon, string $label, array $links) use ($isActi
     </div>
     <div class="sidebar-art"></div>
 </aside>
+
 <script>
-(function () {
-    var sidebar = document.querySelector('.sidebar');
-    if (!sidebar || sidebar.dataset.menuReady) { return; }
-    sidebar.dataset.menuReady = '1';
-    sidebar.addEventListener('click', function (e) {
-        var button = e.target.closest('.menu-title');
-        if (!button || !sidebar.contains(button)) { return; }
-        e.preventDefault();
-        e.stopPropagation();
-        var group = button.closest('.menu-group');
-        var isOpen = group.classList.toggle('open');
-        button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    }, true);
-    if (window.lucide) { window.lucide.createIcons(); }
-})();
+document.querySelectorAll('.sidebar .menu-title').forEach(button => {
+    button.addEventListener('click', () => {
+        const group = button.closest('.menu-group');
+        if (!group) return;
+
+        if (group.querySelector('.submenu a[aria-current="page"]')) return;
+
+        const open = group.classList.toggle('open');
+        button.setAttribute('aria-expanded', String(open));
+    });
+});
 </script>

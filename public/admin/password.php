@@ -373,15 +373,6 @@ $pageTitle = "Password";
 	</div>
 	<script>
 		"use strict";
-		function initSidebarMenu() {
-			document.querySelectorAll(".sidebar .menu-title").forEach(button => {
-				const menuGroup = button.closest(".menu-group");
-				button.addEventListener("click", () => {
-					menuGroup.classList.toggle("open");
-					button.setAttribute("aria-expanded", menuGroup.classList.contains("open") ? "true" : "false");
-				});
-			});
-		}
 		const passwordForm = document.getElementById("passwordForm");
 		const currentPassword = document.getElementById("currentPassword");
 		const newPassword = document.getElementById("newPassword");
@@ -522,7 +513,6 @@ $pageTitle = "Password";
 			updateRequirements();
 			matchMessage.textContent = "";
 		});
-		initSidebarMenu();
 		if (window.lucide) {
 			window.lucide.createIcons();
 		}
