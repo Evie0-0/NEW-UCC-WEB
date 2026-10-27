@@ -68,7 +68,7 @@ session_start();
                 const params = new URLSearchParams({
                     csrf_key: csrfKey.value,
                     class: 'university-posts',
-                    search: '',
+                    search: 'Title 7',
                     filter: 'all',
                     sort: 'create-asc',
                     page: 1,
@@ -90,9 +90,8 @@ session_start();
                 formData.append('username', 'mky');
                 formData.append('password', 'admin123');
 
-                const response = await fetch(`api/posts/save.php`, {
-                    method: 'POST',
-                    body: formData
+                const response = await fetch(`api/posts/filter.php?${params}`, {
+                    method: 'GET'
                 });
 
                 const result = await response.json();

@@ -2,9 +2,13 @@ import { showAlert, showUnexpectedError } from "./common.js";
 
 lucide.createIcons();
 
+// Auto select when page loads
+const usernameInput = document.querySelector('[name="username"]');
+
+usernameInput.select();
+
 // Login
 const loginForm = document.getElementById('loginForm');
-const usernameInput = document.querySelector('[name="username"]');
 const passwordInput = document.querySelector('[name="password"]');
 
 function resetForm() {
