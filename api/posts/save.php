@@ -27,21 +27,9 @@ if (!Token::verify($_POST['csrf_key'] ?? null)) {
 
 session_write_close();
 
-$postId = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
-
-if ($postId === false) {
-    jsonResponse(422, 'Invalid post id.');
-}
-
 try {
-
     $serv = new PostServices();
-
-    if ($postId !== 0) {
-        $serv->update();
-    } else {
-        $serv->create();
-    }
+    $serv->save();
 } catch (Throwable $e) {
     logError($e, 'Failed to process save request.', 'ERROR', [
         'action' => 'save post',

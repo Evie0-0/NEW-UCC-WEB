@@ -71,15 +71,25 @@ session_start();
                     filter: 'all',
                     sort: 'create-desc',
                     page: 1,
-                    id: 11
+                    id: 1
                 });
 
                 const formData = new FormData();
                 formData.append('csrf_key', csrfKey.value);
-                formData.append('class', 'university-posts');
+                formData.append('id', 19);
+                formData.append('title', 'Title 6');
+                formData.append('excerpt', 'Excerpt 6');
+                formData.append('content', 'Content 6');
+                formData.append('featured_image', imageInput.files[0]);
+                formData.append('category', '4');
+                formData.append('status', 'published');
+                formData.append('publish_date', '2026-10-27');
+                formData.append('expiration_date', '2026-10-27');
+                formData.append('remove_featured_image', 'false');
 
-                const response = await fetch(`api/posts/item.php?${params}`, {
-                    method: 'GET'
+                const response = await fetch(`api/posts/archive.php`, {
+                    method: 'POST',
+                    body: formData
                 });
 
                 const result = await response.json();

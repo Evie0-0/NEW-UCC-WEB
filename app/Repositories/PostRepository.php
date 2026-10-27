@@ -16,8 +16,8 @@ final class PostRepository {
     /** @param array<string, mixed> $data  */
     public function insertItem(array $data): string {
         $query = 'INSERT INTO posts (title, excerpt, content, featured_image, category_id,
-            status, author_id, editor_id, published_at, expires_at)
-            VALUES (?,?,?,?,?,?,?,?,?,?)';
+            status, author_id, published_at, expires_at)
+            VALUES (?,?,?,?,?,?,?,?,?)';
         $stmt = $this->conn->prepare($query);
         $stmt->execute([
             $data['title'],
@@ -27,7 +27,6 @@ final class PostRepository {
             $data['category_id'],
             $data['status'],
             $data['author_id'],
-            $data['editor_id'],
             $data['published_at'],
             $data['expires_at']
         ]);
@@ -61,13 +60,11 @@ final class PostRepository {
         $query = "SELECT *,
             CASE
                 WHEN status = 'published'
-                    AND expires_at <= CURRENT_TIMESTAMP
+                    AND expires_at < CURRENT_DATE
                 THEN 'expired'
-
                 WHEN status = 'published'
-                    AND published_at > CURRENT_TIMESTAMP
+                    AND published_at > CURRENT_DATE
                 THEN 'pending'
-
                 ELSE status
             END AS display_status
             FROM posts
@@ -104,11 +101,10 @@ final class PostRepository {
             'pending' => "
                 status = 'published'
                 AND published_at > CURRENT_DATE
-                AND expires_at > CURRENT_DATE
             ",
             'expired' => "
                 status = 'published'
-                AND expires_at <= CURRENT_DATE
+                AND expires_at < CURRENT_DATE
             ",
             'all' => '1 = 1',
             default => throw new InvalidArgumentException('Invalid post filter.')
@@ -155,13 +151,11 @@ final class PostRepository {
         $query = "SELECT *,
             CASE
                 WHEN status = 'published'
-                    AND expires_at <= CURRENT_TIMESTAMP
+                    AND expires_at < CURRENT_DATE
                 THEN 'expired'
-
                 WHEN status = 'published'
-                    AND published_at > CURRENT_TIMESTAMP
+                    AND published_at > CURRENT_DATE
                 THEN 'pending'
-
                 ELSE status
             END AS display_status
             FROM posts

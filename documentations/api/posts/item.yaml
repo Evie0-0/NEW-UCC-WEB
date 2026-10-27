@@ -33,7 +33,6 @@ response:
     - name: data
       type: object
       returned: always (can be empty)
-      direct_access: true
       description: contains the data returned by the endpoint
       conditions:
         - successful request

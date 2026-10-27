@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+use Symfony\Polyfill\Php80\Php80;
 
 function e(string $text): string {
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
@@ -81,18 +82,16 @@ function jsonResponse(int $statusCode = 200, string $message = 'An unexpected er
     exit;
 }
 
-function validateDate(mixed $value, string $field): string {
+function validateDate(mixed $value): string|false {
     if (!is_string($value)) {
-        jsonResponse(422, "$field must be a valid date.");
+        return false;
     }
 
     $date = DateTimeImmutable::createFromFormat('!Y-m-d', $value, new DateTimeZone('Asia/Manila'));
     $errors = DateTimeImmutable::getLastErrors();
 
-    if ($date === false
-        || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))
-        || $date->format('Y-m-d') !== $value) {
-        jsonResponse(422, "$field must be a valid date.");
+    if ($date === false || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) || $date->format('Y-m-d') !== $value) {
+        return false;
     }
 
     return $date->format('Y-m-d');
@@ -106,28 +105,24 @@ function validateString(mixed $value, string $field): string {
     return $value;
 }
 
-function validateInt(mixed $value, string $field): int {
-    $integer = filter_var($value, FILTER_VALIDATE_INT, [
-        'options' => [
-            'min_range' => 0
-        ]
-    ]);
+function validateInt(mixed $value, ?int $min = null, ?int $max = null): int|false {
+    $options = [];
 
-    if ($integer === false || $integer === null) {
-        jsonResponse(422, "Invalid $field.");
+    if ($min !== null) {
+        $options['min_range'] = $min;
     }
 
-    return $integer;
+    if ($max !== null) {
+        $options['max_range'] = $max;
+    }
+
+    return filter_var($value, FILTER_VALIDATE_INT, [
+        'options' => $options
+    ]);
 }
 
-function validateBool(mixed $value, string $field): bool {
-    $bool = filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-
-    if ($bool === null || $bool !== true && $bool !== false) {
-        jsonResponse(422, "$field is not a valid indicator.");
-    }
-
-    return $bool;
+function validateBool(mixed $value): bool {
+    return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
 }
 
 function isSuperadmin(): bool {

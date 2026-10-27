@@ -19,15 +19,29 @@ final class PostServices {
     private const SORT_KEYS = ['create-desc', 'create-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiry-desc', 'expiry-asc'];
     private const PER_PAGE = 10;
 
-    public function create(): void {
+    public function save(): void {
+        $id = validateInt($_POST['id'] ?? null, 0, null);
+
+        if ($id === false) {
+            throw new InvalidArgumentException('Invalid post id.');
+        }
+
+        if ($id === 0) {
+            $this->create();
+        } else {
+            $this->update();
+        }
+    }
+
+    private function create(): void {
         $title = trim(validateString($_POST['title'] ?? '', 'Title'));
         $excerpt = trim(validateString($_POST['excerpt'] ?? '', 'Excerpt'));
         $content = trim(validateString($_POST['content'] ?? '', 'Content'));
         $featuredImage = $_FILES['featured_image'] ?? null;
-        $category = validateId($_POST['category'] ?? null, 'category id');
+        $category = validateInt($_POST['category'] ?? null, 1, null);
         $status = $_POST['status'] ?? '';
-        $publishDate = validateDate($_POST['publish_date'] ?? '', 'Publish date');
-        $expirationDate = validateDate($_POST['expiration_date'] ?? '', 'Expiration date');
+        $publishDate = validateDate($_POST['publish_date'] ?? null);
+        $expirationDate = validateDate($_POST['expiration_date'] ?? null);
 
         if ($title === '') {
             jsonResponse(422, 'Title cannot be empty.');
@@ -48,6 +62,10 @@ final class PostServices {
             $tempFeaturedImage = $imageHandler->verify($featuredImage);
         }
 
+        if ($category === false) {
+            throw new InvalidArgumentException('Invalid category id.');
+        }
+
         $repo = new CategoryRepository(Database::connect());
         $fetchedCategories = $repo->fetchItemsByClass('university-posts');
         $categoryName = array_column($fetchedCategories, 'name', 'id')[$category] ?? null;
@@ -62,8 +80,16 @@ final class PostServices {
 
         $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 
+        if ($publishDate === false) {
+            jsonResponse(422, 'Publish date must be a valid date.');
+        }
+
         if ($publishDate < $today->format('Y-m-d')) {
             jsonResponse(422, 'Publish date cannot be in the past.');
+        }
+
+        if ($expirationDate === false) {
+            jsonResponse(422, 'Expiration date must be a valid date.');
         }
 
         if ($expirationDate < $today->format('Y-m-d')) {
@@ -83,7 +109,6 @@ final class PostServices {
        session_start();
 
        $authorId = $_SESSION['user_id'];
-       $editorId = $_SESSION['user_id'];
 
        session_write_close();
 
@@ -95,7 +120,6 @@ final class PostServices {
            'category_id' => $category,
            'status' =>  $status,
            'author_id' => $authorId,
-           'editor_id' => $editorId,
            'published_at' => $publishDate,
            'expires_at' => $expirationDate
        ];
@@ -130,17 +154,21 @@ final class PostServices {
        jsonResponse(201, 'Post successfully created.');
     }
 
-    public function update(): void {
-        $id = validateId($_POST['id'] ?? null, 'post id');
+    private function update(): void {
+        $id = validateInt($_POST['id'] ?? null, 1, null);
         $title = trim(validateString($_POST['title'] ?? '', 'Title'));
         $excerpt = trim(validateString($_POST['excerpt'] ?? '', 'Excerpt'));
         $content = trim(validateString($_POST['content'] ?? '', 'Content'));
-        $removeFeaturedImage = validateBool($_POST['remove_featured_image'] ?? false, 'Remove featured image flag');
+        $removeFeaturedImage = validateBool($_POST['remove_featured_image'] ?? false);
         $featuredImage = $_FILES['featured_image'] ?? null;
-        $category = validateId($_POST['category'] ?? null, 'category id');
+        $category = validateInt($_POST['category'] ?? null, 1, null);
         $status = $_POST['status'] ?? '';
-        $publishDate = validateDate($_POST['publish_date'] ?? '', 'Publish date');
-        $expirationDate = validateDate($_POST['expiration_date'] ?? '', 'Expiration date');
+        $publishDate = validateDate($_POST['publish_date'] ?? null);
+        $expirationDate = validateDate($_POST['expiration_date'] ?? null);
+
+        if ($id === false) {
+            throw new InvalidArgumentException('Invalid post id.');
+        }
 
         $repo = new PostRepository(Database::connect());
         $fetchedPost = $repo->fetchItemById($id);
@@ -161,6 +189,10 @@ final class PostServices {
             jsonResponse(422, 'Content cannot be empty.');
         }
 
+        if ($removeFeaturedImage === null) {
+            throw new InvalidArgumentException('Invalid remove featured image indicator.');
+        }
+
         $hasNewFeaturedImage = ($featuredImage !== null && ($featuredImage['error'] ?? null) !== UPLOAD_ERR_NO_FILE);
 
         if ($removeFeaturedImage && $hasNewFeaturedImage) {
@@ -172,6 +204,10 @@ final class PostServices {
 
         if ($hasNewFeaturedImage) {
             $tempFeaturedImage = $imageHandler->verify($featuredImage);
+        }
+
+        if ($category === false) {
+            throw new InvalidArgumentException('Invalid category id.');
         }
 
         $repo = new CategoryRepository(Database::connect());
@@ -188,8 +224,16 @@ final class PostServices {
 
         $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 
+        if ($publishDate === false) {
+            jsonResponse(422, 'Publish date must be a valid date.');
+        }
+
         if ($publishDate < $today->format('Y-m-d')) {
             jsonResponse(422, 'Publish date cannot be in the past.');
+        }
+
+        if ($expirationDate === false) {
+            jsonResponse(422, 'Expiration date must be a valid date.');
         }
 
         if ($expirationDate < $today->format('Y-m-d')) {
@@ -288,11 +332,7 @@ final class PostServices {
         $search = $_GET['search'] ?? '';
         $filter = $_GET['filter'] ?? '';
         $sort = $_GET['sort'] ?? '';
-        $page = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT, [
-            'options' => [
-                'min_range' => 1
-            ]
-        ]);
+        $page = validateInt($_GET['page'] ?? 1, 1, null);
 
         if (!is_string($search)) {
             jsonResponse(422, 'Search must be a valid string.');
@@ -341,11 +381,7 @@ final class PostServices {
     }
 
     public function item(): void {
-        $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT, [
-            'options' => [
-                'min_range' => 1
-            ]
-        ]);
+        $id = validateInt($_GET['id'] ?? null, 1, null);
 
         if ($id === false) {
             throw new InvalidArgumentException('Invalid post id.');
@@ -364,7 +400,11 @@ final class PostServices {
     }
 
     public function archive(): void {
-        $id = validateId($_POST['id'] ?? null, 'post id');
+        $id = validateInt($_POST['id'] ?? null, 1, null);
+
+        if ($id === false) {
+            throw new InvalidArgumentException('Invalid post id.');
+        }
 
         $repo = new PostRepository(Database::connect());
         $post = $repo->fetchItemById($id);
