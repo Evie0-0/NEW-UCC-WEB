@@ -90,8 +90,9 @@ session_start();
                 formData.append('username', 'mky');
                 formData.append('password', 'admin123');
 
-                const response = await fetch(`api/audit-trail/filter.php?${params}`, {
-                    method: 'GET',
+                const response = await fetch(`api/posts/save.php`, {
+                    method: 'POST',
+                    body: formData
                 });
 
                 const result = await response.json();
