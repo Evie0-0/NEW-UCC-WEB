@@ -36,10 +36,9 @@ response:
     - name: data
       type: object
       returned: always (can be empty)
-      direct_access: true
       description: contains the data returned by the endpoint
       conditions:
-        - successful request
+        - successful request (empty)
         - unsuccessful request
       properties:
         - name: redo_password
@@ -54,3 +53,12 @@ response:
           description: location to redirect to after login
           conditions:
             - after successful login
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "Successful, logging in.",
+  "data": {
+    "redirect": "index.php"
+  }
+}

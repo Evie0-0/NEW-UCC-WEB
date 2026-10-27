@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Serv;
 
 use Core\Database;
+use Repo\AuditTrailRepository;
 use Repo\UserRepository;
+use Throwable;
 
 final class UserServices {
     public function login(): void {
@@ -48,6 +50,23 @@ final class UserServices {
         $_SESSION['program_id'] = $fetchedUser['program_id'];
 
         session_write_close();
+
+        $userId = $fetchedUser['id'];
+
+        try {
+            $data = [
+                'action' => 'LOGIN',
+                'description' => "User $username logged in.",
+                'entity_type' => 'User',
+                'entity_id' => $userId,
+                'user_id' => $userId
+            ];
+
+            $repo = new AuditTrailRepository(Database::connect());
+            $repo->insertItem($data);
+        } catch (Throwable $e) {
+            throw $e;
+        }
 
         jsonResponse(200, 'Successful, logging in.', [
             'redirect' => 'index.php'

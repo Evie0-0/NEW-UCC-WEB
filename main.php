@@ -67,6 +67,7 @@ session_start();
             try {
                 const params = new URLSearchParams({
                     csrf_key: csrfKey.value,
+                    class: 'university-posts',
                     search: '',
                     filter: 'all',
                     sort: 'create-desc',
@@ -86,8 +87,10 @@ session_start();
                 formData.append('publish_date', '2026-10-27');
                 formData.append('expiration_date', '2026-10-27');
                 formData.append('remove_featured_image', 'false');
+                formData.append('username', 'mky');
+                formData.append('password', 'admin123');
 
-                const response = await fetch(`api/posts/archive.php`, {
+                const response = await fetch(`api/users/login.php`, {
                     method: 'POST',
                     body: formData
                 });
