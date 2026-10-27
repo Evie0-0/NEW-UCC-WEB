@@ -795,7 +795,7 @@ body{
 
 /* LEFT PANEL */
 .login-brand{
-	background:url("assets/images/green-bg.png") no-repeat;
+    /*background:url("assets/images/green-bg.png") no-repeat;*/
 	background-size:100% 100%;
 	background-position:-14px center;
 	display:flex;
@@ -848,7 +848,7 @@ body{
 
 /* RIGHT PANEL */
 .login-side{
-	background:url("assets/images/white-bg.png") center center/100% 100% no-repeat;
+    /*background:url("assets/images/white-bg.png") center center/100% 100% no-repeat;*/
 	position:relative;
 	display:flex;
 	align-items:flex-start;
@@ -1537,5 +1537,3 @@ body{
         }
         #userPreviewModal .up-line svg { width: 24px; height: 24px; flex-shrink: 0; }
         #userPreviewModal .post-preview-metadata-grid { grid-template-columns: repeat(2, auto); justify-content: start; gap: 48px; }
-
-		

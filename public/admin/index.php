@@ -1,31 +1,27 @@
-
 <?php
+declare(strict_types=1);
+
+require_once dirname(__DIR__, 2) . '/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
+
 $pageTitle = "Dashboard";
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>UCC Admin | <?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
-
+    <title>UCC Admin | <?= e($pageTitle) ?></title>
     <link rel="icon" type="image/png" href="assets/images/ucc-LOGO.png">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="assets/css/style.css">
-
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-
 <body data-page-title="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
-
     <div class="dashboard-layout">
-
         <?php include __DIR__ . '/template/sidebar.php'; ?>
 
         <main class="main-content">
