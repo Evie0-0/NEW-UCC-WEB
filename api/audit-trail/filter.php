@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 use Serv\AuditTrailServices;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
@@ -19,10 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 try {
     $serv = new AuditTrailServices();
+    $serv->filter();
 } catch (Throwable $e) {
     logError($e, 'Failed to process filter request.', 'ERROR', [
         'action' => 'filter audit trail items',
-        'endpoint' => 'auditTrails/filter'
+        'endpoint' => 'audit-trails/filter'
     ]);
 
     jsonResponse(500);

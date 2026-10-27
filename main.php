@@ -70,7 +70,7 @@ session_start();
                     class: 'university-posts',
                     search: '',
                     filter: 'all',
-                    sort: 'create-desc',
+                    sort: 'create-asc',
                     page: 1,
                     id: 1
                 });
@@ -90,9 +90,8 @@ session_start();
                 formData.append('username', 'mky');
                 formData.append('password', 'admin123');
 
-                const response = await fetch(`api/users/login.php`, {
-                    method: 'POST',
-                    body: formData
+                const response = await fetch(`api/audit-trail/filter.php?${params}`, {
+                    method: 'GET',
                 });
 
                 const result = await response.json();

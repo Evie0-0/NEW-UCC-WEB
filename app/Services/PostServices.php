@@ -329,16 +329,10 @@ final class PostServices {
     }
 
     public function filter(): void {
-        $search = $_GET['search'] ?? '';
+        $search = trim(validateString($_GET['search'] ?? '', 'Search'));
         $filter = $_GET['filter'] ?? '';
         $sort = $_GET['sort'] ?? '';
         $page = validateInt($_GET['page'] ?? 1, 1, null);
-
-        if (!is_string($search)) {
-            jsonResponse(422, 'Search must be a valid string.');
-        }
-
-        $search = trim($search);
 
         if (!in_array($filter, self::FILTER_KEYS, true)) {
             jsonResponse(422, 'Invalid filter selection.');
@@ -360,7 +354,7 @@ final class PostServices {
 
         $repo = new PostRepository(Database::connect());
         $totalPosts = $repo->countFiltered($data);
-        $totalPages = (int) ceil($totalPosts / self::PER_PAGE);
+        $totalPages = ceil($totalPosts / self::PER_PAGE);
 
         if ($page > max(1, $totalPages)) {
             jsonResponse(422, 'Requested page does not exist.');
@@ -372,6 +366,8 @@ final class PostServices {
             'offset' => $offset
         ]);
 
+        // REMINDER: add user_display in result
+        // REMINDER: change 'posts' to items for more general
         jsonResponse(200, 'Successfully filtered post items.', [
             'posts' => $posts,
             'current_page' => $page,

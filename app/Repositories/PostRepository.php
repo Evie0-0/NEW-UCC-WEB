@@ -128,7 +128,7 @@ final class PostRepository {
         $stmt = $this->conn->prepare($query);
         $stmt->execute($params);
 
-        return (int) $stmt->fetchColumn();
+        return $stmt->fetchColumn();
     }
 
     /** @param array<string, mixed> $data */

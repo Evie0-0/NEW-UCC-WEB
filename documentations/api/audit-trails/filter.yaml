@@ -1,0 +1,206 @@
+api: audit-trail
+directory: api/audit-trail/
+name: filter (endpoint)
+file: filter.php
+path: api/audit-trail/filter.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve filtered audit trail items and some metadata
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: search
+      type: string (from search)
+      required: true (can be empty)
+      source: js (url)
+      description: searches for audit trail descriptions
+    - name: filter
+      type: string (from selection)
+      required: true
+      source: js (url)
+      description: filter actions of items
+      values:
+        - all
+        - login
+        - create
+        - update
+        - refer to audit-trail table (action column) of db for the updated
+      note: use lower case action values
+    - name: sort
+      type: string (from selection)
+      required: true
+      source: js (url)
+      description: sort items
+      values:
+        - create-desc
+        - create-asc
+        - description-desc
+        - description-asc
+    - name: page
+      type: string (from hidden)
+      required: true
+      source: js (url)
+      description: page number to retrieve items for
+  response:
+    content_type: application/json
+    http_code:
+      success: 200
+      errors: ~400 - ~500
+    fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+          - after a successful or unsuccessful operation
+        note:
+          - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+          - successful request
+          - unsuccessful request (empty)
+        properties:
+          - name: items
+            type: array
+            returned: always (can be empty)
+            description: items information
+            conditions:
+              - after a successful request
+            properties:
+              - every column in audit_trail table = refer to db
+      - name: current_page
+        type: int
+        returned: always
+        description: current page number
+        conditions:
+          - after a successful request
+      - name: total_items
+        type: int
+        returned: always
+        description: overall total of items regardless of page
+        conditions:
+          - after a successful request
+      - name: total_pages
+        type: int
+        returned: always
+        description: total number of pages (10 result per page)
+        conditions:
+          - after a successful requst
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "Successfully filtered audit trails.",
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "action": "CREATE",
+        "description": "Created a new post titled Title",
+        "entity_type": "University Post",
+        "entity_id": 6,
+        "user_id": 1,
+        "created_at": "2026-10-25 06:37:27",
+        "active": 1
+      },
+      {
+        "id": 2,
+        "action": "CREATE",
+        "description": "Created a new post titled: Title",
+        "entity_type": "University Post",
+        "entity_id": 7,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:25:57",
+        "active": 1
+      },
+      {
+        "id": 3,
+        "action": "CREATE",
+        "description": "Created a new post titled: Title",
+        "entity_type": "University Post",
+        "entity_id": 8,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:26:20",
+        "active": 1
+      },
+      {
+        "id": 4,
+        "action": "CREATE",
+        "description": "Created a new post titled: Title",
+        "entity_type": "University Post - University News",
+        "entity_id": 9,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:42:07",
+        "active": 1
+      },
+      {
+        "id": 5,
+        "action": "UPDATE",
+        "description": "Updated the post titled: Title",
+        "entity_type": "University Post - University News",
+        "entity_id": 1,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:43:29",
+        "active": 1
+      },
+      {
+        "id": 6,
+        "action": "UPDATE",
+        "description": "Updated the post titled: Title",
+        "entity_type": "University Post - University News",
+        "entity_id": 4,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:49:16",
+        "active": 1
+      },
+      {
+        "id": 7,
+        "action": "UPDATE",
+        "description": "Updated the post titled: Title",
+        "entity_type": "University Post - University News",
+        "entity_id": 4,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:49:38",
+        "active": 1
+      },
+      {
+        "id": 8,
+        "action": "UPDATE",
+        "description": "Updated the post titled: Title",
+        "entity_type": "University Post - University News",
+        "entity_id": 4,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:50:19",
+        "active": 1
+      },
+      {
+        "id": 9,
+        "action": "UPDATE",
+        "description": "Updated the post titled: Title",
+        "entity_type": "University Post - University News",
+        "entity_id": 4,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:51:00",
+        "active": 1
+      },
+      {
+        "id": 10,
+        "action": "UPDATE",
+        "description": "Updated the post titled: Title",
+        "entity_type": "University Post - University News",
+        "entity_id": 4,
+        "user_id": 1,
+        "created_at": "2026-10-25 07:51:26",
+        "active": 1
+      }
+    ],
+    "current_page": 1,
+    "total_items": 80,
+    "total_pages": 8
+  }
+}
