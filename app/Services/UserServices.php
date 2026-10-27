@@ -84,4 +84,17 @@ final class UserServices {
 
         return $isLoggedIn;
     }
+
+    /** @param list<string> $allowedRoles */
+    public static function isAuthorized(array $allowedRoles): bool {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $role = $_SESSION['role'] ?? null;
+
+        session_write_close();
+
+        return is_string($role) && in_array($role, $allowedRoles, true);
+    }
 }
