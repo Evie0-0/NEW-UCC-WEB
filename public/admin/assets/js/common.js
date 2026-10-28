@@ -23,12 +23,23 @@ export async function showConfirm(icon, title, message, confirmText, cancelText)
 }
 
 export async function showUnexpectedError(error) {
-    console.error(error);
-
     await Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Unable to communicate with the server.'
+    });
+}
+
+export async function showLoading(title, text) {
+    await Swal.fire({
+        title: title,
+        text: text,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
 }
 

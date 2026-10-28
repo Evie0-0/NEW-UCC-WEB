@@ -1,19 +1,10 @@
 <?php
 declare(strict_types=1);
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['action'] ?? '') === 'logout') {
-	session_start();
-	$_SESSION = [];
+use Core\Token;
 
-	if (ini_get('session.use_cookies')) {
-		$params = session_get_cookie_params();
-		setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
-	}
-
-	session_destroy();
-	http_response_code(204);
-	exit;
-}
+require_once dirname(__DIR__, 2) . '/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
 
 $pageTitle = "Logout";
 ?>
@@ -28,6 +19,7 @@ $pageTitle = "Logout";
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
 	<script src="https://unpkg.com/lucide@latest"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script type="module" src="assets/js/logout.js"></script>
 	<style>
 		* {
@@ -193,6 +185,7 @@ $pageTitle = "Logout";
 	</style>
 </head>
 <body>
+    <input type="hidden" name="<?= e(Token::KEY) ?>" value="<?= e(Token::generate()) ?>">
 	<iframe id="backgroundPage" title="Admin page behind logout confirmation"></iframe>
 	<div class="logout-overlay" id="logoutOverlay">
 		<div class="logout-card">
