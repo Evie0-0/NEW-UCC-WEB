@@ -34,9 +34,9 @@ final class PostServices {
     }
 
     private function create(): void {
-        $title = trim(validateString($_POST['title'] ?? '', 'Title'));
-        $excerpt = trim(validateString($_POST['excerpt'] ?? '', 'Excerpt'));
-        $content = trim(validateString($_POST['content'] ?? '', 'Content'));
+        $title = is_string($_POST['title'] ?? null) ? trim($_POST['title']) : '';
+        $excerpt = is_string($_POST['excerpt'] ?? null) ? trim($_POST['excerpt']) : '';
+        $content = is_string($_POST['content'] ?? null) ? trim($_POST['content']) : '';
         $featuredImage = $_FILES['featured_image'] ?? null;
         $category = validateInt($_POST['category'] ?? null, 1, null);
         $status = $_POST['status'] ?? '';
@@ -106,14 +106,21 @@ final class PostServices {
            $featuredImageFile = $imageHandler->store($tempFeaturedImage);
        }
 
-
        if (session_status() === PHP_SESSION_NONE) {
            session_start();
        }
 
-       $authorId = $_SESSION[UserServices::USER_ID_KEY];
+       $userId = $_SESSION[UserServices::USER_ID_KEY];
+
+       $canAudit = validateInt($userId, 0, null) !== false;
 
        session_write_close();
+
+       if (!$canAudit) {
+           jsonResponse(401, 'Invalid session.', [
+               'redirect' => 'login.php?error=401',
+           ]);
+       }
 
        $data = [
            'title' => $title,
@@ -122,7 +129,7 @@ final class PostServices {
            'featured_image' => $featuredImageFile,
            'category_id' => $category,
            'status' =>  $status,
-           'author_id' => $authorId,
+           'author_id' => $userId,
            'published_at' => $publishDate,
            'expires_at' => $expirationDate
        ];
@@ -139,7 +146,7 @@ final class PostServices {
                'description' => "Created a new post titled: $title",
                'entity_type' => "University Post - $categoryName",
                'entity_id' => $insertedPost,
-               'user_id' => $authorId
+               'user_id' => $userId
            ];
 
            $repo = new AuditTrailRepository($conn);
