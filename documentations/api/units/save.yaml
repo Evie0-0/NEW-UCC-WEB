@@ -1,0 +1,124 @@
+api: units
+directory: api/units/
+name: save (endpoint)
+file: save.php
+path: api/units/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: creates or updates a unit (college)
+authorization: superadmin only
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross scripting
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create unit - 0 when creating unit)
+      source: form or js (append)
+      description: id of unit when editing
+    - name: name
+      type: string (from text)
+      required: true
+      source: form
+      description: name of unit (maximum of 150 characters)
+      note: must be unique because the public website finds a college by its name
+    - name: dean
+      type: string (from text)
+      required: true
+      source: form
+      description: name of the dean (maximum of 150 characters)
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of unit
+      note: the page labels Active and Hidden are stored as active and inactive
+      values:
+        - active
+        - inactive
+    - name: remove_logo
+      type: bool (from hidden)
+      required: false (defaults to false, only used when editing)
+      source: form or js (append)
+      description: determines whether the stored logo should be removed
+      note: cannot be true while a new logo is uploaded
+    - name: logo
+      type: file (from file input)
+      required: false (optional)
+      source: form or js (append)
+      description: logo of unit (jpeg, png or webp, 10 MB maximum, 5000 x 5000 pixels maximum)
+      note: when editing, the old logo is replaced and deleted from storage/uploads
+    - name: remove_dean_image
+      type: bool (from hidden)
+      required: false (defaults to false, only used when editing)
+      source: form or js (append)
+      description: determines whether the stored dean image should be removed
+      note: cannot be true while a new dean_image is uploaded
+    - name: dean_image
+      type: file (from file input)
+      required: false (optional)
+      source: form or js (append)
+      description: photo of the dean (jpeg, png or webp, 10 MB maximum, 5000 x 5000 pixels maximum)
+      note: when editing, the old image is replaced and deleted from storage/uploads
+response:
+  content_type: application/json
+  http_code:
+    success: 201 | 200
+    errors: ~400 - ~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+  errors:
+    - status: 401
+      message: You are unauthorized to make this request.
+      when: the user is not logged in as superadmin
+    - status: 403
+      message: Invalid CSRF token.
+      when: csrf_key is missing or wrong
+    - status: 404
+      message: Unit does not exist.
+      when: editing an id that does not exist
+    - status: 405
+      message: Invalid request method.
+      when: the request method is not POST
+    - status: 409
+      message: A unit with this name already exists.
+      when: another active unit has the same name
+    - status: 413 | 415 | 422
+      message: image upload errors (too large, unsupported format, not a valid image)
+      when: logo or dean_image fails verification
+    - status: 422
+      message: Invalid unit id. | Name cannot be empty. | Name cannot exceed 150 characters. | Dean cannot be empty. | Dean cannot exceed 150 characters. | Invalid status selection. | Invalid remove image indicator. | An image cannot be removed and replaced at the same time.
+      when: a field is invalid
+    - status: 500
+      message: An unexpected error occured.
+      when: the server failed to process the request (see storage/logs/error.log)
+  side_effects:
+    - an audit trail entry is created (CREATE or UPDATE, entity type Unit)
+example:
+  http_status: 201
+  response: |
+    {
+      "message": "Unit successfully created.",
+      "data": []
+    }
