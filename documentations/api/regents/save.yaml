@@ -1,0 +1,123 @@
+api: regents
+directory: api/regents/
+name: save (endpoint)
+file: save.php
+path: api/regents/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: creates or updates a member of the board of regents
+authorization: superadmin only
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross scripting
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create regent - 0 when creating regent)
+      source: form or js (append)
+      description: id of regent when editing
+    - name: name
+      type: string (from text)
+      required: true
+      source: form
+      description: full name of regent (maximum of 150 characters)
+    - name: position
+      type: string (from text)
+      required: true
+      source: form
+      description: position of regent (maximum of 150 characters)
+    - name: biography
+      type: string (from text)
+      required: false (optional, empty is stored as null)
+      source: form
+      description: biography or short description of regent
+      note: the page field is named bio
+    - name: order_number
+      type: int (from number)
+      required: true
+      source: form
+      description: display order of regent (whole number from 1 to 9999)
+      note: the page field is named displayOrder. Order 1 is the Chairman shown on the board of regents page and the homepage, so only one regent can use it. Other order numbers can be shared
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of regent
+      note: the page labels Active and Hidden are stored as active and inactive
+      values:
+        - active
+        - inactive
+    - name: remove_featured_image
+      type: bool (from hidden)
+      required: false (defaults to false, only used when editing)
+      source: form or js (append)
+      description: determines whether the stored photo should be removed
+      note: cannot be true while a new featured_image is uploaded
+    - name: featured_image
+      type: file (from file input)
+      required: false (optional)
+      source: form or js (append)
+      description: photo of regent (jpeg, png or webp, 10 MB maximum, 5000 x 5000 pixels maximum)
+      note: when editing, the old photo is replaced and deleted from storage/uploads
+response:
+  content_type: application/json
+  http_code:
+    success: 201 | 200
+    errors: ~400 - ~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+  errors:
+    - status: 401
+      message: You are unauthorized to make this request.
+      when: the user is not logged in as superadmin
+    - status: 403
+      message: Invalid CSRF token.
+      when: csrf_key is missing or wrong
+    - status: 404
+      message: Regent does not exist.
+      when: editing an id that does not exist
+    - status: 405
+      message: Invalid request method.
+      when: the request method is not POST
+    - status: 409
+      message: Order number 1 is the Chairman and is already used by Hon. Maria Lourdes Aquino. Change that regent's order number first.
+      when: order_number is 1 and another regent already has it (the message shows that regent's name)
+    - status: 413 | 415 | 422
+      message: image upload errors (too large, unsupported format, not a valid image)
+      when: featured_image fails verification
+    - status: 422
+      message: Invalid regent id. | Name cannot be empty. | Name cannot exceed 150 characters. | Position cannot be empty. | Position cannot exceed 150 characters. | Order number must be a whole number from 1 to 9999. | Invalid status selection. | Invalid remove featured image indicator. | Cannot remove and replace featured image at the same time.
+      when: a field is invalid
+    - status: 500
+      message: An unexpected error occured.
+      when: the server failed to process the request (see storage/logs/error.log)
+  side_effects:
+    - an audit trail entry is created (CREATE or UPDATE, entity type Regent)
+example:
+  http_status: 201
+  response: |
+    {
+      "message": "Regent successfully created.",
+      "data": []
+    }
