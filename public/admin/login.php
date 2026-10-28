@@ -60,14 +60,14 @@ $pageTitle = "Login";
 						<label for="username"> Username </label>
 						<div class="input-box">
 							<i data-lucide="user-round"></i>
-							<input type="text" name="username" placeholder="Enter Username" autofocus tabindex="0">
+							<input type="text" name="username" value="mky" placeholder="Enter Username" autofocus tabindex="0">
 						</div>
 					</div>
 					<div class="input-group">
 						<label for="password"> Password </label>
 						<div class="input-box">
 							<i data-lucide="lock"></i>
-							<input type="password" name="password" placeholder="Enter Password" tabindex="0">
+							<input type="password" name="password" value="admin123" placeholder="Enter Password" tabindex="0">
 						</div>
 					</div>
 					<button type="submit" class="login-btn" tabindex="0"> Login

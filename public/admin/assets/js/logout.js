@@ -24,19 +24,14 @@ async function logout() {
     }
 }
 
-const backgroundPage = document.getElementById("backgroundPage");
-const confirmLogout = document.getElementById("confirmLogout");
-const cancelLogout = document.getElementById("cancelLogout");
+const cancelLogout = document.querySelector('button[data-action="cancel"]');
+const confirmLogout = document.querySelector('button[data-action="logout"]');
 const referrer = document.referrer ? new URL(document.referrer) : null;
 const returnPage = referrer
     && referrer.origin === window.location.origin
     && referrer.pathname.split("/").pop().toLowerCase() !== "logout.php"
     ? referrer.href
     : 'index.php';
-
-if (backgroundPage) {
-    backgroundPage.src = returnPage;
-}
 
 cancelLogout.addEventListener("click", () => {
 	window.location.href = returnPage;

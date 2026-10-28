@@ -35,7 +35,7 @@ $pageTitle = "Dashboard";
     <script type="module" src="assets/js/index.js"></script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body data-page-title="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
+<body data-page-title="<?= e($pageTitle) ?>">
     <div class="dashboard-layout">
         <?php include __DIR__ . '/template/sidebar.php'; ?>
         <main class="main-content">

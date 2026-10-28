@@ -22,16 +22,12 @@ async function userErrorHandler() {
     }
 }
 
-await userErrorHandler();
-
 // Auto select when page loads
-const usernameInput = document.querySelector('[name="username"]');
-
-usernameInput.select();
+document.querySelector('input[name="username"]').select();
 
 // Login
 const loginForm = document.getElementById('loginForm');
-const passwordInput = document.querySelector('[name="password"]');
+const passwordInput = document.querySelector('input[name="password"]');
 
 function resetForm() {
     usernameInput.value = '';
@@ -71,3 +67,6 @@ loginForm.addEventListener('submit', async (event) => {
     const formData = new FormData(loginForm);
     await login(formData);
 })
+
+
+await userErrorHandler();

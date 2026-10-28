@@ -1,8 +1,20 @@
 <?php
 declare(strict_types=1);
 
+use Serv\UserServices;
+
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
+
+if (!UserServices::isAuthenticated()) {
+    header('Location: login.php?error=401');
+    exit;
+}
+
+if (!UserServices::isAuthorized()) {
+    header('Location: login.php?error=403');
+    exit;
+}
 
 $pageTitle = "Logout";
 ?>
@@ -11,7 +23,7 @@ $pageTitle = "Logout";
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>UCC Admin | <?= htmlspecialchars($pageTitle) ?></title>
+	<title>UCC Admin | <?= e($pageTitle) ?></title>
 	<link rel="icon" type="image/png" href="assets/images/ucc-LOGO.png">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,8 +43,8 @@ $pageTitle = "Logout";
 			<h2>Logout?</h2>
 			<p>Are you sure you want to logout of the UCC Admin Panel?</p>
 			<div class="logout-actions">
-				<button type="button" class="logout-btn cancel" id="cancelLogout">Cancel</button>
-				<button type="button" class="logout-btn confirm" id="confirmLogout">
+				<button type="button" class="logout-btn cancel" data-action="cancel">Cancel</button>
+				<button type="button" class="logout-btn confirm" data-action="logout">
 					<i data-lucide="log-out"></i>
 					Logout
 				</button>
