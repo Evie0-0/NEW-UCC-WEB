@@ -68,5 +68,4 @@ loginForm.addEventListener('submit', async (event) => {
     await login(formData);
 })
 
-
 await userErrorHandler();

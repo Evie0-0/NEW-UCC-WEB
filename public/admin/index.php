@@ -16,6 +16,15 @@ if (!UserServices::isAuthorized()) {
     exit;
 }
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$username = $_SESSION[UserServices::USERNAME_KEY];
+$role = $_SESSION[UserServices::ROLE_KEY];
+
+session_write_close();
+
 $pageTitle = "Dashboard";
 ?>
 
@@ -43,7 +52,7 @@ $pageTitle = "Dashboard";
             <section class="content-area">
                 <div class="heading-row">
                     <div>
-                        <h2>Good day, <?= e(UserServices::getUsername()) ?>!</h2>
+                        <h2>Good day, <?= e($username) ?>!</h2>
                         <p>Here's an overview of the university website.</p>
                     </div>
                     <div class="tagline">

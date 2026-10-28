@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-use Serv\UserServices;
-
-require_once dirname(__DIR__, 3) . '/bootstrap.php';
 require_once dirname(__DIR__, 3) . '/app/Support/helper.php';
 
-$pageTitle = $pageTitle ?? 'Admin';
+$username = $username;
+$role = $role;
+
+$pageTitle = $pageTitle;
 ?>
 <header class="top-header">
     <div class="header-left">
@@ -19,8 +19,8 @@ $pageTitle = $pageTitle ?? 'Admin';
         </a>
         <div class="admin-profile">
             <div class="admin-text">
-                <small><?= e(UserServices::getRole()) ?></small>
-                <span>Welcome, <?= e(UserServices::getUsername()) ?>!</span>
+                <small><?= e($role) ?></small>
+                <span>Welcome, <?= e($username) ?>!</span>
             </div>
             <div class="avatar">
                 <i data-lucide="circle-user-round"></i>
