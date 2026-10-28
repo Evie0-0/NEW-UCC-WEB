@@ -123,12 +123,3 @@ function validateInt(mixed $value, ?int $min = null, ?int $max = null): int|fals
 function validateBool(mixed $value): bool {
     return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
 }
-
-/* function isSuperadmin(): bool {
-    return (isset($_SESSION['user_id'], $_SESSION['role']) && $_SESSION['role'] === 'superadmin');
-}
-
-function isInAllowedRoles(): bool {
-    return (isset($_SESSION['user_id'], $_SESSION['role']) && in_array($_SESSION['role'], ['superadmin', 'dean', 'program head'], true));
-}
-*/

@@ -57,19 +57,13 @@ final class PostRepository {
     }
 
     public function fetchItemById(int $id): array|false {
-        $query = "SELECT *,
-            CASE
-                WHEN status = 'published'
-                    AND expires_at < CURRENT_DATE
-                THEN 'expired'
-                WHEN status = 'published'
-                    AND published_at > CURRENT_DATE
-                THEN 'pending'
-                ELSE status
-            END AS display_status
-            FROM posts
-            WHERE id = ?
-            AND active = 1";
+        $query = "
+            SELECT p.*, author.username AS author_username, editor.username AS editor_username,
+            FROM posts AS p
+            LEFT JOIN users AS author ON author.id = p.author_id
+            LEFT JOIN users AS editor ON editor.id = p.editor_id
+            WHERE p.id = ?
+            AND p.active = 1";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$id]);
 
