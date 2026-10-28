@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Repo;
 
+use InvalidArgumentException;
 use PDO;
 
 final class AuditTrailRepository {
