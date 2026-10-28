@@ -106,9 +106,12 @@ final class PostServices {
            $featuredImageFile = $imageHandler->store($tempFeaturedImage);
        }
 
-       session_start();
 
-       $authorId = $_SESSION['user_id'];
+       if (session_status() === PHP_SESSION_NONE) {
+           session_start();
+       }
+
+       $authorId = $_SESSION[UserServices::USER_ID_KEY];
 
        session_write_close();
 
@@ -255,9 +258,11 @@ final class PostServices {
             $featuredImageFile = $newFeaturedImageFile;
         }
 
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-        $editorId = $_SESSION['user_id'];
+        $editorId = $_SESSION[UserServices::USER_ID_KEY];
 
         session_write_close();
 
@@ -367,9 +372,8 @@ final class PostServices {
         ]);
 
         // REMINDER: add user_display in result
-        // REMINDER: change 'posts' to items for more general
         jsonResponse(200, 'Successfully filtered post items.', [
-            'posts' => $posts,
+            'items' => $posts,
             'current_page' => $page,
             'total_posts' => $totalPosts,
             'total_pages' => $totalPages
