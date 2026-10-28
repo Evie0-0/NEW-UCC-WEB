@@ -7,7 +7,7 @@ if (window.lucide) {
 // Logout
 async function logout() {
     try {
-        const response = await fetch('../../api/users/logout.php', {
+        const response = await fetch(`../../api/users/logout.php`, {
             method: 'POST'
         });
 

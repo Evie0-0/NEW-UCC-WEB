@@ -632,6 +632,10 @@
     overflow: hidden;
 }
 
+#previewImageWrap[hidden] {
+    display: none !important;
+}
+
 .preview-image-wrap > img {
     display: block;
     width: 100%;

@@ -37,7 +37,7 @@ function resetForm() {
 
 async function login(formData) {
     try {
-        const response = await fetch('../../api/users/login.php', {
+        const response = await fetch(`../../api/users/login.php`, {
             method: 'POST',
             body: formData
         });

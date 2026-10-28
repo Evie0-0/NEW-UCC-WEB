@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use Serv\UserServices;
+use Core\Token;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
@@ -22,6 +23,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $username = $_SESSION[UserServices::USERNAME_KEY];
 $role = $_SESSION[UserServices::ROLE_KEY];
+$csrfToken = Token::generate();
 
 session_write_close();
 
@@ -122,20 +124,22 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
                             <button type="button" data-action="closeModal" class="modal-close" aria-label="Close post form"><i data-lucide="x"></i></button>
                         </div>
                         <form class="post-form" id="form">
+                            <input type="hidden" name="<?= e(Token::KEY) ?>" value="<?= e($csrfToken) ?>">
                             <div class="image-upload-area">
                                 <div class="upload-placeholder" id="uploadPlaceholder"><i data-lucide="image-plus"></i><strong>Featured Image</strong></div>
                                 <img id="imagePreview" class="image-preview" alt="Featured image preview" hidden>
-                                <input type="file" name="featuredImage" id="featuredImage" accept="image/*" hidden>
+                                <input type="file" name="featured_image" id="featuredImage" accept="image/*" hidden>
                                 <button type="button" data-action="uploadFeaturedImage" class="post-btn post-btn-ghost" id="uploadImageBtn"><i data-lucide="upload"></i> Choose Image</button>
                                 <button type="button" data-action="removeFeaturedImage" class="post-btn post-btn-danger" id="removeImageBtn" hidden><i data-lucide="x"></i> Remove Image</button>
                             </div>
                             <div class="form-grid">
                                 <label class="form-field full-width"><span>Post Title</span><input type="text" id="postTitle" placeholder="Enter post title" maxlength="180" required></label>
                                 <label class="form-field full-width"><span>Excerpt</span><textarea id="postExcerpt" rows="3" maxlength="320" placeholder="Write a short summary for the post" required></textarea></label>
-                                <label><span>Category</span><select name="category">
-
+                                <label><span>Category</span><select id="postCategory" name="category" required>
+                                    <option value="" selected disabled>Select a category</option>
                                 </select></label>
                                 <label><span>Status</span><select name="status">
+                                    <option value="" selected disabled>Select a status</option>
                                     <option value="draft">Draft</option>
                                     <option value="published">Published</option>
                                 </select></label>
@@ -149,7 +153,7 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
                             <div class="form-actions">
                                 <button type="button" data-action="cancel" class="post-btn post-btn-ghost form-cancel">Cancel</button>
                                 <div class="form-actions-right">
-                                    <button type="button" class="post-btn post-btn-ghost" id="formPreviewBtn"><i data-lucide="eye"></i> Preview</button>
+                                    <button type="button" data-action="showPreview" class="post-btn post-btn-ghost" id="formPreviewBtn"><i data-lucide="eye"></i> Preview</button>
                                     <button type="submit" class="post-btn post-btn-primary" id="savePostBtn"><i data-lucide="save"></i> Save Post</button>
                                 </div>
                             </div>
@@ -160,9 +164,11 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
                 <div class="post-modal preview-modal" id="postPreviewModal" aria-hidden="true">
                     <div class="post-modal-backdrop" data-close-preview></div>
                     <article class="post-modal-panel post-preview-panel" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
-                        <div class="post-modal-head"><div><h2>Post Preview</h2></div><button class="modal-close" type="button" data-close-preview aria-label="Close preview"><i data-lucide="x"></i></button></div>
+                        <div class="post-modal-head"><div>
+                            <h2>Post Preview</h2></div>
+                            <button type="button" data-action="closePreview" class="modal-close" aria-label="Close preview"><i data-lucide="x"></i></button></div>
                         <div class="public-post-preview">
-                            <div class="preview-image-wrap" id="previewImageWrap"><div class="preview-default-image"><i data-lucide="image"></i><span>Featured image</span></div><img id="previewImage" alt="Post featured image" hidden></div>
+                            <div class="preview-image-wrap" id="previewImageWrap" hidden><img id="previewImage" alt="Post featured image" hidden></div>
                             <div class="preview-article-body"><h2 id="previewTitle">Post title</h2><p class="preview-excerpt" id="previewExcerpt"></p><div class="preview-content" id="previewContent"></div></div>
                         </div>
                         <footer class="post-preview-metadata">

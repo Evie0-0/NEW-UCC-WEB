@@ -1,4 +1,4 @@
-import { showConfirm } from "./common.js";
+import { formatTimestamp, showConfirm, showUnexpectedError } from "./common.js";
 
 if (window.lucide) {
     window.lucide.createIcons();
@@ -7,6 +7,7 @@ if (window.lucide) {
 // Get form snapshot
 const form = document.getElementById('form');
 const imagePreview = document.getElementById('imagePreview');
+const csrfToken = document.querySelector('input[name="csrf_key"]')?.value ?? '';
 
 function getFormSnapshot() {
     return JSON.stringify({
@@ -31,10 +32,30 @@ window.addEventListener("beforeunload", event => {
 
 // Open modal
 const modal = document.getElementById('modal');
+let postId = 0;
+let removeImage = false;
+let currentPostMetadata = null;
+
 document.querySelector('button[data-action="add"]').addEventListener('click', () => {
+    postId = 0;
+    currentPostMetadata = null;
+    removeImage = false;
+    clearImage();
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('open');
 });
+
+// Set current post for editing
+function setCurrentPost(post) {
+    currentPostMetadata = post;
+    postId = Number(post.id);
+    removeImage = false;
+    clearImage();
+
+    if (post.featured_image) {
+        showImage(post.featured_image);
+    }
+}
 
 // Close form
 async function closeForm() {
@@ -51,25 +72,26 @@ async function closeForm() {
     }
 
     form.reset();
-    clearFeaturedImage();
+    postId = 0;
+    currentPostMetadata = null;
+    removeImage = false;
+    clearImage();
 
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     originalForm = getFormSnapshot();
 }
 
-const closeModalBtn = document.querySelector('button[data-action="closeModal"]');
-closeModalBtn.addEventListener('click', async () => {
+document.querySelector('button[data-action="closeModal"]').addEventListener('click', async () => {
     await closeForm();
 });
 
-const cancelBtn = document.querySelector('button[data-action="cancel"]');
-cancelBtn.addEventListener('click', async () => {
+document.querySelector('button[data-action="cancel"]').addEventListener('click', async () => {
     await closeForm();
 });
 
 // Show image
-const imageInput = document.querySelector('input[name="featuredImage"]');
+const imageInput = document.querySelector('input[name="featured_image"]');
 const imagePlaceholder = document.getElementById('uploadPlaceholder');
 const uploadImageBtn = document.querySelector('button[data-action="uploadFeaturedImage"]');
 const removeImageBtn = document.querySelector('button[data-action="removeFeaturedImage"]');
@@ -80,7 +102,7 @@ function showImage(src) {
         URL.revokeObjectURL(imageObjectUrl);
     }
 
-    imageObjectUrl = src;
+    imageObjectUrl = src.startsWith('blob:') ? src : null;
 
     imagePreview.src = src;
     imagePreview.hidden = false;
@@ -103,14 +125,16 @@ imageInput.addEventListener('change', () => {
         return;
     }
 
+    removeImage = false;
     showImage(URL.createObjectURL(file));
 });
 
-// clearImage
+// Clear image
 function clearImage() {
-    if (imageObjectUrl?.startsWith('blob:')) {
+    if (imageObjectUrl) {
         URL.revokeObjectURL(imageObjectUrl);
     }
+
     imageObjectUrl = null;
 
     imageInput.value = '';
@@ -121,9 +145,99 @@ function clearImage() {
     removeImageBtn.hidden = true;
 }
 
-removeImageBtn.addEventListener('click', clearImage);
+removeImageBtn.addEventListener('click', () => {
+    const hasSavedImage = postId > 0
+        && Boolean(currentPostMetadata?.featured_image);
 
-// Get category
-async function getCategories() {
+    removeImage = hasSavedImage;
+    clearImage();
+});
 
+// Load categories
+const categorySelect = document.querySelector('select[name="category"]');
+
+async function loadCategories() {
+    categorySelect.disabled = true;
+    categorySelect.replaceChildren(new Option('Loading categories…', ''));
+
+    try {
+        const response = await fetch('../../api/categories/by-class.php?class=university-posts', {});
+        const result = await response.json();
+
+        const placeholder = new Option(
+            result.data.length > 0 ? 'Select a category' : 'No categories available', '', true, true
+        );
+
+        placeholder.disabled = true;
+        categorySelect.replaceChildren(placeholder);
+
+        result.data.forEach(category => {
+            categorySelect.add(new Option(category.name, String(category.id)));
+        });
+
+        categorySelect.disabled = categorySelect.options.length === 1;
+    } catch (error) {
+        categorySelect.replaceChildren(new Option('Unable to load categories', ''));
+        categorySelect.disabled = true;
+        await showUnexpectedError(error);
+    }
 }
+
+loadCategories();
+
+// Show preview
+const previewModal = document.getElementById('postPreviewModal');
+const previewTitle = document.getElementById('previewTitle');
+const previewExcerpt = document.getElementById('previewExcerpt');
+const previewContent = document.getElementById('previewContent');
+const previewImage = document.getElementById('previewImage');
+const previewImageWrap = document.getElementById('previewImageWrap');
+const previewMetadataCreatedBy = document.getElementById('previewMetadataCreatedBy');
+const previewMetadataDateCreated = document.getElementById('previewMetadataDateCreated');
+const previewMetadataLastUpdatedBy = document.getElementById('previewMetadataLastUpdatedBy');
+const previewMetadataUpdatedAt = document.getElementById('previewMetadataExpiry');
+
+function showPreviewMetadata() {
+    if (postId === 0) {
+        previewMetadataCreatedBy.textContent = '-';
+        previewMetadataDateCreated.textContent = '-';
+        previewMetadataLastUpdatedBy.textContent = '—';
+        previewMetadataUpdatedAt.textContent = '—';
+        return;
+    }
+
+    const post = currentPostMetadata;
+    previewMetadataCreatedBy.textContent = post?.author_username || '—';
+    previewMetadataDateCreated.textContent = post?.created_at ? formatTimestamp(post.created_at) : '—';
+    previewMetadataLastUpdatedBy.textContent = post?.editor_username || '—';
+    previewMetadataUpdatedAt.textContent = post?.updated_at ? formatTimestamp(post.updated_at) : '—';
+}
+
+function showPreview() {
+    previewTitle.textContent = document.getElementById('postTitle').value.trim() || 'No title';
+    previewExcerpt.textContent = document.getElementById('postExcerpt').value.trim() || 'No excerpt';
+    previewContent.textContent = document.getElementById('postContent').value.trim() || 'No content';
+    showPreviewMetadata();
+
+    const imageSrc = imagePreview.getAttribute('src');
+
+    if (imageSrc && !imagePreview.hidden) {
+        previewImage.src = imageSrc;
+        previewImage.hidden = false;
+        previewImageWrap.hidden = false;
+    } else {
+        previewImage.removeAttribute('src');
+        previewImage.hidden = true;
+        previewImageWrap.hidden = true;
+    }
+
+    previewModal.classList.add('open');
+    previewModal.setAttribute('aria-hidden', 'false');
+}
+
+document.querySelector('button[data-action="showPreview"]').addEventListener('click', showPreview);
+
+document.querySelector('button[data-action="closePreview"]').addEventListener('click', () => {
+        previewModal.classList.remove('open');
+        previewModal.setAttribute('aria-hidden', 'true');
+});
