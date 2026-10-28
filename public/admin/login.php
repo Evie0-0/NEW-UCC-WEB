@@ -70,7 +70,7 @@ $pageTitle = "Login";
 							<input type="password" name="password" value="admin123" placeholder="Enter Password" tabindex="0">
 						</div>
 					</div>
-					<button type="submit" class="login-btn" tabindex="0"> Login
+					<button type="submit" data-action="login" class="login-btn" tabindex="0"> Login
 						<i data-lucide="arrow-right"></i>
 					</button>
 				</form>

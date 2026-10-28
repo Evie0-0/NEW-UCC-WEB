@@ -133,28 +133,28 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
                                 <button type="button" data-action="removeFeaturedImage" class="post-btn post-btn-danger" id="removeImageBtn" hidden><i data-lucide="x"></i> Remove Image</button>
                             </div>
                             <div class="form-grid">
-                                <label class="form-field full-width"><span>Post Title</span><input type="text" id="postTitle" placeholder="Enter post title" maxlength="180" required></label>
-                                <label class="form-field full-width"><span>Excerpt</span><textarea id="postExcerpt" rows="3" maxlength="320" placeholder="Write a short summary for the post" required></textarea></label>
-                                <label><span>Category</span><select id="postCategory" name="category" required>
+                                <label class="form-field full-width"><span>Post Title</span><input type="text" name="title" id="postTitle" placeholder="Enter post title" maxlength="180" required></label>
+                                <label class="form-field full-width"><span>Excerpt</span><textarea name="excerpt" id="postExcerpt" rows="3" maxlength="320" placeholder="Write a short summary for the post" required></textarea></label>
+                                <label><span>Category</span><select name="category" id="postCategory" required>
                                     <option value="" selected disabled>Select a category</option>
                                 </select></label>
-                                <label><span>Status</span><select name="status">
+                                <label><span>Status</span><select name="status" required>
                                     <option value="" selected disabled>Select a status</option>
                                     <option value="draft">Draft</option>
                                     <option value="published">Published</option>
                                 </select></label>
-                                <label class="publish-date-field"><span>Publish Date</span><input type="date" id="postDate" min="<?= e($today) ?>"></label>
-                                <label class="publish-date-field"><span>Expiration Date</span><input type="date" id="postExpiryDate" min="<?= e($today) ?>"></label>
+                                <label class="publish-date-field"><span>Publish Date</span><input type="date" name="publish_date" id="postDate" min="<?= e($today) ?>" required></label>
+                                <label class="publish-date-field"><span>Expiration Date</span><input type="date" name="expiration_date" id="postExpiryDate" min="<?= e($today) ?>" required></label>
                             </div>
 
                             <label class="content-field"><span>Content</span>
-                                <textarea id="postContent" class="content-editor" rows="7" placeholder="Write your post content here..." required></textarea>
+                                <textarea name="content" id="postContent" class="content-editor" rows="7" placeholder="Write your post content here..." required></textarea>
                             </label>
                             <div class="form-actions">
                                 <button type="button" data-action="cancel" class="post-btn post-btn-ghost form-cancel">Cancel</button>
                                 <div class="form-actions-right">
                                     <button type="button" data-action="showPreview" class="post-btn post-btn-ghost" id="formPreviewBtn"><i data-lucide="eye"></i> Preview</button>
-                                    <button type="submit" class="post-btn post-btn-primary" id="savePostBtn"><i data-lucide="save"></i> Save Post</button>
+                                    <button type="submit" data-action="save" class="post-btn post-btn-primary" id="savePostBtn"><i data-lucide="save"></i> Save Post</button>
                                 </div>
                             </div>
                         </form>

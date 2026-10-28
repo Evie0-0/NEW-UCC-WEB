@@ -1,4 +1,4 @@
-import { formatTimestamp, showConfirm, showUnexpectedError } from "./common.js";
+import { formatTimestamp, showAlert, showConfirm, showUnexpectedError } from "./common.js";
 
 if (window.lucide) {
     window.lucide.createIcons();
@@ -240,4 +240,56 @@ document.querySelector('button[data-action="showPreview"]').addEventListener('cl
 document.querySelector('button[data-action="closePreview"]').addEventListener('click', () => {
         previewModal.classList.remove('open');
         previewModal.setAttribute('aria-hidden', 'true');
+});
+
+// Save
+const saveBtn = document.querySelector('button[data-action="save"]');
+
+async function save(formData) {
+    saveBtn.disabled = true;
+
+    formData.set('id', String(postId));
+    formData.set('remove_featured_image', String(removeImage));
+
+    try {
+        const response = await fetch('../../api/posts/save.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+                window.location.href = result.data.redirect;
+                return;
+            }
+
+            await showAlert(false, result.message);
+            return;
+        }
+
+        await showAlert(true, result.message);
+
+        form.reset();
+        postId = 0;
+        currentPostMetadata = null;
+        removeImage = false;
+        clearImage();
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        originalForm = getFormSnapshot();
+    } catch (error) {
+        await showUnexpectedError(error);
+    } finally {
+        saveBtn.disabled = false;
+    }
+}
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (!form.reportValidity()) return;
+
+    await save(new FormData(form));
 });

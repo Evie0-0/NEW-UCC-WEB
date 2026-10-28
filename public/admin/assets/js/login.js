@@ -26,9 +26,10 @@ async function userErrorHandler() {
 document.querySelector('input[name="username"]').select();
 
 // Login
-const loginForm = document.getElementById('loginForm');
+const form = document.getElementById('loginForm');
 const usernameInput = document.querySelector('input[name="username"]');
 const passwordInput = document.querySelector('input[name="password"]');
+const loginBtn = document.querySelector('button[data-action="login"]');
 
 function resetForm() {
     usernameInput.value = '';
@@ -36,6 +37,9 @@ function resetForm() {
 }
 
 async function login(formData) {
+
+    loginBtn.disabled = true;
+
     try {
         const response = await fetch(`../../api/users/login.php`, {
             method: 'POST',
@@ -59,14 +63,17 @@ async function login(formData) {
         window.location.href = result.data.redirect;
     } catch (error) {
         await showUnexpectedError(error);
+    } finally {
+        loginBtn.disabled = false;
     }
 }
 
-loginForm.addEventListener('submit', async (event) => {
+form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const formData = new FormData(loginForm);
-    await login(formData);
-})
+    if (!form.reportValidity()) return;
+
+    await login(new FormData(form));
+});
 
 await userErrorHandler();
