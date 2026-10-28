@@ -82,6 +82,44 @@ final class UserServices {
         ]);
     }
 
+    public function logout(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $username = $_SESSION[self::USERNAME_KEY];
+        $userId = $_SESSION[self::USER_ID_KEY];
+
+        $_SESSION = [];
+
+        if (ini_get('session.use_cookies')) {
+            $cookieParams = session_get_cookie_params();
+
+            setcookie(session_name(), '', time() - 42000, $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], $cookieParams['httponly']);
+        }
+
+        session_destroy();
+
+        try {
+            $data = [
+                'action' => 'LOGOUT',
+                'description' => "User $username logged out.",
+                'entity_type' => 'User',
+                'entity_id' => $userId,
+                'user_id' => $userId
+            ];
+
+            $repo = new AuditTrailRepository(Database::connect());
+            $repo->insertItem($data);
+        } catch (Throwable $e) {
+            throw $e;
+        }
+
+        jsonResponse(200, 'You have been logged out successfully.', [
+            'redirect' => 'login.php'
+        ]);
+    }
+
     public static function getUsername(): string {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
