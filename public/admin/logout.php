@@ -41,7 +41,7 @@ $pageTitle = "Logout";
 				<i data-lucide="log-out"></i>
 			</div>
 			<h2>Logout?</h2>
-			<p>Are you sure you want to logout of the UCC Admin Panel?</p>
+			<p>Are you sure you want to logout of the UCC CMS Panel?</p>
 			<div class="logout-actions">
 				<button type="button" class="logout-btn cancel" data-action="cancel">Cancel</button>
 				<button type="button" class="logout-btn confirm" data-action="logout">

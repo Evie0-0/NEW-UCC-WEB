@@ -27,6 +27,7 @@ document.querySelector('input[name="username"]').select();
 
 // Login
 const loginForm = document.getElementById('loginForm');
+const usernameInput = document.querySelector('input[name="username"]');
 const passwordInput = document.querySelector('input[name="password"]');
 
 function resetForm() {

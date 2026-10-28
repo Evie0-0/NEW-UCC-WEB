@@ -6,14 +6,14 @@ if (window.lucide) {
 
 // Get form snapshot
 const form = document.getElementById('form');
-const featuredImagePreview = document.getElementById('featuredImagePreview');
+const imagePreview = document.getElementById('imagePreview');
 
 function getFormSnapshot() {
     return JSON.stringify({
         fields: [...form.elements]
             .filter(element => element.id !== 'featuredImage')
             .map(element => element.value),
-        featuredImagePreview: featuredImagePreview?.src ?? ''
+        imagePreview: imagePreview?.src ?? ''
     });
 }
 
@@ -21,19 +21,16 @@ let originalForm = getFormSnapshot();
 const isDirty = () => getFormSnapshot() !== originalForm;
 
 // Check before unload
+let allowNavigationWithoutPrompt = false;
+
 window.addEventListener("beforeunload", event => {
-    if (!isDirty()) return;
+    if (!isDirty() || allowNavigationWithoutPrompt) return;
 
     event.preventDefault();
-    event.returnValue = '';
 });
 
 // Open modal
 const modal = document.getElementById('modal');
-const featuredImageInput = document.getElementById('featuredImage');
-const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-const removeImageButton = document.getElementById('removeImageBtn');
-
 document.querySelector('button[data-action="add"]').addEventListener('click', () => {
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('open');
@@ -54,23 +51,79 @@ async function closeForm() {
     }
 
     form.reset();
-    if (featuredImageInput) featuredImageInput.value = '';
-    if (featuredImagePreview) {
-        featuredImagePreview.removeAttribute('src');
-        featuredImagePreview.hidden = true;
-    }
-    if (uploadPlaceholder) uploadPlaceholder.hidden = false;
-    if (removeImageButton) removeImageButton.hidden = true;
+    clearFeaturedImage();
 
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     originalForm = getFormSnapshot();
 }
 
-document.querySelector('button[data-action="closeModal"]').addEventListener('click', async () => {
+const closeModalBtn = document.querySelector('button[data-action="closeModal"]');
+closeModalBtn.addEventListener('click', async () => {
     await closeForm();
 });
 
-document.querySelector('button[data-action="cancel"]').addEventListener('click', async () => {
+const cancelBtn = document.querySelector('button[data-action="cancel"]');
+cancelBtn.addEventListener('click', async () => {
     await closeForm();
 });
+
+// Show image
+const imageInput = document.querySelector('input[name="featuredImage"]');
+const imagePlaceholder = document.getElementById('uploadPlaceholder');
+const uploadImageBtn = document.querySelector('button[data-action="uploadFeaturedImage"]');
+const removeImageBtn = document.querySelector('button[data-action="removeFeaturedImage"]');
+let imageObjectUrl = null;
+
+function showImage(src) {
+    if (imageObjectUrl) {
+        URL.revokeObjectURL(imageObjectUrl);
+    }
+
+    imageObjectUrl = src;
+
+    imagePreview.src = src;
+    imagePreview.hidden = false;
+    imagePreview.style.display = 'block';
+    imagePlaceholder.hidden = true;
+    removeImageBtn.hidden = false;
+}
+
+uploadImageBtn.addEventListener('click', () => {
+    imageInput.click();
+});
+
+imageInput.addEventListener('change', () => {
+    const file = imageInput.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        clearImage();
+        return;
+    }
+
+    showImage(URL.createObjectURL(file));
+});
+
+// clearImage
+function clearImage() {
+    if (imageObjectUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(imageObjectUrl);
+    }
+    imageObjectUrl = null;
+
+    imageInput.value = '';
+    imagePreview.removeAttribute('src');
+    imagePreview.hidden = true;
+    imagePreview.style.display = 'none';
+    imagePlaceholder.hidden = false;
+    removeImageBtn.hidden = true;
+}
+
+removeImageBtn.addEventListener('click', clearImage);
+
+// Get category
+async function getCategories() {
+
+}

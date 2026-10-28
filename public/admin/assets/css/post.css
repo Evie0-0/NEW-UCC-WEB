@@ -552,12 +552,12 @@
     display: none !important;
 }
 
-#uploadPlaceholder[hidden],
-#imagePreview[hidden] {
+.upload-placeholder[hidden],
+.image-preview[hidden] {
     display: none !important;
 }
 
-.image-upload-area #imagePreview:not([hidden]) {
+.image-upload-area .image-preview:not([hidden]) {
     display: block !important;
     flex: 0 0 74px;
 }

@@ -16,7 +16,17 @@ if (!UserServices::isAuthorized([UserServices::SUPERADMIN_KEY])) {
     exit;
 }
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$username = $_SESSION[UserServices::USERNAME_KEY];
+$role = $_SESSION[UserServices::ROLE_KEY];
+
+session_write_close();
+
 $pageTitle = "Posts";
+$today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->format('Y-m-d');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,10 +124,10 @@ $pageTitle = "Posts";
                         <form class="post-form" id="form">
                             <div class="image-upload-area">
                                 <div class="upload-placeholder" id="uploadPlaceholder"><i data-lucide="image-plus"></i><strong>Featured Image</strong></div>
-                                <img id="featuredImagePreview" class="image-preview" alt="Featured image preview">
+                                <img id="imagePreview" class="image-preview" alt="Featured image preview" hidden>
                                 <input type="file" name="featuredImage" id="featuredImage" accept="image/*" hidden>
-                                <button type="button" class="post-btn post-btn-ghost" id="uploadImageBtn"><i data-lucide="upload"></i> Choose Photo</button>
-                                <button type="button" class="post-btn post-btn-danger" id="removeImageBtn" hidden><i data-lucide="x"></i> Remove Photo</button>
+                                <button type="button" data-action="uploadFeaturedImage" class="post-btn post-btn-ghost" id="uploadImageBtn"><i data-lucide="upload"></i> Choose Image</button>
+                                <button type="button" data-action="removeFeaturedImage" class="post-btn post-btn-danger" id="removeImageBtn" hidden><i data-lucide="x"></i> Remove Image</button>
                             </div>
                             <div class="form-grid">
                                 <label class="form-field full-width"><span>Post Title</span><input type="text" id="postTitle" placeholder="Enter post title" maxlength="180" required></label>
@@ -129,8 +139,8 @@ $pageTitle = "Posts";
                                     <option value="draft">Draft</option>
                                     <option value="published">Published</option>
                                 </select></label>
-                                <label class="publish-date-field"><span>Publish Date</span><input type="date" id="postDate"></label>
-                                <label class="publish-date-field"><span>Expiration Date</span><input type="date" id="postExpiryDate"></label>
+                                <label class="publish-date-field"><span>Publish Date</span><input type="date" id="postDate" min="<?= e($today) ?>"></label>
+                                <label class="publish-date-field"><span>Expiration Date</span><input type="date" id="postExpiryDate" min="<?= e($today) ?>"></label>
                             </div>
 
                             <label class="content-field"><span>Content</span>
