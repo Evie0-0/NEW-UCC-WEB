@@ -87,10 +87,12 @@ final class UserServices {
             session_start();
         }
 
-        $userId = $_SESSION[self::USER_ID_KEY] ?? null;
+        $userId = validateInt($_SESSION[self::USER_ID_KEY] ?? null, 1, null);
         $username = $_SESSION[self::USERNAME_KEY] ?? null;
 
-        $canAudit = validateInt($userId, 1, null) !== false && is_string($username) && trim($username) !== '';
+        $isAuthenticated = $userId !== false
+            && is_string($username)
+            && trim($username) !== '';
 
         $_SESSION = [];
 
@@ -102,7 +104,7 @@ final class UserServices {
 
         session_destroy();
 
-        if (!$canAudit) {
+        if (!$isAuthenticated) {
             jsonResponse(200, 'You have been logged out successfully.', [
                 'redirect' => 'login.php'
             ]);
@@ -134,7 +136,11 @@ final class UserServices {
         }
 
         try {
-            return isset($_SESSION[self::USER_ID_KEY], $_SESSION[self::USERNAME_KEY]);
+            $username = $_SESSION[self::USERNAME_KEY] ?? null;
+
+            return validateInt($_SESSION[self::USER_ID_KEY] ?? null, 1, null) !== false
+                && is_string($username)
+                && trim($username) !== '';
         } finally {
             if (session_status() === PHP_SESSION_ACTIVE) {
                 session_write_close();
@@ -155,7 +161,10 @@ final class UserServices {
         try {
             $role = $_SESSION[self::ROLE_KEY] ?? null;
 
-            return is_string($role) && trim($role) !== '' && in_array($role, $allowedRoles, true);
+            return validateInt($_SESSION[self::USER_ID_KEY] ?? null, 1, null) !== false
+                && is_string($role)
+                && trim($role) !== ''
+                && in_array($role, $allowedRoles, true);
         } finally {
             if (session_status() === PHP_SESSION_ACTIVE) {
                 session_write_close();

@@ -110,17 +110,25 @@ final class PostServices {
            session_start();
        }
 
-       $userId = $_SESSION[UserServices::USER_ID_KEY];
+       $authorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
 
-       $canAudit = validateInt($userId, 0, null) !== false;
+       if ($authorId === false) {
+           unset(
+               $_SESSION[UserServices::USER_ID_KEY],
+               $_SESSION[UserServices::USERNAME_KEY],
+               $_SESSION[UserServices::ROLE_KEY],
+               $_SESSION[UserServices::UNIT_ID_KEY],
+               $_SESSION[UserServices::PROGRAM_ID_KEY]
+           );
 
-       session_write_close();
+           session_write_close();
 
-       if (!$canAudit) {
-           jsonResponse(401, 'Invalid session.', [
+           jsonResponse(401, 'Your session has expired. Please log in again.', [
                'redirect' => 'login.php?error=401',
            ]);
        }
+
+       session_write_close();
 
        $data = [
            'title' => $title,
@@ -129,7 +137,7 @@ final class PostServices {
            'featured_image' => $featuredImageFile,
            'category_id' => $category,
            'status' =>  $status,
-           'author_id' => $userId,
+           'author_id' => $authorId,
            'published_at' => $publishDate,
            'expires_at' => $expirationDate
        ];
@@ -146,7 +154,7 @@ final class PostServices {
                'description' => "Created a new post titled: $title",
                'entity_type' => "University Post - $categoryName",
                'entity_id' => $insertedPost,
-               'user_id' => $userId
+               'user_id' => $authorId
            ];
 
            $repo = new AuditTrailRepository($conn);
@@ -269,7 +277,23 @@ final class PostServices {
             session_start();
         }
 
-        $editorId = $_SESSION[UserServices::USER_ID_KEY];
+        $editorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
+
+        if ($editorId === false) {
+            unset(
+                $_SESSION[UserServices::USER_ID_KEY],
+                $_SESSION[UserServices::USERNAME_KEY],
+                $_SESSION[UserServices::ROLE_KEY],
+                $_SESSION[UserServices::UNIT_ID_KEY],
+                $_SESSION[UserServices::PROGRAM_ID_KEY]
+            );
+
+            session_write_close();
+
+            jsonResponse(401, 'Your session has expired. Please log in again.', [
+                'redirect' => 'login.php?error=401',
+            ]);
+        }
 
         session_write_close();
 
@@ -585,7 +609,23 @@ final class PostServices {
 
         session_start();
 
-        $editorId = $_SESSION['user_id'] ?? 1;
+        $editorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
+
+        if ($editorId === false) {
+            unset(
+                $_SESSION[UserServices::USER_ID_KEY],
+                $_SESSION[UserServices::USERNAME_KEY],
+                $_SESSION[UserServices::ROLE_KEY],
+                $_SESSION[UserServices::UNIT_ID_KEY],
+                $_SESSION[UserServices::PROGRAM_ID_KEY]
+            );
+
+            session_write_close();
+
+            jsonResponse(401, 'Your session has expired. Please log in again.', [
+                'redirect' => 'login.php?error=401',
+            ]);
+        }
 
         session_write_close();
 
