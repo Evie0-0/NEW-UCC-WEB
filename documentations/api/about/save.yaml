@@ -1,0 +1,120 @@
+api: about
+directory: api/about/
+name: save (endpoint)
+file: save.php
+path: api/about/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: creates or updates an about ucc post
+authorization: superadmin only
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross scripting
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create post - 0 when creating post)
+      source: form or js (append)
+      description: id of about post when editing
+    - name: name
+      type: string (from text)
+      required: true
+      source: form
+      description: name of about post (maximum of 150 characters)
+    - name: description
+      type: string (from text)
+      required: true
+      source: form
+      description: description of about post
+    - name: category
+      type: int (from selection)
+      required: true
+      source: form
+      description: category of about post
+      note: the about page has no category field yet, add a selection filled by api/categories/by-class.php?class=about
+      values:
+        - 9 (About UCC)
+        - 10 (History)
+        - 11 (New UCC)
+        - 12 (Opportunities)
+        - refer to categories table (id column) of db where class is about
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of about post
+      note: the page labels Active and Hidden are stored as active and inactive
+      values:
+        - active
+        - inactive
+    - name: remove_featured_image
+      type: bool (from hidden)
+      required: false (defaults to false, only used when editing)
+      source: form or js (append)
+      description: determines whether stored image should be removed
+      note: cannot be true while a new featured_image is uploaded
+    - name: featured_image
+      type: file (from file input)
+      required: false (optional)
+      source: form or js (append)
+      description: image of about post (jpeg, png or webp, 10 MB maximum, 5000 x 5000 pixels maximum)
+      note: when editing, the old image is replaced and deleted from storage/uploads
+response:
+  content_type: application/json
+  http_code:
+    success: 201 | 200
+    errors: ~400 - ~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+  errors:
+    - status: 401
+      message: You are unauthorized to make this request.
+      when: the user is not logged in as superadmin
+    - status: 403
+      message: Invalid CSRF token.
+      when: csrf_key is missing or wrong
+    - status: 404
+      message: About post does not exist.
+      when: editing an id that does not exist
+    - status: 405
+      message: Invalid request method.
+      when: the request method is not POST
+    - status: 413 | 415 | 422
+      message: image upload errors (too large, unsupported format, not a valid image)
+      when: featured_image fails verification
+    - status: 422
+      message: Invalid about post id. | Name cannot be empty. | Name cannot exceed 150 characters. | Description cannot be empty. | Invalid category selection. | Invalid status selection. | Invalid remove featured image indicator. | Cannot remove and replace featured image at the same time.
+      when: a field is invalid
+    - status: 500
+      message: An unexpected error occured.
+      when: the server failed to process the request (see storage/logs/error.log)
+  side_effects:
+    - an audit trail entry is created (CREATE or UPDATE, entity type About UCC - category name)
+example:
+  http_status: 200
+  response: |
+    {
+      "message": "About post successfully updated.",
+      "data": []
+    }

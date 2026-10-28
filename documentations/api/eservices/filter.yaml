@@ -1,0 +1,127 @@
+api: eservices
+directory: api/eservices/
+name: filter (endpoint)
+file: filter.php
+path: api/eservices/filter.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve filtered e-service items and some metadata (10 results per page)
+access: superadmin only (session required)
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: search
+      type: string (from search)
+      required: false (can be empty)
+      source: js (url)
+      description: searches for e-service name, description and url
+    - name: filter
+      type: string (from selection)
+      required: false (defaults to all)
+      source: js (url)
+      description: filter status of items
+      values:
+        - all
+        - active
+        - inactive
+    - name: sort
+      type: string (from selection)
+      required: false (defaults to created-desc)
+      source: js (url)
+      description: sort items
+      values:
+        - created-desc
+        - created-asc
+        - name-desc
+        - name-asc
+    - name: page
+      type: int (from hidden)
+      required: false (defaults to 1)
+      source: js (url)
+      description: page number to retrieve e-services for
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: 401 | 405 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+      note:
+        - do not include for alert upon success
+    - name: data
+      type: object
+      returned: always (can be empty)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request
+        - unsuccessful request (empty)
+      properties:
+        - name: eservices
+          type: array
+          returned: always (can be empty)
+          description: e-service information
+          conditions:
+            - after a successful request
+          properties:
+            - every column in eservices table = refer to db
+            - name: created_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who created the e-service
+            - name: updated_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who last updated the e-service
+        - name: current_page
+          type: int
+          returned: always
+          description: current page number
+          conditions:
+            - after a successful request
+        - name: total_eservices
+          type: int
+          returned: always
+          description: overall total of e-services matching the filters regardless of page
+          conditions:
+            - after a successful request
+        - name: total_pages
+          type: int
+          returned: always
+          description: total number of pages (10 results per page)
+          conditions:
+            - after a successful request
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "Successfully filtered e-service items.",
+  "data": {
+    "eservices": [
+      {
+        "id": 1,
+        "name": "Student Portal",
+        "description": "Access grades, enrollment records, and student information.",
+        "url": "https://example.com/student-portal",
+        "featured_image": "61a067af9ff6c181e4f7e05ed21dae07.webp",
+        "status": "active",
+        "author_id": 1,
+        "editor_id": 1,
+        "created_at": "2026-10-28 09:25:06",
+        "updated_at": "2026-10-28 10:02:11",
+        "active": 1,
+        "created_by": "mky",
+        "updated_by": "mky"
+      }
+    ],
+    "current_page": 1,
+    "total_eservices": 1,
+    "total_pages": 1
+  }
+}

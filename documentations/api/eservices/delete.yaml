@@ -1,0 +1,53 @@
+api: eservices
+directory: api/eservices/
+name: delete (endpoint)
+file: delete.php
+path: api/eservices/delete.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: deletes an e-service (soft delete - the row is kept with active = 0 and recorded in the audit trail)
+access: superadmin only (session + csrf token required)
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross site request forgery
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from table row)
+      required: true
+      source: js (append)
+      description: id of the e-service to delete
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: 401 | 403 | 404 | 405 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "E-service successfully deleted.",
+  "data": []
+}

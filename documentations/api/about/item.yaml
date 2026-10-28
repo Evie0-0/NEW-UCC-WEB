@@ -1,0 +1,101 @@
+api: about
+directory: api/about/
+name: item (endpoint)
+file: item.php
+path: api/about/item.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve an about ucc post
+authorization: superadmin only
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: id
+      type: int (from hidden)
+      required: true
+      source: js (url)
+      description: id of an about post
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: ~400 - ~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+      note:
+        - do not include for alert upon success
+    - name: data
+      type: object
+      returned: always (can be empty)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request
+        - unsuccessful request (empty)
+      properties:
+        - name: about
+          type: object
+          returned: always
+          description: about post information
+          conditions:
+            - after a successful request
+          properties:
+            - every column in about table = refer to db
+            - name: category_name
+              type: string
+              returned: always
+              description: name of the category of the post
+            - name: created_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who created the post
+            - name: updated_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who last updated the post
+  errors:
+    - status: 401
+      message: You are unauthorized to make this request.
+      when: the user is not logged in as superadmin
+    - status: 404
+      message: About post does not exist.
+      when: no active about post has the given id
+    - status: 405
+      message: Invalid request method.
+      when: the request method is not GET
+    - status: 422
+      message: Invalid about post id.
+      when: id is missing or not a positive whole number
+    - status: 500
+      message: An unexpected error occured.
+      when: the server failed to process the request (see storage/logs/error.log)
+example:
+  http_status: 200
+  response: |
+    {
+      "message": "About post successfully fetched.",
+      "data": {
+        "about": {
+          "id": 1,
+          "name": "About University of Caloocan City",
+          "description": "Learn about UCC, its history, mission, and commitment to quality education.",
+          "featured_image": "bf6093f4da380c06b20a994a548466fb.webp",
+          "category_id": 9,
+          "status": "active",
+          "author_id": 1,
+          "editor_id": 1,
+          "created_at": "2026-10-28 09:15:00",
+          "updated_at": "2026-10-28 10:02:11",
+          "active": 1,
+          "category_name": "About UCC",
+          "created_by": "mky",
+          "updated_by": "mky"
+        }
+      }
+    }
