@@ -1,0 +1,86 @@
+api: contacts
+directory: api/contacts/
+name: save (endpoint)
+file: save.php
+path: api/contacts/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: saves a contact (creates it when id is 0, updates it otherwise)
+access: superadmin only (session + csrf token required)
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross site request forgery
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create - 0 when creating)
+      source: js (append)
+      description: id of the contact when editing
+    - name: name
+      type: string (from text)
+      required: true
+      source: form
+      description: name of the contact
+      note: maximum of 150 characters (contacts.name column)
+    - name: email
+      type: string (from email)
+      required: true
+      source: form
+      description: email address of the contact
+      note: must be a valid email address, maximum of 200 characters
+    - name: phone_number
+      type: string (from tel)
+      required: true
+      source: form
+      description: contact number
+      note: maximum of 30 characters; digits, spaces and + ( ) - . / # , only
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of the contact
+      values:
+        - active
+        - inactive
+      note: case-insensitive; hidden is accepted as an alias of inactive (the contacts page labels it Hidden)
+response:
+  content_type: application/json
+  http_code:
+    success: 201 (created) | 200 (updated)
+    errors: 401 | 403 | 404 | 405 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+
+Example:
+HTTP Status: 201
+Response: {
+  "message": "Contact successfully created.",
+  "data": []
+}
+
+HTTP Status: 200
+Response: {
+  "message": "Contact successfully updated.",
+  "data": []
+}
