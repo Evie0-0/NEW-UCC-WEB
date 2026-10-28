@@ -19,8 +19,8 @@ final class UserServices {
     public const PROGRAM_ID_KEY = 'program_id';
 
     public function login(): void {
-        $username = trim(validateString($_POST['username'] ?? '', 'Username'));
-        $password = validateString($_POST['password'] ?? '', 'Password');
+        $username = is_string($_POST['username'] ?? null) ? trim($_POST['username']) : '';
+        $password = is_string($_POST['password'] ?? null) ? trim($_POST['password']) : '';
 
         if ($username === '') {
             jsonResponse(422, 'Username cannot be empty.');
@@ -87,8 +87,10 @@ final class UserServices {
             session_start();
         }
 
-        $username = $_SESSION[self::USERNAME_KEY];
-        $userId = $_SESSION[self::USER_ID_KEY];
+        $userId = $_SESSION[self::USER_ID_KEY] ?? null;
+        $username = $_SESSION[self::USERNAME_KEY] ?? null;
+
+        $canAudit = validateInt($userId, 1, null) !== false && is_string($username) && trim($username) !== '';
 
         $_SESSION = [];
 
@@ -99,6 +101,12 @@ final class UserServices {
         }
 
         session_destroy();
+
+        if (!$canAudit) {
+            jsonResponse(200, 'You have been logged out successfully.', [
+                'redirect' => 'login.php'
+            ]);
+        }
 
         try {
             $data = [
@@ -120,45 +128,13 @@ final class UserServices {
         ]);
     }
 
-    public static function getUsername(): string {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        try {
-            $username = $_SESSION[self::USERNAME_KEY] ?? null;
-
-            return is_string($username) ? $username : '';
-        } finally {
-            if (session_status() === PHP_SESSION_ACTIVE) {
-                session_write_close();
-            }
-        }
-    }
-
-    public static function getRole(): string {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        try {
-            $role = $_SESSION[self::ROLE_KEY] ?? null;
-
-            return is_string($role) ? $role : '';
-        } finally {
-            if (session_status() === PHP_SESSION_ACTIVE) {
-                session_write_close();
-            }
-        }
-    }
-
     public static function isAuthenticated(): bool {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
         try {
-            return isset($_SESSION[self::USER_ID_KEY]);
+            return isset($_SESSION[self::USER_ID_KEY], $_SESSION[self::USERNAME_KEY]);
         } finally {
             if (session_status() === PHP_SESSION_ACTIVE) {
                 session_write_close();
@@ -167,7 +143,23 @@ final class UserServices {
     }
 
     /** @param list<string> $allowedRoles */
-    public static function isAuthorized(array $allowedRoles = [self::SUPERADMIN_KEY, self::DEAN_KEY, self::PROGRAM_HEAD_KEY]): bool {
-        return in_array(self::getRole(), $allowedRoles, true);
+    public static function isAuthorized(array $allowedRoles = []): bool {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if ($allowedRoles === []) {
+            $allowedRoles = [self::SUPERADMIN_KEY, self::DEAN_KEY, self::PROGRAM_HEAD_KEY];
+        }
+
+        try {
+            $role = $_SESSION[self::ROLE_KEY] ?? null;
+
+            return is_string($role) && trim($role) !== '' && in_array($role, $allowedRoles, true);
+        } finally {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
+        }
     }
 }
