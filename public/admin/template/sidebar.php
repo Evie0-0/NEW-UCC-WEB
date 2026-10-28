@@ -36,7 +36,7 @@ $renderLink = static function (string $file, string $label, string $icon = '') u
 
     ?>
 
-    <a href="<?= e($file) ?>"<?= $active ? ' class="active" aria-current="page"' : '' ?>>
+    <a href="<?= e($file) ?>" <?= $active ? ' class="active" aria-current="page"' : '' ?>>
         <?php if ($icon !== ''): ?>
             <i data-lucide="<?= e($icon) ?>"></i>
         <?php endif; ?>
@@ -114,7 +114,6 @@ $renderGroup = static function (array $links, string $label, string $icon) use (
     </div>
     <div class="sidebar-art"></div>
 </aside>
-
 <script>
 document.querySelectorAll('.sidebar .menu-title').forEach(button => {
     button.addEventListener('click', () => {

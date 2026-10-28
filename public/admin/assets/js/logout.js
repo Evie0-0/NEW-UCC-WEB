@@ -1,20 +1,14 @@
-import { showAlert, showLoading, showUnexpectedError } from "./common.js";
+import { showAlert, showUnexpectedError } from "./common.js";
 
 if (window.lucide) {
     window.lucide.createIcons();
 }
 
 // Logout
-const csrfKeyInput = document.querySelector('input[name="csrf_key"]');
-
 async function logout() {
     try {
-        const formData = new FormData();
-        formData.append('csrf_key', csrfKeyInput.value);
-
         const response = await fetch('../../api/users/logout.php', {
-            method: 'POST',
-            body: formData
+            method: 'POST'
         });
 
         const result = await response.json();

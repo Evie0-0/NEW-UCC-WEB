@@ -30,19 +30,6 @@ export async function showUnexpectedError(error) {
     });
 }
 
-export async function showLoading(title, text) {
-    await Swal.fire({
-        title: title,
-        text: text,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showConfirmButton: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-}
-
 // Format: September 20, 2005 14:35
 export function formatTimestamp(timestamp) {
     if (!timestamp) return '-';

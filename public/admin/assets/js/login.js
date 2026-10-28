@@ -1,4 +1,4 @@
-import { showAlert, showLoading, showUnexpectedError } from "./common.js";
+import { showAlert, showUnexpectedError } from "./common.js";
 
 if (window.lucide) {
     window.lucide.createIcons();
