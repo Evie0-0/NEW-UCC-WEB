@@ -51,7 +51,7 @@ $pageTitle = "Logout";
 			</div>
 		</div>
 	</div>
-	<div class="logout-success" id="logoutSuccess">
+	<div class="logout-success" id="logoutSuccess" hidden>
 		<div class="success-icon">
 			<i data-lucide="circle-check"></i>
 		</div>
