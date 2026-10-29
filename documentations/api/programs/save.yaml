@@ -1,0 +1,92 @@
+api: programs
+directory: api/programs/
+name: save (endpoint)
+file: save.php
+path: api/programs/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: saves a program (creates it when id is 0, updates it otherwise)
+access: superadmin only (session + csrf token required)
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross site request forgery
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create - 0 when creating)
+      source: js (append)
+      description: id of the program when editing
+    - name: unit_id
+      type: int (from selection)
+      required: true
+      source: form
+      description: id of the unit the program belongs to (programs.unit_id -> units.id)
+      note: must be the numeric id of a unit (not its name), and the unit must exist with active = 1. The error message says whether unit_id is missing, not a number, or does not match an active unit
+    - name: name
+      type: string (from text)
+      required: true
+      source: form
+      description: name of the program
+      note: maximum of 150 characters (programs.name column)
+    - name: mission
+      type: string (from textarea)
+      required: true
+      source: form
+      description: mission of the program
+      note: maximum of 5000 characters (an API limit, the form has none)
+    - name: vision
+      type: string (from textarea)
+      required: true
+      source: form
+      description: vision of the program
+      note: maximum of 5000 characters (an API limit, the form has none)
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of the program
+      values:
+        - active
+        - inactive
+      note: case-insensitive, so the form values Active / Hidden are accepted (hidden is an alias of inactive)
+response:
+  content_type: application/json
+  http_code:
+    success: 201 (created) | 200 (updated)
+    errors: 401 | 403 | 404 | 405 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+
+Example:
+HTTP Status: 201
+Response: {
+  "message": "Program successfully created.",
+  "data": []
+}
+
+HTTP Status: 200
+Response: {
+  "message": "Program successfully updated.",
+  "data": []
+}
