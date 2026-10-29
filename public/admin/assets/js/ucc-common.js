@@ -1,4 +1,5 @@
-(function (w) {
+/*
+    (function (w) {
     "use strict";
 
     const $ = id => document.getElementById(id);
@@ -185,3 +186,4 @@
 
     w.UCC = {$, esc, icons, todayStr, fmtDate, fmtDay, isUrl, mapsUrl, statusClass, effectiveStatus, thumb, fillMeta, offsetDate, toast, openModal, closeModal, confirmDelete, imageField, list, initMenu};
 })(window);
+*/

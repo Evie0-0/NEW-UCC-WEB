@@ -321,7 +321,7 @@ async function archiveSavedItem(id, title) {
     try {
         const formData = new FormData();
         formData.set('id', String(id));
-        formData.set('csrf_key', form.elements.namedItem('csrf_key').value);
+        formData.set('csrf_key', document.querySelector('input[name="csrf_key"]').value);
 
         const response = await fetch('../../api/posts/archive.php', {
             method: 'POST',
