@@ -161,3 +161,7 @@ Stack trace:
 #1 /home/mky/Documents/cur_projects/ucc_cms/public/admin/users.php(23): include('...')
 #2 {main}
   thrown in /home/mky/Documents/cur_projects/ucc_cms/app/Support/helper.php on line 4
+[30-Oct-2026 03:40:43 Asia/Manila] PHP Warning:  session_start(): Session cannot be started after headers have already been sent (sent from /home/mky/Documents/cur_projects/ucc_cms/public/admin/posts.php on line 38) in /home/mky/Documents/cur_projects/ucc_cms/app/Services/UserServices.php on line 154
+[30-Oct-2026 03:52:36 Asia/Manila] PHP Warning:  session_start(): Session cannot be started after headers have already been sent (sent from /home/mky/Documents/cur_projects/ucc_cms/public/admin/posts.php on line 38) in /home/mky/Documents/cur_projects/ucc_cms/app/Services/UserServices.php on line 154
+[30-Oct-2026 03:57:52 Asia/Manila] PHP Warning:  session_start(): Session cannot be started after headers have already been sent (sent from /home/mky/Documents/cur_projects/ucc_cms/public/admin/posts.php on line 38) in /home/mky/Documents/cur_projects/ucc_cms/app/Services/UserServices.php on line 154
+[30-Oct-2026 03:57:53 Asia/Manila] PHP Warning:  session_start(): Session cannot be started after headers have already been sent (sent from /home/mky/Documents/cur_projects/ucc_cms/public/admin/posts.php on line 38) in /home/mky/Documents/cur_projects/ucc_cms/app/Services/UserServices.php on line 154
