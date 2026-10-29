@@ -307,7 +307,7 @@ async function editSavedItem(id) {
 }
 
 // Archive saved item
-async function archiveSavedItem(id, title) {
+async function archiveSavedItem(id) {
     const confirmed = await showConfirm(
         'warning',
         'Archive this post?',
@@ -597,8 +597,8 @@ tableBody.addEventListener('click', async (event) => {
 
     const archiveButton = event.target.closest('button[data-action="archive"]');
     if (archiveButton) {
-        const title = archiveButton.closest('tr').querySelector('[data-field="title"]').textContent;
-        await archiveSavedItem(archiveButton.dataset.postId, title);
+        await archiveSavedItem(archiveButton.dataset.postId);
+        return;
     }
 });
 statusFilter.addEventListener('change', () => loadPosts(1));
