@@ -58,7 +58,7 @@ final class PostRepository {
 
     public function fetchItemById(int $id): array|false {
         $query = "
-            SELECT p.*, author.username AS author_username, editor.username AS editor_username,
+            SELECT p.*, author.username AS author_username, editor.username AS editor_username
             FROM posts AS p
             LEFT JOIN users AS author ON author.id = p.author_id
             LEFT JOIN users AS editor ON editor.id = p.editor_id
@@ -142,7 +142,8 @@ final class PostRepository {
             default => throw new InvalidArgumentException('Invalid post sort.')
         };
 
-        $query = "SELECT *,
+        $query = "SELECT posts.*,
+            (SELECT name FROM categories WHERE categories.id = posts.category_id) AS display_category,
             CASE
                 WHEN status = 'published'
                     AND expires_at < CURRENT_DATE

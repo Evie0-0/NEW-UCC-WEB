@@ -34,9 +34,9 @@ final class PostServices {
     }
 
     private function create(): void {
-        $title = trim(validateString($_POST['title'] ?? '', 'Title'));
-        $excerpt = trim(validateString($_POST['excerpt'] ?? '', 'Excerpt'));
-        $content = trim(validateString($_POST['content'] ?? '', 'Content'));
+        $title = is_string($_POST['title'] ?? null) ? trim($_POST['title']) : '';
+        $excerpt = is_string($_POST['excerpt'] ?? null) ? trim($_POST['excerpt']) : '';
+        $content = is_string($_POST['content'] ?? null) ? trim($_POST['content']) : '';
         $featuredImage = $_FILES['featured_image'] ?? null;
         $category = validateInt($_POST['category'] ?? null, 1, null);
         $status = $_POST['status'] ?? '';
@@ -100,20 +100,35 @@ final class PostServices {
             jsonResponse(422, 'Expiration date cannot be earlier than the publish date.');
         }
 
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $authorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
+
+        if ($authorId === false) {
+            unset(
+                $_SESSION[UserServices::USER_ID_KEY],
+                $_SESSION[UserServices::USERNAME_KEY],
+                $_SESSION[UserServices::ROLE_KEY],
+                $_SESSION[UserServices::UNIT_ID_KEY],
+                $_SESSION[UserServices::PROGRAM_ID_KEY]
+            );
+
+            session_write_close();
+
+            jsonResponse(401, 'Your session has expired. Please log in again.', [
+                'redirect' => 'login.php',
+            ]);
+        }
+
+        session_write_close();
+
         $featuredImageFile = null;
 
-       if ($tempFeaturedImage !== null) {
-           $featuredImageFile = $imageHandler->store($tempFeaturedImage);
-       }
-
-
-       if (session_status() === PHP_SESSION_NONE) {
-           session_start();
-       }
-
-       $authorId = $_SESSION[UserServices::USER_ID_KEY];
-
-       session_write_close();
+        if ($tempFeaturedImage !== null) {
+            $featuredImageFile = $imageHandler->store($tempFeaturedImage);
+        }
 
        $data = [
            'title' => $title,
@@ -247,6 +262,30 @@ final class PostServices {
             jsonResponse(422, 'Expiration date cannot be earlier than the publish date.');
         }
 
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $editorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
+
+        if ($editorId === false) {
+            unset(
+                $_SESSION[UserServices::USER_ID_KEY],
+                $_SESSION[UserServices::USERNAME_KEY],
+                $_SESSION[UserServices::ROLE_KEY],
+                $_SESSION[UserServices::UNIT_ID_KEY],
+                $_SESSION[UserServices::PROGRAM_ID_KEY]
+            );
+
+            session_write_close();
+
+            jsonResponse(401, 'Your session has expired. Please log in again.', [
+                'redirect' => 'login.php',
+            ]);
+        }
+
+        session_write_close();
+
         $oldFeaturedImage = $fetchedPost['featured_image'] ?? null;
         $featuredImageFile = $oldFeaturedImage;
         $newFeaturedImageFile = null;
@@ -257,14 +296,6 @@ final class PostServices {
             $newFeaturedImageFile = $imageHandler->store($tempFeaturedImage);
             $featuredImageFile = $newFeaturedImageFile;
         }
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $editorId = $_SESSION[UserServices::USER_ID_KEY];
-
-        session_write_close();
 
         $data = [
             'title' => $title,
@@ -334,7 +365,7 @@ final class PostServices {
     }
 
     public function filter(): void {
-        $search = trim(validateString($_GET['search'] ?? '', 'Search'));
+        $search = is_string($_GET['search'] ?? null) ? trim($_GET['search']) : '';
         $filter = $_GET['filter'] ?? '';
         $sort = $_GET['sort'] ?? '';
         $page = validateInt($_GET['page'] ?? 1, 1, null);
@@ -426,9 +457,27 @@ final class PostServices {
         $fetchedCategories = $repo->fetchItemsByClass('university-posts');
         $categoryName = array_column($fetchedCategories, 'name', 'id')[$category] ?? null;
 
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-        $editorId = $_SESSION['user_id'];
+        $editorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
+
+        if ($editorId === false) {
+            unset(
+                $_SESSION[UserServices::USER_ID_KEY],
+                $_SESSION[UserServices::USERNAME_KEY],
+                $_SESSION[UserServices::ROLE_KEY],
+                $_SESSION[UserServices::UNIT_ID_KEY],
+                $_SESSION[UserServices::PROGRAM_ID_KEY]
+            );
+
+            session_write_close();
+
+            jsonResponse(401, 'Your session has expired. Please log in again.', [
+                'redirect' => 'login.php',
+            ]);
+        }
 
         session_write_close();
 
@@ -578,7 +627,23 @@ final class PostServices {
 
         session_start();
 
-        $editorId = $_SESSION['user_id'] ?? 1;
+        $editorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
+
+        if ($editorId === false) {
+            unset(
+                $_SESSION[UserServices::USER_ID_KEY],
+                $_SESSION[UserServices::USERNAME_KEY],
+                $_SESSION[UserServices::ROLE_KEY],
+                $_SESSION[UserServices::UNIT_ID_KEY],
+                $_SESSION[UserServices::PROGRAM_ID_KEY]
+            );
+
+            session_write_close();
+
+            jsonResponse(401, 'Your session has expired. Please log in again.', [
+                'redirect' => 'login.php',
+            ]);
+        }
 
         session_write_close();
 

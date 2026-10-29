@@ -1,8 +1,6 @@
 import { showAlert, showUnexpectedError } from "./common.js";
 
-if (window.lucide) {
-    window.lucide.createIcons();
-}
+window.lucide?.createIcons();
 
 // Unauthenticated or unauthorized error handling
 async function userErrorHandler() {
@@ -37,7 +35,6 @@ function resetForm() {
 }
 
 async function login(formData) {
-
     loginBtn.disabled = true;
 
     try {
@@ -57,7 +54,7 @@ async function login(formData) {
             return;
         }
 
-        await showAlert(true, result.message);
+        await showAlert(true, result.message, 5000);
         resetForm();
 
         window.location.href = result.data.redirect;

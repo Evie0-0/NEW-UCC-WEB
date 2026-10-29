@@ -45,6 +45,64 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
 	<script type="module" src="assets/js/posts.js"></script>
 	<link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/post.css">
+    <style>
+        .featured-thumb [hidden] {
+            display: none !important;
+        }
+
+        .featured-thumb [data-field="imagePlaceholder"] {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9a8a62;
+        }
+
+        .featured-thumb [data-field="imagePlaceholder"] svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .featured-thumb img:not([hidden]) {
+            object-fit: contain;
+            background-color: #f8f4ea;
+        }
+
+        .posts-table {
+            table-layout: fixed;
+        }
+
+        .posts-table th,
+        .posts-table td {
+            text-align: center !important;
+        }
+
+        .posts-table thead th {
+            text-align: center !important;
+            vertical-align: middle;
+        }
+
+        .posts-table th.col-image { width: 10%; }
+        .posts-table th.col-title { width: 22%; }
+        .posts-table th.col-category { width: 16%; }
+        .posts-table th.col-date, .posts-table th.col-expiry { width: 15%; }
+        .posts-table th.col-status { width: 10%; }
+        .posts-table th.col-actions { width: 16%; }
+
+        .posts-table td:last-child .action-buttons {
+            justify-content: center;
+        }
+
+        .posts-table td[data-field] {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .post-form textarea {
+            outline: none;
+        }
+
+    </style>
 </head>
 <body data-page-title="<?= e($pageTitle) ?>">
     <div class="dashboard-layout">
@@ -100,17 +158,49 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
                                     <th class="col-actions">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="postsTableBody"></tbody>
+                            <tbody id="tableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <nav class="posts-pagination" id="postsPagination" aria-label="Posts pagination" hidden>
-                    <button class="page-btn" id="prevPageBtn" type="button" aria-label="Previous page">
+                <template id="rowTemplate">
+                    <tr data-post-id>
+                        <td>
+                            <div class="featured-thumb">
+                                <span data-field="imagePlaceholder" aria-hidden="true"><i data-lucide="image"></i></span>
+                                <img data-field="image" alt="" hidden>
+                            </div>
+                        </td>
+                        <td class="post-title-cell" data-field="title"></td>
+                        <td class="category-text" data-field="category"></td>
+                        <td data-field="publishDate"></td>
+                        <td data-field="expirationDate"></td>
+                        <td><span class="status-badge" data-field="status"></span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button type="button" data-action="preview" class="action-btn preview" aria-label="Preview post" title="Preview"
+                                        style="background-color:#fff; color:#8a6900; border-color:#e5c65a;">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                                <button type="button" data-action="edit" class="action-btn edit" aria-label="Edit post" title="Edit"
+                                        style="background-color:#fff; color:#8a6900; border-color:#e5c65a;">
+                                    <i data-lucide="pencil"></i>
+                                </button>
+                                <button type="button" data-action="archive" class="action-btn archive" aria-label="Archive post" title="Archive"
+                                        style="background-color:#fff; color:#8a6900; border-color:#e8e3d8;">
+                                    <i data-lucide="archive"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+
+                <nav class="posts-pagination" id="pagination" aria-label="Posts pagination" hidden>
+                    <button type="button" name="previous" class="page-btn" id="prevPageBtn" aria-label="Previous page">
                         <i data-lucide="chevron-left"></i>
                     </button>
-                    <div class="page-numbers" id="pageNumbers"></div>
-                    <button class="page-btn" id="nextPageBtn" type="button" aria-label="Next page">
+                    <div class="page-numbers" id="pageNum"></div>
+                    <button type="button" name="next" class="page-btn" id="nextPageBtn" aria-label="Next page">
                         <i data-lucide="chevron-right"></i>
                     </button>
                     <span class="page-total" id="pageTotal">1 page</span>
@@ -123,7 +213,7 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
                             <div><h2 id="postFormTitle">Add New Post</h2><p id="postFormDescription">Create a post for the university website.</p></div>
                             <button type="button" data-action="closeModal" class="modal-close" aria-label="Close post form"><i data-lucide="x"></i></button>
                         </div>
-                        <form class="post-form" id="form">
+                        <form class="post-form" id="form" enctype="multipart/form-data">
                             <input type="hidden" name="<?= e(Token::KEY) ?>" value="<?= e($csrfToken) ?>">
                             <div class="image-upload-area">
                                 <div class="upload-placeholder" id="uploadPlaceholder"><i data-lucide="image-plus"></i><strong>Featured Image</strong></div>

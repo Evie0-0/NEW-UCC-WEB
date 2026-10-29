@@ -1,9 +1,19 @@
 // For success and error alerts
-export async function showAlert(ok, message) {
-    await Swal.fire({
+export async function showAlert(ok, message, autoCloseMs = null) {
+    const options = {
         icon: ok ? 'success' : 'error',
         title: ok ? 'Success' : 'Error',
         text: message
+    };
+
+    if (Number.isFinite(autoCloseMs) && autoCloseMs > 0) {
+        options.timer = autoCloseMs;
+        options.timerProgressBar = true;
+        options.showConfirmButton = true;
+    }
+
+    await Swal.fire({
+        ...options
     });
 }
 

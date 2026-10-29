@@ -1,8 +1,6 @@
 import { showAlert, showUnexpectedError } from "./common.js";
 
-if (window.lucide) {
-    window.lucide.createIcons();
-}
+window.lucide?.createIcons();
 
 // Logout
 async function logout() {

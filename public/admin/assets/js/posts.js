@@ -1,13 +1,10 @@
-import { formatTimestamp, showAlert, showConfirm, showUnexpectedError } from "./common.js";
+import { formatDate, formatTimestamp, showAlert, showConfirm, showUnexpectedError } from "./common.js";
 
-if (window.lucide) {
-    window.lucide.createIcons();
-}
+window.lucide?.createIcons();
 
-// Get form snapshot
+// Get from snapshot
 const form = document.getElementById('form');
 const imagePreview = document.getElementById('imagePreview');
-const csrfToken = document.querySelector('input[name="csrf_key"]')?.value ?? '';
 
 function getFormSnapshot() {
     return JSON.stringify({
@@ -21,7 +18,7 @@ function getFormSnapshot() {
 let originalForm = getFormSnapshot();
 const isDirty = () => getFormSnapshot() !== originalForm;
 
-// Check before unload
+// Check page change
 let allowNavigationWithoutPrompt = false;
 
 window.addEventListener("beforeunload", event => {
@@ -37,10 +34,12 @@ let removeImage = false;
 let currentPostMetadata = null;
 
 document.querySelector('button[data-action="add"]').addEventListener('click', () => {
+    form.reset();
     postId = 0;
     currentPostMetadata = null;
     removeImage = false;
     clearImage();
+    originalForm = getFormSnapshot();
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('open');
 });
@@ -53,8 +52,12 @@ function setCurrentPost(post) {
     clearImage();
 
     if (post.featured_image) {
-        showImage(post.featured_image);
+        showImage(getFeaturedImageUrl(post.featured_image));
     }
+}
+
+function getFeaturedImageUrl(filename) {
+    return `../../storage/uploads/${encodeURIComponent(filename)}`;
 }
 
 // Close form
@@ -76,6 +79,8 @@ async function closeForm() {
     currentPostMetadata = null;
     removeImage = false;
     clearImage();
+    document.getElementById('postFormTitle').textContent = 'Add New Post';
+    document.getElementById('postFormDescription').textContent = 'Create a post for the university website.';
 
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
@@ -176,6 +181,7 @@ async function loadCategories() {
         });
 
         categorySelect.disabled = categorySelect.options.length === 1;
+        await loadPosts();
     } catch (error) {
         categorySelect.replaceChildren(new Option('Unable to load categories', ''));
         categorySelect.disabled = true;
@@ -197,8 +203,8 @@ const previewMetadataDateCreated = document.getElementById('previewMetadataDateC
 const previewMetadataLastUpdatedBy = document.getElementById('previewMetadataLastUpdatedBy');
 const previewMetadataUpdatedAt = document.getElementById('previewMetadataExpiry');
 
-function showPreviewMetadata() {
-    if (postId === 0) {
+function showPreviewMetadata(id = postId, post = currentPostMetadata) {
+    if (id === 0) {
         previewMetadataCreatedBy.textContent = '-';
         previewMetadataDateCreated.textContent = '-';
         previewMetadataLastUpdatedBy.textContent = '—';
@@ -206,33 +212,147 @@ function showPreviewMetadata() {
         return;
     }
 
-    const post = currentPostMetadata;
     previewMetadataCreatedBy.textContent = post?.author_username || '—';
     previewMetadataDateCreated.textContent = post?.created_at ? formatTimestamp(post.created_at) : '—';
     previewMetadataLastUpdatedBy.textContent = post?.editor_username || '—';
     previewMetadataUpdatedAt.textContent = post?.updated_at ? formatTimestamp(post.updated_at) : '—';
 }
 
+function openPreviewModal() {
+    previewModal.classList.add('open');
+    previewModal.setAttribute('aria-hidden', 'false');
+}
+
+function setPreviewImage(src) {
+    if (src) {
+        previewImage.src = src;
+        previewImage.hidden = false;
+        previewImageWrap.hidden = false;
+        return;
+    }
+
+    previewImage.removeAttribute('src');
+    previewImage.hidden = true;
+    previewImageWrap.hidden = true;
+}
+
 function showPreview() {
     previewTitle.textContent = document.getElementById('postTitle').value.trim() || 'No title';
     previewExcerpt.textContent = document.getElementById('postExcerpt').value.trim() || 'No excerpt';
     previewContent.textContent = document.getElementById('postContent').value.trim() || 'No content';
-    showPreviewMetadata();
-
     const imageSrc = imagePreview.getAttribute('src');
+    setPreviewImage(imageSrc && !imagePreview.hidden ? imageSrc : '');
+    showPreviewMetadata();
+    openPreviewModal();
+}
 
-    if (imageSrc && !imagePreview.hidden) {
-        previewImage.src = imageSrc;
-        previewImage.hidden = false;
-        previewImageWrap.hidden = false;
-    } else {
-        previewImage.removeAttribute('src');
-        previewImage.hidden = true;
-        previewImageWrap.hidden = true;
+// Fetch post item
+async function fetchPostItem(id) {
+    const response = await fetch(`../../api/posts/item.php?id=${encodeURIComponent(id)}`);
+    const result = await response.json();
+
+    if (!response.ok) {
+        if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+            allowNavigationWithoutPrompt = true;
+            window.location.href = result.data.redirect;
+            return null;
+        }
+
+        await showAlert(false, result.message || 'Unable to load this post.');
+        return null;
     }
 
-    previewModal.classList.add('open');
-    previewModal.setAttribute('aria-hidden', 'false');
+    return result.data.post;
+}
+
+// Show saved item
+async function showSavedItem(id) {
+    try {
+        const post = await fetchPostItem(id);
+        if (!post) return;
+
+        previewTitle.textContent = post.title || 'No title';
+        previewExcerpt.textContent = post.excerpt || 'No excerpt';
+        previewContent.textContent = post.content || 'No content';
+        setPreviewImage(post.featured_image ? getFeaturedImageUrl(post.featured_image) : '');
+        showPreviewMetadata(Number(post.id), post);
+        openPreviewModal();
+    } catch (error) {
+        await showUnexpectedError(error);
+    }
+}
+
+// Edit saved item
+async function editSavedItem(id) {
+    try {
+        const post = await fetchPostItem(id);
+        if (!post) return;
+
+        form.reset();
+        form.elements.namedItem('title').value = post.title ?? '';
+        form.elements.namedItem('excerpt').value = post.excerpt ?? '';
+        form.elements.namedItem('category').value = String(post.category_id ?? '');
+        form.elements.namedItem('status').value = post.status ?? '';
+        form.elements.namedItem('publish_date').value = String(post.published_at ?? '').slice(0, 10);
+        form.elements.namedItem('expiration_date').value = String(post.expires_at ?? '').slice(0, 10);
+        form.elements.namedItem('content').value = post.content ?? '';
+
+        setCurrentPost(post);
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        originalForm = getFormSnapshot();
+    } catch (error) {
+        await showUnexpectedError(error);
+    }
+}
+
+// Archive saved item
+async function archiveSavedItem(id, title) {
+    const confirmed = await showConfirm(
+        'warning',
+        'Archive this post?',
+        `The post will be removed from the list.`,
+        'Archive post',
+        'Cancel'
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const formData = new FormData();
+        formData.set('id', String(id));
+        formData.set('csrf_key', form.elements.namedItem('csrf_key').value);
+
+        const response = await fetch('../../api/posts/archive.php', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+                if (!new URL(result.data.redirect, window.location.href).searchParams.has('error')) {
+                    await showAlert(false, result.message);
+
+                    allowNavigationWithoutPrompt = true;
+                    window.location.href = result.data.redirect;
+                    return;
+                }
+
+                allowNavigationWithoutPrompt = true;
+                window.location.href = result.data.redirect;
+                return;
+            }
+
+            await showAlert(false, result.message);
+            return;
+        }
+
+        await showAlert(true, result.message);
+        await loadPosts(1);
+    } catch (error) {
+        await showUnexpectedError(error);
+    }
 }
 
 document.querySelector('button[data-action="showPreview"]').addEventListener('click', showPreview);
@@ -261,6 +381,15 @@ async function save(formData) {
 
         if (!response.ok) {
             if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+                if (!new URL(result.data.redirect, window.location.href).searchParams.has('error')) {
+                    await showAlert(false, result.message);
+
+                    allowNavigationWithoutPrompt = true;
+                    window.location.href = result.data.redirect;
+                    return;
+                }
+
+                allowNavigationWithoutPrompt = true;
                 window.location.href = result.data.redirect;
                 return;
             }
@@ -279,6 +408,7 @@ async function save(formData) {
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
         originalForm = getFormSnapshot();
+        await loadPosts(1);
     } catch (error) {
         await showUnexpectedError(error);
     } finally {
@@ -293,3 +423,187 @@ form.addEventListener('submit', async (event) => {
 
     await save(new FormData(form));
 });
+
+// Filter
+const searchInput = document.querySelector('input[name="search"]');
+const statusFilter = document.querySelector('select[name="filter"]');
+const sortSelect = document.querySelector('select[name="sort"]');
+const tableBody = document.getElementById('tableBody');
+const rowTemplate = document.getElementById('rowTemplate');
+const itemCount = document.getElementById('itemCount');
+const pagination = document.getElementById('pagination');
+const prevBtn = document.querySelector('button[name="previous"]');
+const nextBtn = document.querySelector('button[name="next"]');
+const pageNumbers = document.getElementById('pageNum');
+const pageTotal = document.getElementById('pageTotal');
+let currentPage = 1;
+let controller = null;
+let timer = null;
+
+function renderPostRow(post) {
+    const row = rowTemplate.content.firstElementChild.cloneNode(true);
+    row.dataset.postId = String(post.id);
+
+    const image = row.querySelector('[data-field="image"]');
+    const imagePlaceholder = row.querySelector('[data-field="imagePlaceholder"]');
+
+    if (post.featured_image) {
+        image.addEventListener('load', () => {
+            image.hidden = false;
+            imagePlaceholder.hidden = true;
+        }, { once: true });
+
+        image.addEventListener('error', () => {
+            image.hidden = true;
+            imagePlaceholder.hidden = false;
+        }, { once: true });
+
+        image.src = getFeaturedImageUrl(post.featured_image);
+    }
+
+    const title = post.title || '—';
+    const category = post.display_category || '—';
+    const publishDate = formatDate(post.published_at);
+    const expirationDate = formatDate(post.expires_at);
+
+    for (const [field, value] of Object.entries({ title, category, publishDate, expirationDate })) {
+        const cell = row.querySelector(`[data-field="${field}"]`);
+        cell.textContent = value;
+        cell.title = value;
+    }
+
+    const badge = row.querySelector('[data-field="status"]');
+    const status = String(post.display_status).toLowerCase();
+    badge.classList.add(`status-${status}`);
+    badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    badge.title = badge.textContent;
+
+    row.querySelectorAll('[data-action]').forEach(button => {
+        button.dataset.postId = String(post.id);
+        const actionLabel = {
+            preview: 'Preview',
+            edit: 'Edit',
+            archive: 'Archive'
+        }[button.dataset.action];
+        button.setAttribute('aria-label', `${actionLabel} ${post.title}`);
+    });
+
+    return row;
+}
+
+function renderPagination(currentPage, totalPages) {
+    pagination.hidden = totalPages <= 1;
+    prevBtn.disabled = currentPage <= 1;
+    nextBtn.disabled = currentPage >= totalPages;
+    pageNumbers.replaceChildren();
+    pageTotal.textContent = `${totalPages} ${totalPages === 1 ? 'page' : 'pages'}`;
+
+    const start = Math.max(1, currentPage - 2);
+    const end = Math.min(totalPages, currentPage + 2);
+    for (let page = start; page <= end; page += 1) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `page-btn${page === currentPage ? ' active' : ''}`;
+        button.textContent = String(page);
+        button.setAttribute('aria-label', `Page ${page}`);
+
+        if (page === currentPage) button.setAttribute('aria-current', 'page');
+
+        button.addEventListener('click', () => loadPosts(page));
+        pageNumbers.append(button);
+    }
+}
+
+async function loadPosts(page = 1) {
+    controller?.abort();
+    controller = new AbortController();
+    currentPage = page;
+
+    const params = new URLSearchParams({
+        search: searchInput.value.trim(),
+        filter: statusFilter.value,
+        sort: sortSelect.value,
+        page: String(page)
+    });
+
+    try {
+        const response = await fetch(`../../api/posts/filter.php?${params}`, {
+            signal: controller.signal
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+                allowNavigationWithoutPrompt = true;
+                window.location.href = result.data.redirect;
+                return;
+            }
+
+            await showAlert(false, result.message);
+        }
+
+        const { items, current_page: returnedPage, total_posts: totalPosts, total_pages: totalPages } = result.data;
+
+        tableBody.replaceChildren();
+
+        if (items.length === 0) {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 7;
+            cell.className = 'empty-row';
+            cell.textContent = 'No posts found.';
+            row.append(cell);
+            tableBody.append(row);
+        } else {
+            tableBody.append(...items.map(renderPostRow));
+            window.lucide?.createIcons({ root: tableBody });
+        }
+
+        itemCount.textContent = `${totalPosts} ${totalPosts === 1 ? 'post' : 'posts'}`;
+        renderPagination(Number(returnedPage), Number(totalPages));
+        currentPage = Number(returnedPage);
+    } catch (error) {
+        if (error.name === 'AbortError') return;
+
+        tableBody.replaceChildren();
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 7;
+        cell.className = 'empty-row';
+        cell.textContent = 'Could not load posts. Please try again.';
+        row.append(cell);
+        tableBody.append(row);
+
+        await showUnexpectedError(error);
+    }
+}
+
+searchInput.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => loadPosts(1), 300);
+});
+tableBody.addEventListener('click', async (event) => {
+    const previewButton = event.target.closest('button[data-action="preview"]');
+    if (previewButton) {
+        await showSavedItem(previewButton.dataset.postId);
+        return;
+    }
+
+    const editButton = event.target.closest('button[data-action="edit"]');
+    if (editButton) {
+        await editSavedItem(editButton.dataset.postId);
+        return
+    }
+
+    const archiveButton = event.target.closest('button[data-action="archive"]');
+    if (archiveButton) {
+        const title = archiveButton.closest('tr').querySelector('[data-field="title"]').textContent;
+        await archiveSavedItem(archiveButton.dataset.postId, title);
+    }
+});
+statusFilter.addEventListener('change', () => loadPosts(1));
+sortSelect.addEventListener('change', () => loadPosts(1));
+prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) loadPosts(currentPage - 1);
+});
+nextBtn.addEventListener('click', () => loadPosts(currentPage + 1));

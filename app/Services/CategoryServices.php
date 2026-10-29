@@ -8,7 +8,7 @@ use Repo\CategoryRepository;
 
 final class CategoryServices {
     public function byClass(): void {
-        $class = trim(validateString($_GET['class'] ?? '', 'Class'));
+        $class = is_string($_GET['class'] ?? null) ? trim($_GET['class']) : '';
 
         if ($class === '') {
             jsonResponse(422, 'Class cannot be empty.');
