@@ -95,7 +95,7 @@ $renderGroup = static function (array $links, string $label, string $icon) use (
             $renderGroup($officialsLinks, 'Officials', 'users');
             $renderGroup($componentsLinks, 'Components', 'building-2');
             $renderLink('users.php', 'User Management', 'user');
-            $renderLink('audit.php', 'Audit Trail', 'scroll-text');
+            $renderLink('audit-trail.php', 'Audit Trail', 'scroll-text');
         } elseif (UserServices::isAuthorized([UserServices::DEAN_KEY])) {
             $renderLink('index.php', 'Dashboard', 'house');
             $renderLink('unit-info.php', 'Unit Information', 'book-open-text');

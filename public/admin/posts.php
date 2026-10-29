@@ -27,8 +27,8 @@ $csrfToken = Token::generate();
 
 session_write_close();
 
-$pageTitle = "Posts";
 $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->format('Y-m-d');
+$pageTitle = "Posts";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -98,6 +98,10 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
             white-space: nowrap;
         }
 
+        .posts-table tbody td {
+            cursor: default;
+        }
+
         .status-badge.status-draft {
             background: #eceeed;
             color: #52615b;
@@ -115,6 +119,51 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
 
         .post-form textarea {
             outline: none;
+        }
+
+        #postPreviewModal .post-preview-metadata-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) 24px repeat(2, minmax(0, 1fr));
+        }
+
+        #postPreviewModal .post-preview-metadata-grid strong {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        #postPreviewModal .post-preview-metadata-grid > div:nth-child(3) {
+            grid-column: 4;
+            position: relative;
+        }
+
+        #postPreviewModal .post-preview-metadata-grid > div:nth-child(3)::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -30px;
+            width: 1px;
+            background: #d8d1c2;
+        }
+
+        @media (max-width: 760px) {
+            #postPreviewModal .post-preview-metadata-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #postPreviewModal .post-preview-metadata-grid > div:nth-child(3) {
+                grid-column: auto;
+                margin-top: 6px;
+                padding-top: 12px;
+            }
+
+            #postPreviewModal .post-preview-metadata-grid > div:nth-child(3)::before {
+                left: 0;
+                right: 0;
+                bottom: auto;
+                width: auto;
+                height: 1px;
+            }
         }
 
     </style>
@@ -233,7 +282,7 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
                             <div class="image-upload-area">
                                 <div class="upload-placeholder" id="uploadPlaceholder"><i data-lucide="image-plus"></i><strong>Featured Image</strong></div>
                                 <img id="imagePreview" class="image-preview" alt="Featured image preview" hidden>
-                                <input type="file" name="featured_image" id="featuredImage" accept="image/*" hidden>
+                                <input type="file" name="featured_image" id="featuredImage" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" hidden>
                                 <button type="button" data-action="uploadFeaturedImage" class="post-btn post-btn-ghost" id="uploadImageBtn"><i data-lucide="upload"></i> Choose Image</button>
                                 <button type="button" data-action="removeFeaturedImage" class="post-btn post-btn-danger" id="removeImageBtn" hidden><i data-lucide="x"></i> Remove Image</button>
                             </div>
@@ -277,7 +326,7 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
                             <div class="preview-article-body"><h2 id="previewTitle">Post title</h2><p class="preview-excerpt" id="previewExcerpt"></p><div class="preview-content" id="previewContent"></div></div>
                         </div>
                         <footer class="post-preview-metadata">
-                            <div class="post-preview-metadata-grid" style="display:flex; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:56px; justify-items:center; text-align:left;">
+                            <div class="post-preview-metadata-grid">
                                 <div><span>CREATED BY</span><strong id="previewMetadataCreatedBy">—</strong></div>
                                 <div><span>CREATED AT</span><strong id="previewMetadataDateCreated">—</strong></div>
                                 <div><span>UPDATED BY</span><strong id="previewMetadataLastUpdatedBy">—</strong></div>

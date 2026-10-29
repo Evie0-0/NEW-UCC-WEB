@@ -5,6 +5,8 @@ window.lucide?.createIcons();
 // Get from snapshot
 const form = document.getElementById('form');
 const imagePreview = document.getElementById('imagePreview');
+const dateMinimums = [...form.querySelectorAll('input[type="date"]')]
+    .map(input => [input, input.min]);
 
 function getFormSnapshot() {
     return JSON.stringify({
@@ -29,14 +31,36 @@ window.addEventListener("beforeunload", event => {
 
 // Open modal
 const modal = document.getElementById('modal');
+const postFormTitle = document.getElementById('postFormTitle');
+const postFormDescription = document.getElementById('postFormDescription');
 let postId = 0;
 let removeImage = false;
-let currentPostMetadata = null;
+let currentPost = null;
+
+function updateFormHeading() {
+    const isNewPost = postId === 0;
+    postFormTitle.textContent = isNewPost ? 'Add New Post' : 'Edit Post';
+    postFormDescription.textContent = isNewPost
+        ? 'Create a post for the university website.'
+        : 'Update this post for the university website.';
+}
+
+function updateDateMinimums() {
+    for (const [input, minimum] of dateMinimums) {
+        if (postId === 0) {
+            input.min = minimum;
+        } else {
+            input.removeAttribute('min');
+        }
+    }
+}
 
 document.querySelector('button[data-action="add"]').addEventListener('click', () => {
     form.reset();
     postId = 0;
-    currentPostMetadata = null;
+    updateDateMinimums();
+    updateFormHeading();
+    currentPost = null;
     removeImage = false;
     clearImage();
     originalForm = getFormSnapshot();
@@ -46,8 +70,10 @@ document.querySelector('button[data-action="add"]').addEventListener('click', ()
 
 // Set current post for editing
 function setCurrentPost(post) {
-    currentPostMetadata = post;
+    currentPost = post;
     postId = Number(post.id);
+    updateDateMinimums();
+    updateFormHeading();
     removeImage = false;
     clearImage();
 
@@ -76,11 +102,10 @@ async function closeForm() {
 
     form.reset();
     postId = 0;
-    currentPostMetadata = null;
+    updateDateMinimums();
+    currentPost = null;
     removeImage = false;
     clearImage();
-    document.getElementById('postFormTitle').textContent = 'Add New Post';
-    document.getElementById('postFormDescription').textContent = 'Create a post for the university website.';
 
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
@@ -109,7 +134,13 @@ function showImage(src) {
 
     imageObjectUrl = src.startsWith('blob:') ? src : null;
 
+    imagePreview.alt = `${document.getElementById('postTitle').value.trim()} featured image`;
     imagePreview.src = src;
+    imagePreview.onerror = () => {
+        imagePreview.alt = 'Could not load the image';
+        imagePreview.onerror = null;
+    };
+    imagePreview.onload = () => { imagePreview.onerror = null; };
     imagePreview.hidden = false;
     imagePreview.style.display = 'block';
     imagePlaceholder.hidden = true;
@@ -152,7 +183,7 @@ function clearImage() {
 
 removeImageBtn.addEventListener('click', () => {
     const hasSavedImage = postId > 0
-        && Boolean(currentPostMetadata?.featured_image);
+        && Boolean(currentPost?.featured_image);
 
     removeImage = hasSavedImage;
     clearImage();
@@ -168,6 +199,19 @@ async function loadCategories() {
     try {
         const response = await fetch('../../api/categories/by-class.php?class=university-posts', {});
         const result = await response.json();
+
+        if (!response.ok) {
+            if (result.data?.redirect) {
+                allowNavigationWithoutPrompt = true;
+                window.location.href = result.data.redirect;
+                return;
+            }
+
+            categorySelect.replaceChildren(new Option('Unable to load categories', ''));
+            showTableMessage('Could not load posts. Please try again.');
+            await showAlert(false, result.message);
+            return;
+        }
 
         const placeholder = new Option(
             result.data.length > 0 ? 'Select a category' : 'No categories available', '', true, true
@@ -185,6 +229,7 @@ async function loadCategories() {
     } catch (error) {
         categorySelect.replaceChildren(new Option('Unable to load categories', ''));
         categorySelect.disabled = true;
+        showTableMessage('Could not load posts. Please try again.');
         await showUnexpectedError(error);
     }
 }
@@ -203,19 +248,18 @@ const previewMetadataDateCreated = document.getElementById('previewMetadataDateC
 const previewMetadataLastUpdatedBy = document.getElementById('previewMetadataLastUpdatedBy');
 const previewMetadataUpdatedAt = document.getElementById('previewMetadataExpiry');
 
-function showPreviewMetadata(id = postId, post = currentPostMetadata) {
-    if (id === 0) {
-        previewMetadataCreatedBy.textContent = '-';
-        previewMetadataDateCreated.textContent = '-';
-        previewMetadataLastUpdatedBy.textContent = '—';
-        previewMetadataUpdatedAt.textContent = '—';
-        return;
-    }
+function showPreviewMetadata(id = postId, post = currentPost) {
+    const values = [
+        [previewMetadataCreatedBy, id === 0 ? '-' : post?.author_username || '—'],
+        [previewMetadataDateCreated, id === 0 ? '-' : post?.created_at ? formatTimestamp(post.created_at) : '—'],
+        [previewMetadataLastUpdatedBy, id === 0 ? '—' : post?.editor_username || '—'],
+        [previewMetadataUpdatedAt, id === 0 ? '—' : post?.updated_at ? formatTimestamp(post.updated_at) : '—']
+    ];
 
-    previewMetadataCreatedBy.textContent = post?.author_username || '—';
-    previewMetadataDateCreated.textContent = post?.created_at ? formatTimestamp(post.created_at) : '—';
-    previewMetadataLastUpdatedBy.textContent = post?.editor_username || '—';
-    previewMetadataUpdatedAt.textContent = post?.updated_at ? formatTimestamp(post.updated_at) : '—';
+    for (const [element, value] of values) {
+        element.textContent = value;
+        element.title = value;
+    }
 }
 
 function openPreviewModal() {
@@ -225,7 +269,12 @@ function openPreviewModal() {
 
 function setPreviewImage(src) {
     if (src) {
+        previewImage.alt = 'Post featured image';
         previewImage.src = src;
+        previewImage.onerror = () => {
+            previewImage.alt = 'Could not load the image';
+            previewImage.onerror = null;
+        };
         previewImage.hidden = false;
         previewImageWrap.hidden = false;
         return;
@@ -247,19 +296,19 @@ function showPreview() {
 }
 
 // Fetch post item
-async function fetchPostItem(id) {
+async function fetchItem(id) {
     const response = await fetch(`../../api/posts/item.php?id=${encodeURIComponent(id)}`);
     const result = await response.json();
 
     if (!response.ok) {
-        if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+        if (result.data?.redirect) {
             allowNavigationWithoutPrompt = true;
             window.location.href = result.data.redirect;
-            return null;
+            return;
         }
 
         await showAlert(false, result.message || 'Unable to load this post.');
-        return null;
+        return;
     }
 
     return result.data.post;
@@ -268,7 +317,7 @@ async function fetchPostItem(id) {
 // Show saved item
 async function showSavedItem(id) {
     try {
-        const post = await fetchPostItem(id);
+        const post = await fetchItem(id);
         if (!post) return;
 
         previewTitle.textContent = post.title || 'No title';
@@ -285,7 +334,7 @@ async function showSavedItem(id) {
 // Edit saved item
 async function editSavedItem(id) {
     try {
-        const post = await fetchPostItem(id);
+        const post = await fetchItem(id);
         if (!post) return;
 
         form.reset();
@@ -330,7 +379,7 @@ async function archiveSavedItem(id) {
         const result = await response.json();
 
         if (!response.ok) {
-            if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+            if (result.data?.redirect) {
                 if (!new URL(result.data.redirect, window.location.href).searchParams.has('error')) {
                     await showAlert(false, result.message);
 
@@ -380,7 +429,7 @@ async function save(formData) {
         const result = await response.json();
 
         if (!response.ok) {
-            if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+            if (result.data?.redirect) {
                 if (!new URL(result.data.redirect, window.location.href).searchParams.has('error')) {
                     await showAlert(false, result.message);
 
@@ -402,7 +451,8 @@ async function save(formData) {
 
         form.reset();
         postId = 0;
-        currentPostMetadata = null;
+        updateDateMinimums();
+        currentPost = null;
         removeImage = false;
         clearImage();
         modal.classList.remove('open');
@@ -446,6 +496,8 @@ function renderPostRow(post) {
 
     const image = row.querySelector('[data-field="image"]');
     const imagePlaceholder = row.querySelector('[data-field="imagePlaceholder"]');
+    const thumbnail = row.querySelector('.featured-thumb');
+    image.alt = `${post.title} featured image`;
 
     if (post.featured_image) {
         image.addEventListener('load', () => {
@@ -456,6 +508,7 @@ function renderPostRow(post) {
         image.addEventListener('error', () => {
             image.hidden = true;
             imagePlaceholder.hidden = false;
+            thumbnail.title = 'Could not load the image';
         }, { once: true });
 
         image.src = getFeaturedImageUrl(post.featured_image);
@@ -491,6 +544,16 @@ function renderPostRow(post) {
     return row;
 }
 
+function showTableMessage(message) {
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 7;
+    cell.className = 'empty-row';
+    cell.textContent = message;
+    row.append(cell);
+    tableBody.replaceChildren(row);
+}
+
 function renderPagination(currentPage, totalPages) {
     pagination.hidden = totalPages <= 1;
     prevBtn.disabled = currentPage <= 1;
@@ -515,6 +578,7 @@ function renderPagination(currentPage, totalPages) {
 }
 
 async function loadPosts(page = 1) {
+    clearTimeout(timer);
     controller?.abort();
     controller = new AbortController();
     currentPage = page;
@@ -533,29 +597,25 @@ async function loadPosts(page = 1) {
         const result = await response.json();
 
         if (!response.ok) {
-            if (Object.hasOwn(result.data ?? {}, 'redirect')) {
+            if (result.data?.redirect) {
                 allowNavigationWithoutPrompt = true;
                 window.location.href = result.data.redirect;
                 return;
             }
 
+            showTableMessage('Could not load posts. Please try again.');
+            itemCount.textContent = '— posts';
+            pagination.hidden = true;
             await showAlert(false, result.message);
+            return;
         }
 
         const { items, current_page: returnedPage, total_posts: totalPosts, total_pages: totalPages } = result.data;
 
-        tableBody.replaceChildren();
-
         if (items.length === 0) {
-            const row = document.createElement('tr');
-            const cell = document.createElement('td');
-            cell.colSpan = 7;
-            cell.className = 'empty-row';
-            cell.textContent = 'No posts found.';
-            row.append(cell);
-            tableBody.append(row);
+            showTableMessage('No posts found.');
         } else {
-            tableBody.append(...items.map(renderPostRow));
+            tableBody.replaceChildren(...items.map(renderPostRow));
             window.lucide?.createIcons({ root: tableBody });
         }
 
@@ -565,14 +625,9 @@ async function loadPosts(page = 1) {
     } catch (error) {
         if (error.name === 'AbortError') return;
 
-        tableBody.replaceChildren();
-        const row = document.createElement('tr');
-        const cell = document.createElement('td');
-        cell.colSpan = 7;
-        cell.className = 'empty-row';
-        cell.textContent = 'Could not load posts. Please try again.';
-        row.append(cell);
-        tableBody.append(row);
+        showTableMessage('Could not load posts. Please try again.');
+        itemCount.textContent = '— posts';
+        pagination.hidden = true;
 
         await showUnexpectedError(error);
     }

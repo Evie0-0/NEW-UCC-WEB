@@ -7,19 +7,30 @@ use Core\Database;
 use Repo\AuditTrailRepository;
 
 final class AuditTrailServices {
-    private const FILTER_KEYS = ['all', 'CREATE', 'UPDATE', 'LOGIN'];
-    private const SORT_KEYS = ['create-desc', 'create-asc', 'description-desc', 'description-asc'];
+    private const SORT_KEYS = ['added-desc', 'added-asc', 'description-desc', 'description-asc', 'username-asc', 'username-desc'];
     private const PER_PAGE = 10;
 
+    public function actions(): void {
+        $repo = new AuditTrailRepository(Database::connect());
+        $fetchedActions = $repo->actions();
+
+        jsonResponse(200, 'Actions successfully fetched.', $fetchedActions);
+    }
+
     public function filter(): void {
-        $search = trim(validateString($_GET['search'] ?? '', 'Search'));
-        $filter = $_GET['filter'] ?? '';
-        $sort = $_GET['sort'] ?? '';
+        $search = is_string($_GET['search'] ?? null) ? trim($_GET['search']) : '';
+        $filter = is_string($_GET['filter'] ?? null) ? $_GET['filter'] : '';
+        $sort = is_string($_GET['sort'] ?? null) ? $_GET['sort'] : '';
         $page = validateInt($_GET['page'] ?? 1, 1, null);
 
-        if (!in_array($filter, self::FILTER_KEYS, true)) {
+        $repo = new AuditTrailRepository(Database::connect());
+        $fetchedActions = $repo->actions();
+
+        if (!in_array(strtoupper($filter), array_map('strtoupper', $fetchedActions), true)) {
             jsonResponse(422, 'Invalid filter selection.');
         }
+
+        $filter = strtolower($filter) === 'all' ? 'all' : strtoupper($filter);
 
         if (!in_array($sort, self::SORT_KEYS, true)) {
             jsonResponse(422, 'Invalid sort selection.');
@@ -35,7 +46,6 @@ final class AuditTrailServices {
             'sort' => $sort
         ];
 
-        $repo = new AuditTrailRepository(Database::connect());
         $totalItems = $repo->countFiltered($data);
         $totalPages = ceil($totalItems / self::PER_PAGE);
 
@@ -44,13 +54,11 @@ final class AuditTrailServices {
         }
 
         $offset = ($page - 1) * self::PER_PAGE;
-
         $auditTrails = $repo->filter([
             ...$data,
             'offset' => $offset
         ]);
 
-        // REMINDER: add user_display in result
         jsonResponse(200, 'Successfully filtered audit trails.', [
             'items' => $auditTrails,
             'current_page' => $page,

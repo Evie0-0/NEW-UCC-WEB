@@ -28,6 +28,19 @@ final class AuditTrailRepository {
         ]);
     }
 
+    /** @return list<string> */
+    public function actions(): array {
+        $query = '
+            SELECT DISTINCT action
+            FROM audit_trail
+            WHERE active = 1
+            ORDER BY action ASC';
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return ['all', ...$stmt->fetchAll(PDO::FETCH_COLUMN)];
+    }
+
     /** @param array<string, mixed> $data */
     /** @return array{0: string, 1: array<string, mixed>} */
     private function buildWhere(array $data): array {
@@ -56,12 +69,9 @@ final class AuditTrailRepository {
     public function countFiltered(array $data): int {
         [$where, $params] = $this->buildWhere($data);
 
-        $query = "
-            SELECT COUNT(*)
+        $query = "SELECT COUNT(*)
             FROM audit_trail
-            WHERE $where
-        ";
-
+            WHERE $where";
         $stmt = $this->conn->prepare($query);
         $stmt->execute($params);
 
@@ -74,15 +84,18 @@ final class AuditTrailRepository {
         [$where, $params] = $this->buildWhere($data);
 
         $orderBy = match ($data['sort']) {
-            'create-desc' => 'created_at DESC',
-            'create-asc' => 'created_at ASC',
+            'added-desc' => 'created_at DESC',
+            'added-asc' => 'created_at ASC',
             'description-desc' => 'description DESC',
             'description-asc' => 'description ASC',
+            'username-asc' => 'username ASC',
+            'username-desc' => 'username DESC',
             default => throw new InvalidArgumentException('Invalid audit trail sort.')
         };
 
         $query = "
-            SELECT *
+            SELECT audit_trail.*,
+                (SELECT username FROM users WHERE users.id = audit_trail.user_id) AS username
             FROM audit_trail
             WHERE $where
             ORDER BY $orderBy, id DESC

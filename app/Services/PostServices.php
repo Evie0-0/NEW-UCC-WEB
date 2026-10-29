@@ -240,22 +240,12 @@ final class PostServices {
             jsonResponse(422, 'Invalid status selection.');
         }
 
-        $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
-
         if ($publishDate === false) {
             jsonResponse(422, 'Publish date must be a valid date.');
         }
 
-        if ($publishDate < $today->format('Y-m-d')) {
-            jsonResponse(422, 'Publish date cannot be in the past.');
-        }
-
         if ($expirationDate === false) {
             jsonResponse(422, 'Expiration date must be a valid date.');
-        }
-
-        if ($expirationDate < $today->format('Y-m-d')) {
-            jsonResponse(422, 'Expiration date cannot be in the past.');
         }
 
         if ($expirationDate < $publishDate) {
@@ -366,8 +356,8 @@ final class PostServices {
 
     public function filter(): void {
         $search = is_string($_GET['search'] ?? null) ? trim($_GET['search']) : '';
-        $filter = $_GET['filter'] ?? '';
-        $sort = $_GET['sort'] ?? '';
+        $filter = is_string($_GET['filter'] ?? null) ? $_GET['filter'] : '';
+        $sort = is_string($_GET['sort'] ?? null) ? $_GET['sort'] : '';
         $page = validateInt($_GET['page'] ?? 1, 1, null);
 
         if (!in_array($filter, self::FILTER_KEYS, true)) {
@@ -402,7 +392,6 @@ final class PostServices {
             'offset' => $offset
         ]);
 
-        // REMINDER: add user_display in result
         jsonResponse(200, 'Successfully filtered post items.', [
             'items' => $posts,
             'current_page' => $page,

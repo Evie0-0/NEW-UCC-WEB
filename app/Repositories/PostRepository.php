@@ -118,7 +118,6 @@ final class PostRepository {
             FROM posts
             WHERE $where
         ";
-
         $stmt = $this->conn->prepare($query);
         $stmt->execute($params);
 

@@ -54,7 +54,7 @@ $pageTitle = "Login";
 					</div>
 					<h2> CMS Login </h2>
 				</div>
-				<p> Sign in to access the UCC Website CMS. </p>
+				<p> Sign in to access the University's CMS. </p>
 				<form class="login-form" id="loginForm">
 					<div class="input-group">
 						<label for="username"> Username </label>

@@ -9,7 +9,7 @@ require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
 
 if (!UserServices::isAuthorized([UserServices::SUPERADMIN_KEY])) {
-    jsonResponse(401, 'You are unauthorized', [
+    jsonResponse(403, 'You are unauthorized', [
         'redirect' => 'login.php?error=403'
     ]);
 }
