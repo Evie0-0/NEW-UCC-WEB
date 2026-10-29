@@ -1,0 +1,422 @@
+title: Unit Posts API Documentation
+api:
+  name: unit-posts
+  directory: api/unit-posts/
+  endpoints:
+  - name: filter
+    file: filter.php
+    path: api/unit-posts/filter.php
+    use_alerts:
+      success: false
+      failure: true
+    description: retrieve filtered unit post items and some metadata (10 results per page)
+    access: superadmin only (session required)
+    note: archived posts (archived_at is set) and posts whose unit has been deleted are not returned. The list leaves out the content column; use the item endpoint to get it
+    request:
+      method: GET
+      source: URLSearchParams
+      fields:
+      - name: search
+        type: string (from search)
+        required: false (can be empty)
+        source: js (url)
+        description: searches for post title, excerpt and unit name
+      - name: unit_id
+        type: int (from selection)
+        required: false (empty = all units)
+        source: js (url)
+        description: only return posts of this unit
+      - name: filter
+        type: string (from selection)
+        required: false (defaults to all)
+        source: js (url)
+        description: filter status of items
+        values:
+        - all
+        - draft
+        - published
+        - pending
+        - expired
+        note: case-insensitive. published = published, already live and not expired; pending = published but the publish date is still in the future; expired = published but the expiry date has passed
+      - name: sort
+        type: string (from selection)
+        required: false (defaults to newest)
+        source: js (url)
+        description: sort items
+        values:
+        - newest
+        - oldest
+        - title-asc
+        - title-desc
+        - expiry-asc
+        - expiry-desc
+        note: posts without an expiry date always go last in both expiry sorts
+      - name: page
+        type: int (from hidden)
+        required: false (defaults to 1)
+        source: js (url)
+        description: page number to retrieve unit posts for
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+        note:
+        - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request
+        - unsuccessful request (empty)
+        properties:
+        - name: unit_posts
+          type: array
+          returned: always (can be empty)
+          description: unit post information
+          conditions:
+          - after a successful request
+          properties:
+          - every column in unit_posts table except content = refer to db
+          - name: display_status
+            type: string
+            returned: always
+            description: status shown on the page
+            values:
+            - draft
+            - published
+            - pending
+            - expired
+          - name: has_expiry
+            type: int (1 or 0)
+            returned: always
+            description: 0 when the post has no expiry date (expires_at is stored as 9999-12-31)
+          - name: unit_name
+            type: string
+            returned: always
+            description: name of the unit
+          - name: category_name
+            type: string
+            returned: always (can be null)
+            description: name of the category
+          - name: created_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who created the post
+          - name: updated_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who last updated the post
+        - name: current_page
+          type: int
+          returned: always
+          description: current page number
+          conditions:
+          - after a successful request
+        - name: total_unit_posts
+          type: int
+          returned: always
+          description: overall total of unit posts matching the filters regardless of page
+          conditions:
+          - after a successful request
+        - name: total_pages
+          type: int
+          returned: always
+          description: total number of pages (10 results per page)
+          conditions:
+          - after a successful request
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Successfully filtered unit post items.",
+        "data": {
+          "unit_posts": [
+            {
+              "id": 1,
+              "title": "CAS Holds Annual Research Congress",
+              "excerpt": "Faculty and students presented their latest research projects.",
+              "featured_image": null,
+              "unit_id": 1,
+              "category_id": 7,
+              "views": 0,
+              "status": "published",
+              "author_id": 1,
+              "editor_id": null,
+              "published_at": "2026-10-28 00:00:00",
+              "expires_at": "9999-12-31 00:00:00",
+              "archived_at": null,
+              "created_at": "2026-10-28 09:25:06",
+              "updated_at": null,
+              "active": 1,
+              "display_status": "published",
+              "has_expiry": 0,
+              "unit_name": "College of Arts and Sciences",
+              "category_name": "Unit News",
+              "created_by": "mky",
+              "updated_by": null
+            }
+          ],
+          "current_page": 1,
+          "total_unit_posts": 1,
+          "total_pages": 1
+        }
+      }
+  - name: item
+    file: item.php
+    path: api/unit-posts/item.php
+    use_alerts:
+      success: false
+      failure: true
+    description: retrieve a single unit post (including its content)
+    access: superadmin only (session required)
+    request:
+      method: GET
+      source: URLSearchParams
+      fields:
+      - name: id
+        type: int (from hidden)
+        required: true
+        source: js (url)
+        description: id of a unit post
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+        note:
+        - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request
+        - unsuccessful request (empty)
+        properties:
+        - name: unit_post
+          type: object
+          returned: on success
+          description: unit post information
+          properties:
+          - every column in unit_posts table = refer to db
+          - display_status, has_expiry, unit_name, category_name, created_by and updated_by = same as the filter endpoint
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Unit post successfully fetched.",
+        "data": {
+          "unit_post": {
+            "id": 1,
+            "title": "CAS Holds Annual Research Congress",
+            "excerpt": "Faculty and students presented their latest research projects.",
+            "content": "",
+            "featured_image": null,
+            "unit_id": 1,
+            "category_id": 7,
+            "views": 0,
+            "status": "published",
+            "author_id": 1,
+            "editor_id": null,
+            "published_at": "2026-10-28 00:00:00",
+            "expires_at": "9999-12-31 00:00:00",
+            "archived_at": null,
+            "created_at": "2026-10-28 09:25:06",
+            "updated_at": null,
+            "active": 1,
+            "display_status": "published",
+            "has_expiry": 0,
+            "unit_name": "College of Arts and Sciences",
+            "category_name": "Unit News",
+            "created_by": "mky",
+            "updated_by": null
+          }
+        }
+      }
+  - name: save
+    file: save.php
+    path: api/unit-posts/save.php
+    use_alerts:
+      success: true
+      failure: true
+    description: saves a unit post (creates it when id is 0, updates it otherwise)
+    access: superadmin only (session + csrf token required)
+    request:
+      method: POST
+      source: FormData
+      fields:
+      - name: csrf_key
+        type: string (from hidden)
+        required: true
+        source: js (append)
+        description: csrf token to avoid cross site request forgery
+        note: use Token::generate() on hidden input
+      - name: id
+        type: int (from hidden)
+        required: true (to determine whether to edit or create - 0 when creating)
+        source: js (append)
+        description: id of the unit post when editing
+      - name: unit_id
+        type: int (from selection)
+        required: true
+        source: form
+        description: id of the unit that publishes the post
+        note: must be the numeric id of a unit (not its name). The unit must exist in the units table with active = 1, so a unit removed with the units delete endpoint is rejected. The error message says whether unit_id is missing, not a number, or does not match an active unit
+      - name: title
+        type: string (from text)
+        required: true
+        source: form
+        description: title of the post
+        note: maximum of 150 characters (unit_posts.title column)
+      - name: excerpt
+        type: string (from text)
+        required: true
+        source: form
+        description: short summary of the post
+        note: maximum of 500 characters (matches the form maxlength)
+      - name: content
+        type: string (from text)
+        required: false
+        source: form or js (append)
+        description: body of the post
+        note: the unit posts page has no content field. When omitted, a new post is saved with empty content and an edited post keeps its current content
+      - name: category
+        type: int (from selection)
+        required: false
+        source: form or js (append)
+        description: id of a category whose class is unit-posts
+        note: when omitted, an edited post keeps its current category and a new post uses the only category of class unit-posts (Unit News). If the class ever has several categories, it becomes required for new posts
+      - name: status
+        type: string (from selection)
+        required: true
+        source: form
+        description: status of the post
+        values:
+        - draft
+        - published
+        note: case-insensitive, so the form values Draft / Published are accepted. expired and pending are display statuses calculated from the dates
+      - name: publish_date
+        type: string (from date)
+        required: true
+        source: form
+        description: date the post goes live
+        note: format YYYY-MM-DD. Cannot be in the past when creating, and when editing only if it was changed
+      - name: expiration_date
+        type: string (from date)
+        required: false (blank = no expiry)
+        source: form
+        description: date the post expires
+        note: format YYYY-MM-DD. Cannot be earlier than publish_date, and cannot be in the past when creating or when changed while editing. Because unit_posts.expires_at is NOT NULL, a blank value is stored as 9999-12-31
+      - name: featured_image
+        type: file (from file input)
+        required: false
+        source: form or js (append)
+        description: featured image of the post
+        note: JPEG, PNG or WebP, maximum of 10 MB and 5000 x 5000 pixels
+      - name: remove_featured_image
+        type: bool (from hidden)
+        required: false (update only)
+        source: js (append)
+        description: determines whether the stored image should be removed
+        note: cannot be combined with a new featured_image in the same request
+    response:
+      content_type: application/json
+      http_code:
+        success: 201 (created) | 200 (updated)
+        errors: 400 | 401 | 403 | 404 | 405 | 413 | 415 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+        properties:
+        - None
+    example: |-
+      Example:
+      HTTP Status: 201
+      Response: {
+        "message": "Unit post successfully created.",
+        "data": []
+      }
+
+      HTTP Status: 200
+      Response: {
+        "message": "Unit post successfully updated.",
+        "data": []
+      }
+  - name: delete
+    file: delete.php
+    path: api/unit-posts/delete.php
+    use_alerts:
+      success: true
+      failure: true
+    description: deletes a unit post (soft delete - the row is kept with active = 0 and recorded in the audit trail)
+    access: superadmin only (session + csrf token required)
+    request:
+      method: POST
+      source: FormData
+      fields:
+      - name: csrf_key
+        type: string (from hidden)
+        required: true
+        source: js (append)
+        description: csrf token to avoid cross site request forgery
+        note: use Token::generate() on hidden input
+      - name: id
+        type: int (from table row)
+        required: true
+        source: js (append)
+        description: id of the unit post to delete
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 403 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+        properties:
+        - None
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Unit post successfully deleted.",
+        "data": []
+      }
