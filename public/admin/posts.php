@@ -98,6 +98,21 @@ $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->form
             white-space: nowrap;
         }
 
+        .status-badge.status-draft {
+            background: #eceeed;
+            color: #52615b;
+        }
+
+        .status-badge.status-pending {
+            background: #fff1c9;
+            color: #795b00;
+        }
+
+        .status-badge.status-expired {
+            background: #fde8e8;
+            color: #b42318;
+        }
+
         .post-form textarea {
             outline: none;
         }
