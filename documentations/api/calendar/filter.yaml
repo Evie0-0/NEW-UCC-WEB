@@ -1,0 +1,161 @@
+api: calendar
+directory: api/calendar/
+name: filter (endpoint)
+file: filter.php
+path: api/calendar/filter.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve filtered calendar events and some metadata (10 results per page)
+authorization: superadmin only
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+  - name: search
+    type: string (from search)
+    required: false (can be empty)
+    source: js (url)
+    description: searches for event titles
+  - name: filter
+    type: string (from selection)
+    required: false (defaults to all)
+    source: js (url)
+    description: filter status of items
+    note: the page label Pending is the value pending
+    values:
+    - all
+    - draft
+    - published
+    - pending
+  - name: date
+    type: string (from date input)
+    required: false (can be empty)
+    source: js (url)
+    description: only events with this publish date
+    note: format YYYY-MM-DD
+  - name: sort
+    type: string (from selection)
+    required: false (defaults to create-desc)
+    source: js (url)
+    description: sort items
+    note: the page option values created-desc, created-asc and date-desc, date-asc map to create-desc, create-asc and publish-desc, publish-asc
+    values:
+    - create-desc
+    - create-asc
+    - publish-desc
+    - publish-asc
+    - start-asc
+    - start-desc
+    - title-asc
+    - title-desc
+  - name: page
+    type: int (from hidden)
+    required: false (defaults to 1)
+    source: js (url)
+    description: page number to retrieve events for
+response:
+  content_type: application/json
+  http_code:
+    success: '200'
+    errors: ~400 - ~500
+  fields:
+  - name: message
+    type: string
+    returned: always
+    description: a message describing the outcome of the request
+    conditions:
+    - after a successful or unsuccessful operation
+    note:
+    - do not include for alert upon success
+  - name: data
+    type: object
+    returned: always (can be empty)
+    description: contains the data returned by the endpoint
+    conditions:
+    - successful request
+    - unsuccessful request (empty)
+    properties:
+    - name: events
+      type: array
+      returned: always (can be empty)
+      description: events information
+      conditions:
+      - after a successful request
+      properties:
+      - every column in calendar table = refer to db
+      - name: display_status
+        type: string
+        returned: always
+        description: draft, published or pending (a published event whose publish date has not arrived yet)
+      - name: created_by
+        type: string
+        returned: always (can be null)
+        description: username of the user who created it
+      - name: updated_by
+        type: string
+        returned: always (can be null)
+        description: username of the user who last updated it
+    - name: current_page
+      type: int
+      returned: always
+      description: current page number
+      conditions:
+      - after a successful request
+    - name: total_events
+      type: int
+      returned: always
+      description: overall total of events regardless of page
+      conditions:
+      - after a successful request
+    - name: total_pages
+      type: int
+      returned: always
+      description: total number of pages (10 results per page)
+      conditions:
+      - after a successful request
+  errors:
+  - status: 401
+    message: You are unauthorized to make this request.
+    when: the user is not logged in as superadmin
+  - status: 405
+    message: Invalid request method.
+    when: the request method is not GET
+  - status: 422
+    message: Invalid filter selection. | Date must be a valid date (YYYY-MM-DD). | Invalid sort selection. | Invalid page number. | Requested page does not exist.
+    when: a parameter is invalid
+  - status: 500
+    message: An unexpected error occured.
+    when: the server failed to process the request (see storage/logs/error.log)
+example:
+  http_status: 200
+  response: |
+    {
+      "message": "Successfully filtered calendar items.",
+      "data": {
+        "events": [
+          {
+            "id": 1,
+            "title": "Foundation Day Celebration",
+            "description": "Join us as we celebrate the university's foundation day.",
+            "featured_image": "bf6093f4da380c06b20a994a548466fb.webp",
+            "views": 0,
+            "status": "published",
+            "author_id": 1,
+            "editor_id": null,
+            "published_at": "2026-10-20 00:00:00",
+            "starts_at": "2026-11-05 00:00:00",
+            "ends_at": "2026-11-07 00:00:00",
+            "created_at": "2026-10-28 09:15:00",
+            "updated_at": null,
+            "active": 1,
+            "display_status": "published",
+            "created_by": "mky",
+            "updated_by": null
+          }
+        ],
+        "current_page": 1,
+        "total_events": 1,
+        "total_pages": 1
+      }
+    }
