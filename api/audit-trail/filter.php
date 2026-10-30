@@ -22,7 +22,7 @@ try {
     $serv->filter();
 } catch (Throwable $e) {
     logError($e, 'Failed to process filter request.', 'ERROR', [
-        'action' => 'filter audit trail items',
+        'action' => 'filter audit trails',
         'endpoint' => 'audit-trails/filter'
     ]);
 

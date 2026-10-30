@@ -81,8 +81,11 @@ final class PostRepository {
         $params = [];
 
         if ($data['search'] !== '') {
-            $conditions[] = 'title LIKE :search';
-            $params['search'] = "%{$data['search']}%";
+            $conditions[] = '(title LIKE :search_title OR category_id IN (
+                SELECT id FROM categories WHERE name LIKE :search_category
+            ))';
+            $params['search_title'] = "%{$data['search']}%";
+            $params['search_category'] = "%{$data['search']}%";
         }
 
         $filterCondition = match ($data['filter']) {
@@ -105,9 +108,8 @@ final class PostRepository {
         };
 
         $conditions[] = $filterCondition;
-        $where = implode(' AND ', $conditions);
 
-        return [$where, $params];
+        return [implode(' AND ', $conditions), $params];
     }
 
     /** @param array<string, mixed> $data */
@@ -121,7 +123,7 @@ final class PostRepository {
         $stmt = $this->conn->prepare($query);
         $stmt->execute($params);
 
-        return $stmt->fetchColumn();
+        return (int) $stmt->fetchColumn();
     }
 
     /** @param array<string, mixed> $data */
@@ -130,8 +132,8 @@ final class PostRepository {
         [$where, $params] = $this->buildWhere($data);
 
         $orderBy = match ($data['sort']) {
-            'create-desc' => 'created_at DESC',
-            'create-asc' => 'created_at ASC',
+            'added-desc' => 'created_at DESC',
+            'added-asc' => 'created_at ASC',
             'title-desc' => 'title DESC',
             'title-asc' => 'title ASC',
             'publish-desc' => 'published_at DESC',
@@ -157,7 +159,6 @@ final class PostRepository {
             ORDER BY $orderBy, id DESC
             LIMIT 10 OFFSET :offset
         ";
-
         $stmt = $this->conn->prepare($query);
 
         foreach ($params as $key => $value) {

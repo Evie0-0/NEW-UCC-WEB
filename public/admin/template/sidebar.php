@@ -18,7 +18,7 @@ $academicsLinks = [
     'program-posts.php' => 'Program Posts',
 ];
 $officialsLinks = [
-    'executive.php' => 'Executive Officials',
+    'officials.php' => 'Executive Officials',
     'regents.php'   => 'Board of Regents',
 ];
 $componentsLinks = [

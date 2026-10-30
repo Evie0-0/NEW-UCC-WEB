@@ -7,7 +7,7 @@ require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
 
 if (!UserServices::isAuthenticated()) {
-    header('Location: login.php?error=401');
+    header('Location: login.php');
     exit;
 }
 

@@ -68,7 +68,7 @@ $pageTitle = 'Audit Trail';
 			<div class="posts-toolbar">
 				<div class="posts-tools-left">
 					<div class="posts-search">
-						<input type="search" id="auditSearch" placeholder="Search audit trails..." aria-label="Search description">
+						<input type="search" id="auditSearch" placeholder="Search audit trails..." aria-label="Search description or username">
 						<i data-lucide="search"></i>
 					</div>
 					<select id="auditFilter" class="posts-filter" aria-label="Filter by action" disabled>

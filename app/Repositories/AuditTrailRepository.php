@@ -51,8 +51,11 @@ final class AuditTrailRepository {
         $params = [];
 
         if ($data['search'] !== '') {
-            $conditions[] = 'description LIKE :search';
-            $params['search'] = "%{$data['search']}%";
+            $conditions[] = '(description LIKE :search_description OR user_id IN (
+                SELECT id FROM users WHERE username LIKE :search_username
+            ))';
+            $params['search_description'] = "%{$data['search']}%";
+            $params['search_username'] = "%{$data['search']}%";
         }
 
         if ($data['filter'] !== 'all') {
@@ -60,9 +63,7 @@ final class AuditTrailRepository {
             $params['action'] = $data['filter'];
         }
 
-        $where = implode(' AND ', $conditions);
-
-        return [$where, $params];
+        return [implode(' AND ', $conditions), $params];
     }
 
     /** @param array<string, mixed> $data */
@@ -75,7 +76,7 @@ final class AuditTrailRepository {
         $stmt = $this->conn->prepare($query);
         $stmt->execute($params);
 
-        return $stmt->fetchColumn();
+        return (int) $stmt->fetchColumn();
     }
 
     /** @param array<string, mixed> $data */
@@ -101,7 +102,6 @@ final class AuditTrailRepository {
             ORDER BY $orderBy, id DESC
             LIMIT 10 OFFSET :offset
         ";
-
         $stmt = $this->conn->prepare($query);
 
         foreach ($params as $key => $value) {

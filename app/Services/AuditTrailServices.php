@@ -53,10 +53,9 @@ final class AuditTrailServices {
             jsonResponse(422, 'Requested page does not exist.');
         }
 
-        $offset = ($page - 1) * self::PER_PAGE;
         $auditTrails = $repo->filter([
             ...$data,
-            'offset' => $offset
+            'offset' => ($page - 1) * self::PER_PAGE
         ]);
 
         jsonResponse(200, 'Successfully filtered audit trails.', [

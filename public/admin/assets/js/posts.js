@@ -156,7 +156,7 @@ imageInput.addEventListener('change', () => {
 
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
         clearImage();
         return;
     }
@@ -250,10 +250,10 @@ const previewMetadataUpdatedAt = document.getElementById('previewMetadataExpiry'
 
 function showPreviewMetadata(id = postId, post = currentPost) {
     const values = [
-        [previewMetadataCreatedBy, id === 0 ? '-' : post?.author_username || '—'],
-        [previewMetadataDateCreated, id === 0 ? '-' : post?.created_at ? formatTimestamp(post.created_at) : '—'],
-        [previewMetadataLastUpdatedBy, id === 0 ? '—' : post?.editor_username || '—'],
-        [previewMetadataUpdatedAt, id === 0 ? '—' : post?.updated_at ? formatTimestamp(post.updated_at) : '—']
+        [previewMetadataCreatedBy, id === 0 ? '-' : post?.author_username || '-'],
+        [previewMetadataDateCreated, id === 0 ? '-' : post?.created_at ? formatTimestamp(post.created_at) : '-'],
+        [previewMetadataLastUpdatedBy, id === 0 ? '-' : post?.editor_username || '-'],
+        [previewMetadataUpdatedAt, id === 0 ? '-' : post?.updated_at ? formatTimestamp(post.updated_at) : '-']
     ];
 
     for (const [element, value] of values) {
@@ -610,7 +610,7 @@ async function loadPosts(page = 1) {
             return;
         }
 
-        const { items, current_page: returnedPage, total_posts: totalPosts, total_pages: totalPages } = result.data;
+        const { items, current_page: returnedPage, total_items: totalPosts, total_pages: totalPages } = result.data;
 
         if (items.length === 0) {
             showTableMessage('No posts found.');

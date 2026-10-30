@@ -35,7 +35,7 @@ $pageTitle = "Posts";
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<title>UCC Admin | <?= e($pageTitle) ?> </title>
+	<title>UCC CMS | <?= e($pageTitle) ?> </title>
 	<link rel="icon" type="image/png" href="assets/images/ucc-LOGO.png">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -191,8 +191,8 @@ $pageTitle = "Posts";
                             <option value="expired">Expired</option>
                         </select>
                         <select name="sort" class="posts-filter" aria-label="Order posts">
-                            <option value="create-desc">Creation date (newest first)</option>
-                            <option value="create-asc">Creation date (oldest first)</option>
+                            <option value="added-desc">Date added (newest first)</option>
+                            <option value="added-asc">Date added (oldest first)</option>
                             <option value="publish-desc">Publish date (newest first)</option>
                             <option value="publish-asc">Publish date (oldest first)</option>
                             <option value="expiry-asc">Expiration date (soonest first)</option>
@@ -327,10 +327,10 @@ $pageTitle = "Posts";
                         </div>
                         <footer class="post-preview-metadata">
                             <div class="post-preview-metadata-grid">
-                                <div><span>CREATED BY</span><strong id="previewMetadataCreatedBy">—</strong></div>
-                                <div><span>CREATED AT</span><strong id="previewMetadataDateCreated">—</strong></div>
-                                <div><span>UPDATED BY</span><strong id="previewMetadataLastUpdatedBy">—</strong></div>
-                                <div><span>UPDATED AT</span><strong id="previewMetadataExpiry">—</strong></div>
+                                <div><span>CREATED BY</span><strong id="previewMetadataCreatedBy">-</strong></div>
+                                <div><span>CREATED AT</span><strong id="previewMetadataDateCreated">-</strong></div>
+                                <div><span>UPDATED BY</span><strong id="previewMetadataLastUpdatedBy">-</strong></div>
+                                <div><span>UPDATED AT</span><strong id="previewMetadataExpiry">-</strong></div>
                             </div>
                         </footer>
                     </article>

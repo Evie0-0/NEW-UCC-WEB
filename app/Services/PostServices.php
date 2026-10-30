@@ -16,7 +16,7 @@ use Throwable;
 final class PostServices {
     private const STATUS_KEYS = ['draft', 'published'];
     private const FILTER_KEYS = ['all', 'draft', 'published', 'pending', 'expired'];
-    private const SORT_KEYS = ['create-desc', 'create-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiry-desc', 'expiry-asc'];
+    private const SORT_KEYS = ['added-desc', 'added-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiry-desc', 'expiry-asc'];
     private const PER_PAGE = 10;
 
     public function save(): void {
@@ -386,16 +386,15 @@ final class PostServices {
             jsonResponse(422, 'Requested page does not exist.');
         }
 
-        $offset = ($page - 1) * self::PER_PAGE;
         $posts = $repo->filter([
             ...$data,
-            'offset' => $offset
+            'offset' => ($page - 1) * self::PER_PAGE
         ]);
 
         jsonResponse(200, 'Successfully filtered post items.', [
             'items' => $posts,
             'current_page' => $page,
-            'total_posts' => $totalPosts,
+            'total_items' => $totalPosts,
             'total_pages' => $totalPages
         ]);
     }
