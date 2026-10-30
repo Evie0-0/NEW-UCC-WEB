@@ -17,35 +17,32 @@ $eservices = [];
 $databaseError = null;
 
 try {
-    // Use the database connection configured in .env
-    $pdo = Database::connect();
-
-    $stmt = $pdo->prepare("
-        SELECT
-            e.id,
-            e.name,
-            e.description,
-            e.url,
-            e.featured_image,
-            e.status,
-            e.active,
-            e.author_id,
-            e.editor_id,
-            e.created_at,
-            e.updated_at,
-            NULL AS author_username,
-            NULL AS editor_username
-        FROM eservices AS e
-        WHERE e.active = 1
-        ORDER BY e.created_at DESC, e.id DESC
-    ");
-
-    $stmt->execute();
-    $eservices = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+	// Use the database connection configured in .env
+	$pdo = Database::connect();
+	$stmt = $pdo->prepare("
+		SELECT
+			e.id,
+			e.name,
+			e.description,
+			e.url,
+			e.featured_image,
+			e.status,
+			e.active,
+			e.author_id,
+			e.editor_id,
+			e.created_at,
+			e.updated_at,
+			NULL AS author_username,
+			NULL AS editor_username
+		FROM eservices AS e
+		WHERE e.active = 1
+		ORDER BY e.created_at DESC, e.id DESC
+	");
+	$stmt->execute();
+	$eservices = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Throwable $e) {
-    logError($e, 'Unable to load E-Services.');
-    $databaseError = 'Unable to load E-Services. Check the database connection and server logs.';
+	error_log('E-Services database error: ' . $e->getMessage());
+	$databaseError = 'E-Services error: ' . $e->getMessage();
 }
 
 $csrfToken = Token::generate();
@@ -592,7 +589,6 @@ if ($eservicesJson === false) {
     </div>
 
     <!-- PASS DATABASE RECORDS TO JAVASCRIPT -->
-
     <script>
         window.UCC_ESERVICES = <?= $eservicesJson ?>;
 

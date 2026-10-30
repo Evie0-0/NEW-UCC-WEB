@@ -11,7 +11,6 @@ require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
-// Only POST requests are allowed.
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     header('Allow: POST');
 
@@ -19,7 +18,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     exit;
 }
 
-// Check whether the user is authorized.
 if (!UserServices::isAuthorized([
     UserServices::SUPERADMIN_KEY,
     UserServices::DEAN_KEY,
@@ -32,7 +30,6 @@ if (!UserServices::isAuthorized([
     exit;
 }
 
-// Verify the CSRF token.
 if (!Token::verify($_POST[Token::KEY] ?? null)) {
     jsonResponse(
         403,
@@ -43,27 +40,26 @@ if (!Token::verify($_POST[Token::KEY] ?? null)) {
 
 try {
 
-    // Use the existing E-Service backend.
+    // Use the existing E-Service backend
     $service = new EServiceServices();
 
-    // Handles creating and updating E-Services.
+    // Handles creating and updating E-Services
     $service->save();
 
 } catch (Throwable $e) {
-
-    logError(
-        $e,
-        'Failed to save E-Service.',
-        'ERROR',
-        [
-            'action' => 'save e-service',
-            'endpoint' => 'eservices/save'
-        ]
-    );
-
-    jsonResponse(
-        500,
-        'Unable to save E-Service. Please try again.'
-    );
-    exit;
+	error_log(
+		'E-Service save error: ' .
+		$e->getMessage() .
+		' | File: ' .
+		$e->getFile() .
+		' | Line: ' .
+		$e->getLine()
+	);
+	jsonResponse(
+		500,
+		'DEBUG: ' . $e->getMessage() .
+		' | File: ' . basename($e->getFile()) .
+		' | Line: ' . $e->getLine()
+	);
+	exit;
 }
