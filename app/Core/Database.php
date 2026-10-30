@@ -8,7 +8,7 @@ use PDO;
 final class Database {
     public static function connect(): PDO {
         $host = $_ENV['DB_HOST'] ?? 'localhost';
-        $name = $_ENV['DB_NAME'] ?? 'ucc_cms';
+        $name = $_ENV['DB_NAME'] ?? 'ucc';
         $user = $_ENV['DB_USERNAME'] ?? 'mky';
         $password = $_ENV['DB_PASSWORD'] ?? 'admin';
 

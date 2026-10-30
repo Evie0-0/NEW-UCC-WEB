@@ -3,10 +3,18 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 3) . '/app/Support/helper.php';
 
-$username = $username;
-$role = $role;
+$username = isset($username) && is_string($username)
+    ? $username
+    : 'Administrator';
 
-$pageTitle = $pageTitle;
+$role = isset($role) && is_string($role)
+    ? $role
+    : 'Admin';
+
+$pageTitle = isset($pageTitle) && is_string($pageTitle)
+    ? $pageTitle
+    : 'Dashboard';
+    
 ?>
 <header class="top-header">
     <div class="header-left">

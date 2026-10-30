@@ -1,4 +1,3 @@
-/*
     (function (w) {
     "use strict";
 
@@ -186,4 +185,4 @@
 
     w.UCC = {$, esc, icons, todayStr, fmtDate, fmtDay, isUrl, mapsUrl, statusClass, effectiveStatus, thumb, fillMeta, offsetDate, toast, openModal, closeModal, confirmDelete, imageField, list, initMenu};
 })(window);
-*/
+

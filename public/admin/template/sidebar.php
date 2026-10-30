@@ -85,10 +85,30 @@ $renderGroup = static function (array $links, string $label, string $icon) use (
             </div>
         </div>
     </div>
-    <div class="gold-line"></div>
-    <nav class="sidebar-nav" aria-label="Admin navigation">
+
+<div class="gold-line"></div>
+
+<?php
+// TEMPORARY DEBUGGING - LOCALHOST ONLY
+if (in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1'], true)) {
+    echo '<!-- Session status: ' .
+        (session_status() === PHP_SESSION_ACTIVE ? 'ACTIVE' : 'NOT ACTIVE') .
+        ' -->';
+
+    echo '<!-- Current session role: ' .
+        htmlspecialchars(
+            (string) ($_SESSION['role'] ?? 'NOT SET'),
+            ENT_QUOTES,
+            'UTF-8'
+        ) .
+        ' -->';
+}
+?>
+
+<nav class="sidebar-nav" aria-label="Admin navigation">
+
         <?php
-        if (UserServices::isAuthorized([UserServices::SUPERADMIN_KEY])) {
+        if (UserServices::isAuthorized([UserServices::SUPERADMIN_KEY, 'admin'])) {
             $renderLink('index.php', 'Dashboard', 'house');
             $renderLink('posts.php', 'Posts', 'newspaper');
             $renderGroup($academicsLinks, 'Academics', 'graduation-cap');
