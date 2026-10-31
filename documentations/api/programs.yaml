@@ -1,0 +1,354 @@
+title: Programs API Documentation
+api:
+  name: programs
+  directory: api/programs/
+  endpoints:
+  - name: filter
+    file: filter.php
+    path: api/programs/filter.php
+    use_alerts:
+      success: false
+      failure: true
+    description: retrieve filtered program items and some metadata (10 results per page)
+    access: superadmin only (session required)
+    note: programs are joined to units by programs.unit_id = units.id. unit_name is null if the unit row no longer exists
+    request:
+      method: GET
+      source: URLSearchParams
+      fields:
+      - name: search
+        type: string (from search)
+        required: false (can be empty)
+        source: js (url)
+        description: searches for program name, mission, vision and unit name
+      - name: unit_id
+        type: int (from selection)
+        required: false (empty = all units)
+        source: js (url)
+        description: only return programs of this unit (units.id)
+      - name: filter
+        type: string (from selection)
+        required: false (defaults to all)
+        source: js (url)
+        description: filter status of items
+        values:
+        - all
+        - active
+        - inactive
+        note: case-insensitive; hidden is accepted as an alias of inactive (the programs page labels it Hidden)
+      - name: sort
+        type: string (from selection)
+        required: false (defaults to name-asc)
+        source: js (url)
+        description: sort items
+        values:
+        - name-asc
+        - name-desc
+        - newest
+        - oldest
+      - name: page
+        type: int (from hidden)
+        required: false (defaults to 1)
+        source: js (url)
+        description: page number to retrieve programs for
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+        note:
+        - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request
+        - unsuccessful request (empty)
+        properties:
+        - name: programs
+          type: array
+          returned: always (can be empty)
+          description: program information
+          conditions:
+          - after a successful request
+          properties:
+          - every column in programs table = refer to db
+          - name: unit_name
+            type: string
+            returned: always (can be null)
+            description: name of the unit the program belongs to
+          - name: created_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who created the program
+          - name: updated_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who last updated the program
+        - name: current_page
+          type: int
+          returned: always
+          description: current page number
+          conditions:
+          - after a successful request
+        - name: total_programs
+          type: int
+          returned: always
+          description: overall total of programs matching the filters regardless of page
+          conditions:
+          - after a successful request
+        - name: total_pages
+          type: int
+          returned: always
+          description: total number of pages (10 results per page)
+          conditions:
+          - after a successful request
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Successfully filtered program items.",
+        "data": {
+          "programs": [
+            {
+              "id": 2,
+              "name": "Bachelor of Science in Public Administration",
+              "vision": "test",
+              "mission": "test",
+              "unit_id": 1,
+              "status": "active",
+              "author_id": 1,
+              "editor_id": 1,
+              "created_at": "2026-10-28 12:14:46",
+              "updated_at": null,
+              "active": 1,
+              "unit_name": "College of Liberal Arts and Sciences",
+              "created_by": "mky",
+              "updated_by": "mky"
+            }
+          ],
+          "current_page": 1,
+          "total_programs": 1,
+          "total_pages": 1
+        }
+      }
+  - name: item
+    file: item.php
+    path: api/programs/item.php
+    use_alerts:
+      success: false
+      failure: true
+    description: retrieve a single program
+    access: superadmin only (session required)
+    request:
+      method: GET
+      source: URLSearchParams
+      fields:
+      - name: id
+        type: int (from hidden)
+        required: true
+        source: js (url)
+        description: id of a program
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+        note:
+        - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request
+        - unsuccessful request (empty)
+        properties:
+        - name: program
+          type: object
+          returned: on success
+          description: program information
+          properties:
+          - every column in programs table = refer to db
+          - unit_name, created_by and updated_by = same as the filter endpoint
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Program successfully fetched.",
+        "data": {
+          "program": {
+            "id": 2,
+            "name": "Bachelor of Science in Public Administration",
+            "vision": "test",
+            "mission": "test",
+            "unit_id": 1,
+            "status": "active",
+            "author_id": 1,
+            "editor_id": 1,
+            "created_at": "2026-10-28 12:14:46",
+            "updated_at": null,
+            "active": 1,
+            "unit_name": "College of Liberal Arts and Sciences",
+            "created_by": "mky",
+            "updated_by": "mky"
+          }
+        }
+      }
+  - name: save
+    file: save.php
+    path: api/programs/save.php
+    use_alerts:
+      success: true
+      failure: true
+    description: saves a program (creates it when id is 0, updates it otherwise)
+    access: superadmin only (session + csrf token required)
+    request:
+      method: POST
+      source: FormData
+      fields:
+      - name: csrf_key
+        type: string (from hidden)
+        required: true
+        source: js (append)
+        description: csrf token to avoid cross site request forgery
+        note: use Token::generate() on hidden input
+      - name: id
+        type: int (from hidden)
+        required: true (to determine whether to edit or create - 0 when creating)
+        source: js (append)
+        description: id of the program when editing
+      - name: unit_id
+        type: int (from selection)
+        required: true
+        source: form
+        description: id of the unit the program belongs to (programs.unit_id -> units.id)
+        note: must be the numeric id of a unit (not its name), and the unit must exist with active = 1. The error message says whether unit_id is missing, not a number, or does not match an active unit
+      - name: name
+        type: string (from text)
+        required: true
+        source: form
+        description: name of the program
+        note: maximum of 150 characters (programs.name column)
+      - name: mission
+        type: string (from textarea)
+        required: true
+        source: form
+        description: mission of the program
+        note: maximum of 5000 characters (an API limit, the form has none)
+      - name: vision
+        type: string (from textarea)
+        required: true
+        source: form
+        description: vision of the program
+        note: maximum of 5000 characters (an API limit, the form has none)
+      - name: status
+        type: string (from selection)
+        required: true
+        source: form
+        description: status of the program
+        values:
+        - active
+        - inactive
+        note: case-insensitive, so the form values Active / Hidden are accepted (hidden is an alias of inactive)
+    response:
+      content_type: application/json
+      http_code:
+        success: 201 (created) | 200 (updated)
+        errors: 401 | 403 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+        properties:
+        - None
+    example: |-
+      Example:
+      HTTP Status: 201
+      Response: {
+        "message": "Program successfully created.",
+        "data": []
+      }
+
+      HTTP Status: 200
+      Response: {
+        "message": "Program successfully updated.",
+        "data": []
+      }
+  - name: delete
+    file: delete.php
+    path: api/programs/delete.php
+    use_alerts:
+      success: true
+      failure: true
+    description: deletes a program (soft delete - the row is kept with active = 0 and recorded in the audit trail)
+    access: superadmin only (session + csrf token required)
+    note: the program's posts (program_posts) are not modified
+    request:
+      method: POST
+      source: FormData
+      fields:
+      - name: csrf_key
+        type: string (from hidden)
+        required: true
+        source: js (append)
+        description: csrf token to avoid cross site request forgery
+        note: use Token::generate() on hidden input
+      - name: id
+        type: int (from table row)
+        required: true
+        source: js (append)
+        description: id of the program to delete
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 403 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+        properties:
+        - None
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Program successfully deleted.",
+        "data": []
+      }

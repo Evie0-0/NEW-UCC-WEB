@@ -1,0 +1,3 @@
+html, body { min-height: 100%; }
+body { min-height: 100vh; display: flex; flex-direction: column; }
+.news-page { flex: 1 0 auto; }

@@ -1,34 +1,20 @@
 <?php
-declare(strict_types=1);
-
-require_once dirname(__DIR__, 3) . '/app/Support/helper.php';
-
-$username = isset($username) && is_string($username)
-    ? $username
-    : 'Administrator';
-
-$role = isset($role) && is_string($role)
-    ? $role
-    : 'Admin';
-
-$pageTitle = isset($pageTitle) && is_string($pageTitle)
-    ? $pageTitle
-    : 'Dashboard';
-    
+$pageTitle = $pageTitle ?? 'Admin';
 ?>
+
 <header class="top-header">
     <div class="header-left">
-        <h1 id="pageTitle"><?= e($pageTitle) ?></h1>
+        <h1 id="pageTitle"><?= htmlspecialchars($pageTitle) ?></h1>
     </div>
     <div class="header-right">
-        <a href="../index.php" class="visit-website-btn">
+        <a href="/../../homepage.php" class="visit-website-btn">
             <i data-lucide="external-link"></i>
             <span>Visit Website</span>
         </a>
         <div class="admin-profile">
             <div class="admin-text">
-                <small><?= e($role) ?></small>
-                <span>Welcome, <?= e($username) ?>!</span>
+                <small>Administrator</small>
+                <span>Welcome, Admin!</span>
             </div>
             <div class="avatar">
                 <i data-lucide="circle-user-round"></i>

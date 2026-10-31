@@ -1,4 +1,4 @@
-    (function (w) {
+(function (w) {
     "use strict";
 
     const $ = id => document.getElementById(id);
@@ -87,7 +87,7 @@
     function list(c) {
         let showingAll = false, page = 1;
         const pageSize = c.pageSize || 10;
-        const pg = c.pager || null;
+        const pg = c.pager || null; 
 
         function renderPager(totalRows) {
             const last = Math.max(1, Math.ceil(totalRows / pageSize));
@@ -185,4 +185,3 @@
 
     w.UCC = {$, esc, icons, todayStr, fmtDate, fmtDay, isUrl, mapsUrl, statusClass, effectiveStatus, thumb, fillMeta, offsetDate, toast, openModal, closeModal, confirmDelete, imageField, list, initMenu};
 })(window);
-

@@ -16,6 +16,7 @@ $pageTitle = "Programs";
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/program.css">
 </head>
+
 <body data-page-title="<?= htmlspecialchars($pageTitle) ?>">
 <div class="dashboard-layout">
 	<?php include __DIR__ . '/template/sidebar.php'; ?>

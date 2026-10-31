@@ -1,0 +1,36 @@
+#cesModal .student-modal-dialog{
+			position:relative;
+			z-index:2;
+		}
+		#cesModal .student-modal-close{
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			width:38px;
+			height:38px;
+			flex-shrink:0;
+			padding:0;
+			border:1px solid rgba(255,255,255,.25);
+			border-radius:50%;
+			background:rgba(255,255,255,.08);
+			color:#fff;
+			font-family:Arial,Helvetica,sans-serif;
+			font-size:26px;
+			line-height:1;
+			cursor:pointer;
+			transition:
+				background .2s ease,
+				border-color .2s ease,
+				transform .2s ease;
+		}
+		#cesModal .student-modal-close:hover{
+			background:#eab72e;
+			border-color:#eab72e;
+			color:#003b25;
+			transform:rotate(90deg);
+		}
+		.ces-featured-card,
+		.ces-moa-card,
+		.ces-services-card{
+			cursor:pointer;
+		}

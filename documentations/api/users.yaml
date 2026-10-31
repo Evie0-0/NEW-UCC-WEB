@@ -1,0 +1,59 @@
+title: Users API Documentation
+api:
+  name: users
+  directory: api/users/
+  endpoints:
+    - name: login
+      file: login.php
+      path: api/users/login.php
+      use_alerts:
+        success: true
+        failure: true
+      description: authenticates a user using their credentials
+      request:
+        method: POST
+        source: FormData
+        fields:
+          - name: username
+            type: string (from text)
+            required: true
+            source: form
+            description: user's username
+          - name: password
+            type: string (from text)
+            required: true
+            source: form
+            description: user's password
+      response:
+        content_type: application/json
+        http_code:
+          success: 200
+          errors: ~400 - ~500
+        fields:
+          - name: message
+            type: string
+            returned: always
+            description: a message describing the outcome of the request
+            conditions:
+              - after a successful or unsuccessful operation
+          - name: data
+            type: object
+            returned: always (can be empty)
+            direct_access: true
+            description: contains the data returned by the endpoint
+            conditions:
+              - successful request
+              - unsuccessful request
+            properties:
+              - name: redo_password
+                type: bool
+                returned: sometimes
+                description: indicates whether password input should be re-inputted
+                conditions:
+                  - when username or password is incorrect
+              - name: redirect
+                type: string
+                returned: sometimes
+                description: location to redirect to after login
+                conditions:
+                  - after successful login

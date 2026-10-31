@@ -1,0 +1,105 @@
+api: officials
+directory: api/officials/
+name: save (endpoint)
+file: save.php
+path: api/officials/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: saves an executive official (creates it when id is 0, updates it otherwise)
+access: superadmin only (session + csrf token required)
+note: the public website finds the university president by id = 1 AND position exactly equal to University President, so changing that text on official 1 (or deleting or hiding it) removes the president section from the public page
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross site request forgery
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create - 0 when creating)
+      source: js (append)
+      description: id of the official when editing
+    - name: name
+      type: string (from text)
+      required: true
+      source: form
+      description: full name of the official
+      note: maximum of 150 characters (officials.name column)
+    - name: position
+      type: string (from text)
+      required: true
+      source: form
+      description: position of the official
+      note: maximum of 150 characters (officials.position column)
+    - name: biography
+      type: string (from textarea)
+      required: false (blank is stored as null)
+      source: form
+      description: biography or short description
+      note: maximum of 5000 characters (an API limit, the form has none)
+    - name: order_number
+      type: int (from number)
+      required: true
+      source: form
+      description: display order on the public website
+      note: whole number of 1 or more. Duplicates are allowed; ties are shown by id
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of the official
+      values:
+        - active
+        - inactive
+      note: case-insensitive, so the form values Active / Inactive are accepted; hidden is also accepted as an alias of inactive
+    - name: featured_image
+      type: file (from file input)
+      required: false
+      source: form or js (append)
+      description: photo of the official
+      note: JPEG, PNG or WebP, maximum of 10 MB and 5000 x 5000 pixels
+    - name: remove_featured_image
+      type: bool (from hidden)
+      required: false (update only)
+      source: js (append)
+      description: determines whether the stored photo should be removed
+      note: cannot be combined with a new featured_image in the same request
+response:
+  content_type: application/json
+  http_code:
+    success: 201 (created) | 200 (updated)
+    errors: 400 | 401 | 403 | 404 | 405 | 413 | 415 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+
+Example:
+HTTP Status: 201
+Response: {
+  "message": "Official successfully created.",
+  "data": []
+}
+
+HTTP Status: 200
+Response: {
+  "message": "Official successfully updated.",
+  "data": []
+}

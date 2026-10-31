@@ -1,0 +1,96 @@
+api: categories
+directory: api/categories/
+name: by-class (endpoint)
+file: by-class.php
+path: api/categories/by-class.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve category values by class
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: class
+      type: string (from text)
+      required: true
+      source: js (url)
+      description: class of the category to use
+      values:
+        - university-posts
+        - unit-posts
+        - program-posts
+        - refer to categories table (class column) of db for the updated
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    error: ~400-~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+      note:
+        - do not include for alert upon success or unsuccess
+    - name: data
+      type: object
+      returned: always (can be empty)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request
+        - unsuccessful request (empty)
+      properties:
+        - every column in categories table = refer to db
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "Categories successfully fetched.",
+  "data": [
+    {
+      "id": 1,
+      "name": "University News",
+      "class": "university-posts",
+      "created_at": "2026-10-22 09:25:06",
+      "active": 1
+    },
+    {
+      "id": 2,
+      "name": "Student Life",
+      "class": "university-posts",
+      "created_at": "2026-10-22 09:25:06",
+      "active": 1
+    },
+    {
+      "id": 3,
+      "name": "Community and Extension Services",
+      "class": "university-posts",
+      "created_at": "2026-10-22 09:25:06",
+      "active": 1
+    },
+    {
+      "id": 4,
+      "name": "Admission",
+      "class": "university-posts",
+      "created_at": "2026-10-22 09:25:06",
+      "active": 1
+    },
+    {
+      "id": 5,
+      "name": "Alumni",
+      "class": "university-posts",
+      "created_at": "2026-10-22 09:25:06",
+      "active": 1
+    },
+    {
+      "id": 6,
+      "name": "Careers",
+      "class": "university-posts",
+      "created_at": "2026-10-22 09:25:06",
+      "active": 1
+    }
+  ]
+}

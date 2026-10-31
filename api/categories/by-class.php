@@ -2,16 +2,17 @@
 declare(strict_types=1);
 
 use Serv\CategoryServices;
-use Serv\UserServices;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
 
-if (!UserServices::isAuthorized()) {
-    jsonResponse(403, 'You are unauthorized', [
-        'redirect' => 'login.php?error=403'
-    ]);
+session_start();
+
+if (!isInAllowedRoles()) {
+    jsonResponse(401, 'You are unauthorized to make this request.');
 }
+
+session_write_close();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     jsonResponse(405, 'Invalid request method.');

@@ -1,0 +1,122 @@
+api: unit-posts
+directory: api/unit-posts/
+name: save (endpoint)
+file: save.php
+path: api/unit-posts/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: saves a unit post (creates it when id is 0, updates it otherwise)
+access: superadmin only (session + csrf token required)
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross site request forgery
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create - 0 when creating)
+      source: js (append)
+      description: id of the unit post when editing
+    - name: unit_id
+      type: int (from selection)
+      required: true
+      source: form
+      description: id of the unit that publishes the post
+      note: must be the numeric id of a unit (not its name). The unit must exist in the units table with active = 1, so a unit removed with the units delete endpoint is rejected. The error message says whether unit_id is missing, not a number, or does not match an active unit
+    - name: title
+      type: string (from text)
+      required: true
+      source: form
+      description: title of the post
+      note: maximum of 150 characters (unit_posts.title column)
+    - name: excerpt
+      type: string (from text)
+      required: true
+      source: form
+      description: short summary of the post
+      note: maximum of 500 characters (matches the form maxlength)
+    - name: content
+      type: string (from text)
+      required: false
+      source: form or js (append)
+      description: body of the post
+      note: the unit posts page has no content field. When omitted, a new post is saved with empty content and an edited post keeps its current content
+    - name: category
+      type: int (from selection)
+      required: false
+      source: form or js (append)
+      description: id of a category whose class is unit-posts
+      note: when omitted, an edited post keeps its current category and a new post uses the only category of class unit-posts (Unit News). If the class ever has several categories, it becomes required for new posts
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of the post
+      values:
+        - draft
+        - published
+      note: case-insensitive, so the form values Draft / Published are accepted. expired and pending are display statuses calculated from the dates
+    - name: publish_date
+      type: string (from date)
+      required: true
+      source: form
+      description: date the post goes live
+      note: format YYYY-MM-DD. Cannot be in the past when creating, and when editing only if it was changed
+    - name: expiration_date
+      type: string (from date)
+      required: false (blank = no expiry)
+      source: form
+      description: date the post expires
+      note: format YYYY-MM-DD. Cannot be earlier than publish_date, and cannot be in the past when creating or when changed while editing. Because unit_posts.expires_at is NOT NULL, a blank value is stored as 9999-12-31
+    - name: featured_image
+      type: file (from file input)
+      required: false
+      source: form or js (append)
+      description: featured image of the post
+      note: JPEG, PNG or WebP, maximum of 10 MB and 5000 x 5000 pixels
+    - name: remove_featured_image
+      type: bool (from hidden)
+      required: false (update only)
+      source: js (append)
+      description: determines whether the stored image should be removed
+      note: cannot be combined with a new featured_image in the same request
+response:
+  content_type: application/json
+  http_code:
+    success: 201 (created) | 200 (updated)
+    errors: 400 | 401 | 403 | 404 | 405 | 413 | 415 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+
+Example:
+HTTP Status: 201
+Response: {
+  "message": "Unit post successfully created.",
+  "data": []
+}
+
+HTTP Status: 200
+Response: {
+  "message": "Unit post successfully updated.",
+  "data": []
+}

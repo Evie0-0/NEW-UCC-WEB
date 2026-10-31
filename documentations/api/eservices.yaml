@@ -1,0 +1,353 @@
+title: E-Services API Documentation
+api:
+  name: eservices
+  directory: api/eservices/
+  endpoints:
+  - name: filter
+    file: filter.php
+    path: api/eservices/filter.php
+    use_alerts:
+      success: false
+      failure: true
+    description: retrieve filtered e-service items and some metadata (10 results per page)
+    access: superadmin only (session required)
+    request:
+      method: GET
+      source: URLSearchParams
+      fields:
+      - name: search
+        type: string (from search)
+        required: false (can be empty)
+        source: js (url)
+        description: searches for e-service name, description and url
+      - name: filter
+        type: string (from selection)
+        required: false (defaults to all)
+        source: js (url)
+        description: filter status of items
+        values:
+        - all
+        - active
+        - inactive
+      - name: sort
+        type: string (from selection)
+        required: false (defaults to created-desc)
+        source: js (url)
+        description: sort items
+        values:
+        - created-desc
+        - created-asc
+        - name-desc
+        - name-asc
+      - name: page
+        type: int (from hidden)
+        required: false (defaults to 1)
+        source: js (url)
+        description: page number to retrieve e-services for
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+        note:
+        - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request
+        - unsuccessful request (empty)
+        properties:
+        - name: eservices
+          type: array
+          returned: always (can be empty)
+          description: e-service information
+          conditions:
+          - after a successful request
+          properties:
+          - every column in eservices table = refer to db
+          - name: created_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who created the e-service
+          - name: updated_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who last updated the e-service
+        - name: current_page
+          type: int
+          returned: always
+          description: current page number
+          conditions:
+          - after a successful request
+        - name: total_eservices
+          type: int
+          returned: always
+          description: overall total of e-services matching the filters regardless of page
+          conditions:
+          - after a successful request
+        - name: total_pages
+          type: int
+          returned: always
+          description: total number of pages (10 results per page)
+          conditions:
+          - after a successful request
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Successfully filtered e-service items.",
+        "data": {
+          "eservices": [
+            {
+              "id": 1,
+              "name": "Student Portal",
+              "description": "Access grades, enrollment records, and student information.",
+              "url": "https://example.com/student-portal",
+              "featured_image": "61a067af9ff6c181e4f7e05ed21dae07.webp",
+              "status": "active",
+              "author_id": 1,
+              "editor_id": 1,
+              "created_at": "2026-10-28 09:25:06",
+              "updated_at": "2026-10-28 10:02:11",
+              "active": 1,
+              "created_by": "mky",
+              "updated_by": "mky"
+            }
+          ],
+          "current_page": 1,
+          "total_eservices": 1,
+          "total_pages": 1
+        }
+      }
+  - name: item
+    file: item.php
+    path: api/eservices/item.php
+    use_alerts:
+      success: false
+      failure: true
+    description: retrieve a single e-service
+    access: superadmin only (session required)
+    request:
+      method: GET
+      source: URLSearchParams
+      fields:
+      - name: id
+        type: int (from hidden)
+        required: true
+        source: js (url)
+        description: id of an e-service
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+        note:
+        - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request
+        - unsuccessful request (empty)
+        properties:
+        - name: eservice
+          type: object
+          returned: on success
+          description: e-service information
+          properties:
+          - every column in eservices table = refer to db
+          - name: created_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who created the e-service
+          - name: updated_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who last updated the e-service
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "E-service successfully fetched.",
+        "data": {
+          "eservice": {
+            "id": 1,
+            "name": "Student Portal",
+            "description": "Access grades, enrollment records, and student information.",
+            "url": "https://example.com/student-portal",
+            "featured_image": null,
+            "status": "active",
+            "author_id": 1,
+            "editor_id": null,
+            "created_at": "2026-10-28 09:25:06",
+            "updated_at": null,
+            "active": 1,
+            "created_by": "mky",
+            "updated_by": null
+          }
+        }
+      }
+  - name: save
+    file: save.php
+    path: api/eservices/save.php
+    use_alerts:
+      success: true
+      failure: true
+    description: saves an e-service (creates it when id is 0, updates it otherwise)
+    access: superadmin only (session + csrf token required)
+    request:
+      method: POST
+      source: FormData
+      fields:
+      - name: csrf_key
+        type: string (from hidden)
+        required: true
+        source: js (append)
+        description: csrf token to avoid cross site request forgery
+        note: use Token::generate() on hidden input
+      - name: id
+        type: int (from hidden)
+        required: true (to determine whether to edit or create - 0 when creating)
+        source: js (append)
+        description: id of the e-service when editing
+      - name: name
+        type: string (from text)
+        required: true
+        source: form
+        description: name of the e-service
+        note: maximum of 150 characters (eservices.name column)
+      - name: description
+        type: string (from text)
+        required: true
+        source: form
+        description: description of the e-service
+        note: maximum of 500 characters (matches the form maxlength)
+      - name: url
+        type: string (from url)
+        required: false (can be empty)
+        source: form
+        description: website address of the e-service
+        note: when given, must start with http:// or https:// (maximum of 2048 characters). Stored as an empty string when blank because the url column is NOT NULL
+      - name: status
+        type: string (from selection)
+        required: true
+        source: form
+        description: status of the e-service
+        values:
+        - active
+        - inactive
+        note: case-insensitive, so the form values Active / Inactive are accepted
+      - name: featured_image
+        type: file (from file input)
+        required: false
+        source: form or js (append)
+        description: logo of the e-service
+        note: JPEG, PNG or WebP, maximum of 10 MB and 5000 x 5000 pixels (SVG is not supported by the image manager)
+      - name: remove_featured_image
+        type: bool (from hidden)
+        required: false (update only)
+        source: js (append)
+        description: determines whether the stored image should be removed
+        note: cannot be combined with a new featured_image in the same request
+    response:
+      content_type: application/json
+      http_code:
+        success: 201 (created) | 200 (updated)
+        errors: 400 | 401 | 403 | 404 | 405 | 413 | 415 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+        properties:
+        - None
+    example: |-
+      Example:
+      HTTP Status: 201
+      Response: {
+        "message": "E-service successfully created.",
+        "data": []
+      }
+
+      HTTP Status: 200
+      Response: {
+        "message": "E-service successfully updated.",
+        "data": []
+      }
+  - name: delete
+    file: delete.php
+    path: api/eservices/delete.php
+    use_alerts:
+      success: true
+      failure: true
+    description: deletes an e-service (soft delete - the row is kept with active = 0 and recorded in the audit trail)
+    access: superadmin only (session + csrf token required)
+    request:
+      method: POST
+      source: FormData
+      fields:
+      - name: csrf_key
+        type: string (from hidden)
+        required: true
+        source: js (append)
+        description: csrf token to avoid cross site request forgery
+        note: use Token::generate() on hidden input
+      - name: id
+        type: int (from table row)
+        required: true
+        source: js (append)
+        description: id of the e-service to delete
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 403 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+        properties:
+        - None
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "E-service successfully deleted.",
+        "data": []
+      }

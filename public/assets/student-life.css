@@ -1,0 +1,363 @@
+.student-modal{
+			position:fixed;
+			inset:0;
+			z-index:9999;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			padding:30px;
+			visibility:hidden;
+			opacity:0;
+			pointer-events:none;
+			transition:opacity .3s ease,visibility .3s ease;
+		}
+		.student-modal.active{
+			visibility:visible;
+			opacity:1;
+			pointer-events:auto;
+		}
+		.student-modal-backdrop{
+			position:absolute;
+			inset:0;
+			background:rgba(0,35,25,.72);
+			backdrop-filter:blur(8px);
+			-webkit-backdrop-filter:blur(8px);
+		}
+		.student-modal-dialog{
+			position:relative;
+			width:min(920px,100%);
+			max-height:calc(100vh - 60px);
+			background:#fbfcfa;
+			border:1px solid rgba(7,95,73,.15);
+			box-shadow:0 30px 80px rgba(0,31,22,.35);
+			overflow:hidden;
+			transform:translateY(25px) scale(.97);
+			transition:transform .35s cubic-bezier(.22,1,.36,1);
+			z-index:2;
+			display:flex;
+			flex-direction:column;
+		}
+		.student-modal.active .student-modal-dialog{
+			transform:translateY(0) scale(1);
+		}
+		.student-modal-close{
+			position:absolute;
+			top:18px;
+			right:18px;
+			z-index:5;
+			width:42px;
+			height:42px;
+			border:1px solid rgba(255,255,255,.4);
+			background:rgba(0,55,39,.88);
+			color:#fff;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			cursor:pointer;
+			transition:background .25s ease,transform .25s ease;
+		}
+		.student-modal-close:hover{
+			background:var(--gold,#e5b548);
+			color:#073d2d;
+			transform:rotate(90deg);
+		}
+		.student-modal-close svg{
+			width:19px;
+			height:19px;
+		}
+		.student-modal-header{
+			padding:42px 55px 30px;
+			background:linear-gradient(135deg,#003f2a,#075f49);
+			color:#fff;
+			position:relative;
+			overflow:hidden;
+		}
+		.student-modal-header::after{
+			content:"";
+			position:absolute;
+			width:240px;
+			height:240px;
+			right:-90px;
+			top:-110px;
+			border:1px solid rgba(229,181,72,.28);
+			border-radius:50%;
+			box-shadow:0 0 0 25px rgba(229,181,72,.04),0 0 0 50px rgba(229,181,72,.025);
+		}
+		.student-modal-header-line{
+			width:48px;
+			height:4px;
+			background:var(--gold,#e5b548);
+			margin-bottom:18px;
+		}
+		.student-modal-category{
+			display:block;
+			font-family:"Manrope",sans-serif;
+			font-size:11px;
+			font-weight:800;
+			letter-spacing:2px;
+			color:#f2ca68;
+			margin-bottom:10px;
+		}
+		.student-modal-header h2{
+			max-width:760px;
+			margin:0;
+			font-family:"Oswald",sans-serif;
+			font-size:clamp(30px,4vw,48px);
+			line-height:1.05;
+			font-weight:600;
+			text-transform:uppercase;
+			letter-spacing:.2px;
+			padding-right:40px;
+		}
+		.student-modal-meta{
+			display:flex;
+			align-items:center;
+			gap:8px;
+			margin-top:20px;
+			font-family:"Manrope",sans-serif;
+			font-size:12px;
+			color:rgba(255,255,255,.75);
+		}
+		.student-modal-meta svg{
+			width:16px;
+			height:16px;
+			color:#f2ca68;
+		}
+		.student-modal-image-wrap{
+			width:100%;
+			max-height:320px;
+			overflow:hidden;
+			background:#eaf3f0;
+			display:none;
+		}
+		.student-modal-image-wrap.has-image{
+			display:block;
+		}
+		.student-modal-image-wrap img{
+			display:block;
+			width:100%;
+			height:320px;
+			object-fit:cover;
+		}
+		.student-modal-body{
+			padding:38px 55px 42px;
+			overflow-y:auto;
+			color:#263d38;
+			font-family:"Manrope",sans-serif;
+			font-size:15px;
+			line-height:1.8;
+		}
+		.student-modal-body h3{
+			margin:25px 0 9px;
+			font-family:"Oswald",sans-serif;
+			font-size:23px;
+			line-height:1.2;
+			letter-spacing:.4px;
+			color:#075f49;
+			text-transform:uppercase;
+		}
+		.student-modal-body h3:first-child{
+			margin-top:0;
+		}
+		.student-modal-body p{
+			margin:0 0 17px;
+		}
+		.student-modal-body ul{
+			margin:0 0 20px;
+			padding-left:23px;
+		}
+		.student-modal-body li{
+			margin-bottom:7px;
+		}
+		.student-modal-body strong{
+			color:#075f49;
+		}
+		.student-modal-body .modal-highlight{
+			margin:22px 0;
+			padding:20px 22px;
+			border-left:4px solid #e5b548;
+			background:#f1f6f3;
+		}
+		.student-modal-body .modal-video-link{
+			display:inline-flex;
+			align-items:center;
+			gap:9px;
+			padding:12px 18px;
+			margin-top:8px;
+			background:#075f49;
+			color:#fff;
+			text-decoration:none;
+			font-size:12px;
+			font-weight:800;
+			letter-spacing:1px;
+			transition:background .25s ease,transform .25s ease;
+		}
+		.student-modal-body .modal-video-link:hover{
+			background:#e5b548;
+			color:#073d2d;
+			transform:translateY(-2px);
+		}
+		.student-modal-body .modal-video-link svg{
+			width:16px;
+			height:16px;
+		}
+		.student-modal-footer{
+			min-height:66px;
+			padding:0 55px;
+			border-top:1px solid rgba(7,95,73,.12);
+			display:flex;
+			align-items:center;
+			justify-content:space-between;
+			gap:20px;
+			background:#fff;
+			font-family:"Manrope",sans-serif;
+			font-size:10px;
+			font-weight:800;
+			letter-spacing:1.5px;
+			color:#71817c;
+		}
+		.student-modal-footer a{
+			display:inline-flex;
+			align-items:center;
+			gap:7px;
+			color:#075f49;
+			text-decoration:none;
+			transition:color .2s ease;
+		}
+		.student-modal-footer a:hover{
+			color:#d49d21;
+		}
+		.student-modal-footer svg{
+			width:14px;
+			height:14px;
+		}
+		body.modal-open{
+			overflow:hidden;
+		}
+		.student-modal-trigger{
+			cursor:pointer;
+		}
+
+		/* POST IMAGE INSIDE THE MODAL (only shown when the post has an image) */
+		.student-modal-image{
+			margin:0 0 16px;
+			padding:10px;
+			border:1px solid rgba(7,95,73,.15);
+			border-radius:10px;
+			background:#f1f6f3;
+		}
+		.student-modal-image a{
+			display:block;
+			cursor:zoom-in;
+		}
+		.student-modal-image img{
+			display:block;
+			width:100%;
+			height:auto;
+			border-radius:6px;
+		}
+		/* CATEGORY BADGE + PUBLISHED TIME (under the image) */
+		.student-modal-body .student-modal-meta-row{
+			display:flex;
+			align-items:center;
+			flex-wrap:wrap;
+			column-gap:12px;
+			row-gap:8px;
+			margin:0 0 24px;
+		}
+		.student-modal-body .student-modal-badge{
+			display:inline-flex;
+			align-items:center;
+			justify-content:center;
+			width:max-content;
+			min-height:30px;
+			box-sizing:border-box;
+			padding:7px 12px;
+			border:1px solid #075f49;
+			border-radius:999px;
+			background:#075f49;
+			color:#fff;
+			font-family:"Manrope",sans-serif;
+			font-size:10px;
+			font-weight:800;
+			letter-spacing:1px;
+			line-height:1.2;
+			text-transform:uppercase;
+		}
+		.student-modal-body .student-modal-published{
+			display:inline-flex;
+			align-items:center;
+			min-height:30px;
+			font-family:"Manrope",sans-serif;
+			font-size:12px;
+			font-weight:600;
+			letter-spacing:.2px;
+			line-height:1.4;
+			text-transform:none;
+			color:#64746e;
+		}
+		@media(max-width:600px){
+			.student-modal-body .student-modal-meta-row{column-gap:9px;margin-bottom:18px;}
+			.student-modal-body .student-modal-badge{min-height:28px;padding:6px 10px;font-size:9px;}
+			.student-modal-body .student-modal-published{font-size:11px;}
+		}
+
+		/* FULL-SIZE IMAGE LIGHTBOX */
+		.student-image-lightbox{
+			position:fixed;
+			inset:0;
+			z-index:10000;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			padding:24px;
+			visibility:hidden;
+			opacity:0;
+			pointer-events:none;
+			transition:opacity .25s ease,visibility .25s ease;
+		}
+		.student-image-lightbox.active{
+			visibility:visible;
+			opacity:1;
+			pointer-events:auto;
+		}
+		.student-image-lightbox-backdrop{
+			position:absolute;
+			inset:0;
+			background:rgba(0,0,0,.88);
+		}
+		.student-image-lightbox-content{
+			position:relative;
+			z-index:1;
+			max-width:94vw;
+			max-height:92vh;
+		}
+		.student-image-lightbox-content img{
+			display:block;
+			max-width:94vw;
+			max-height:92vh;
+			object-fit:contain;
+		}
+		.student-image-lightbox-close{
+			position:fixed;
+			top:18px;
+			right:18px;
+			z-index:2;
+			width:42px;
+			height:42px;
+			border:0;
+			border-radius:50%;
+			background:#fff;
+			color:#073d2d;
+			font-size:26px;
+			line-height:1;
+			cursor:pointer;
+		}
+
+		/* EMPTY STATE */
+		.student-life-empty{
+			padding:60px 20px;
+			text-align:center;
+			font-family:"Manrope",sans-serif;
+			color:#4b5f5a;
+		}

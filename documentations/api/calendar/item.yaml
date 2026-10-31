@@ -1,0 +1,104 @@
+api: calendar
+directory: api/calendar/
+name: item (endpoint)
+file: item.php
+path: api/calendar/item.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve a calendar event
+authorization: superadmin only
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+  - name: id
+    type: int (from hidden)
+    required: true
+    source: js (append)
+    description: id of event
+response:
+  content_type: application/json
+  http_code:
+    success: '200'
+    errors: ~400 - ~500
+  fields:
+  - name: message
+    type: string
+    returned: always
+    description: a message describing the outcome of the request
+    conditions:
+    - after a successful or unsuccessful operation
+    note:
+    - do not include for alert upon success
+  - name: data
+    type: object
+    returned: always (can be empty)
+    description: contains the data returned by the endpoint
+    conditions:
+    - successful request
+    - unsuccessful request (empty)
+    properties:
+    - name: event
+      type: object
+      returned: always
+      description: event information
+      conditions:
+      - after a successful request
+      properties:
+      - every column in calendar table = refer to db
+      - name: display_status
+        type: string
+        returned: always
+        description: draft, published or pending (a published event whose publish date has not arrived yet)
+      - name: created_by
+        type: string
+        returned: always (can be null)
+        description: username of the user who created it
+      - name: updated_by
+        type: string
+        returned: always (can be null)
+        description: username of the user who last updated it
+  errors:
+  - status: 401
+    message: You are unauthorized to make this request.
+    when: the user is not logged in as superadmin
+  - status: 404
+    message: Event does not exist.
+    when: no active event has the given id
+  - status: 405
+    message: Invalid request method.
+    when: the request method is not GET
+  - status: 422
+    message: Invalid event id.
+    when: id is missing or not a positive whole number
+  - status: 500
+    message: An unexpected error occured.
+    when: the server failed to process the request (see storage/logs/error.log)
+example:
+  http_status: 200
+  response: |
+    {
+      "message": "Event successfully fetched.",
+      "data": {
+        "event": {
+          "id": 1,
+          "title": "Foundation Day Celebration",
+          "description": "Join us as we celebrate the university's foundation day.",
+          "featured_image": "bf6093f4da380c06b20a994a548466fb.webp",
+          "views": 0,
+          "status": "published",
+          "author_id": 1,
+          "editor_id": null,
+          "published_at": "2026-10-20 00:00:00",
+          "starts_at": "2026-11-05 00:00:00",
+          "ends_at": "2026-11-07 00:00:00",
+          "created_at": "2026-10-28 09:15:00",
+          "updated_at": null,
+          "active": 1,
+          "display_status": "published",
+          "created_by": "mky",
+          "updated_by": null
+        }
+      }
+    }

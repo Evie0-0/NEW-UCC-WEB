@@ -27,10 +27,9 @@ final class PublicUniversityNewsRepository
                 WHERE p.active = 1
                   AND p.status = 'published'
                   AND p.category_id = 1
-                  AND NOW() >= p.published_at
-                ORDER BY 
-                    p.published_at DESC,
-                    p.id DESC
+                  AND (p.expires_at IS NULL OR p.expires_at > NOW())
+                  AND p.published_at <= NOW()
+                ORDER BY p.published_at DESC
                 LIMIT 1";
 
         return $this->conn->query($sql)->fetch(PDO::FETCH_ASSOC) ?: [];
@@ -44,10 +43,9 @@ final class PublicUniversityNewsRepository
                 WHERE p.active = 1
                   AND p.status = 'published'
                   AND p.category_id = 1
-                  AND NOW() >= p.published_at
-                ORDER BY 
-                    p.published_at DESC,
-                    p.id DESC
+                  AND (p.expires_at IS NULL OR p.expires_at > NOW())
+                  AND p.published_at <= NOW()
+                ORDER BY p.published_at DESC
                 LIMIT 3";
 
         return $this->conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
@@ -62,10 +60,9 @@ final class PublicUniversityNewsRepository
                 WHERE p.active = 1
                   AND p.status = 'published'
                   AND p.category_id = 1
-                  AND NOW() >= p.published_at
-                ORDER BY 
-                    p.published_at DESC,
-                    p.id DESC";
+                  AND (p.expires_at IS NULL OR p.expires_at > NOW())
+                  AND p.published_at <= NOW()
+                ORDER BY p.published_at DESC";
 
         return $this->conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -73,6 +70,10 @@ final class PublicUniversityNewsRepository
     /**
      * Increment a news post's lifetime view count at most once per visitor
      * during each rolling 24-hour period.
+     *
+     * Requires a unique key on posts_views (post_id, visitor_id).
+     * Returns true when this call increments posts.views, false when the
+     * visitor's view is still inside the 24-hour window.
      */
     public function recordView(int $postId, string $visitorId): bool
     {
@@ -85,7 +86,7 @@ final class PublicUniversityNewsRepository
         try {
             // A unique key makes first-time view insertion safe from duplicate clicks.
             $insert = $this->conn->prepare(
-                'INSERT IGNORE INTO post_views (post_id, visitor_id, viewed_at)
+                'INSERT IGNORE INTO posts_views (post_id, visitor_id, viewed_at)
                  VALUES (?, ?, CURRENT_TIMESTAMP)'
             );
             $insert->execute([$postId, $visitorId]);
@@ -95,7 +96,7 @@ final class PublicUniversityNewsRepository
                 // The conditional UPDATE is atomic: only the first request after
                 // the 24-hour boundary can refresh this visitor/post pair.
                 $refresh = $this->conn->prepare(
-                    'UPDATE post_views
+                    'UPDATE posts_views
                      SET viewed_at = CURRENT_TIMESTAMP
                      WHERE post_id = ?
                        AND visitor_id = ?

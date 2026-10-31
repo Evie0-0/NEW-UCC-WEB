@@ -1,0 +1,152 @@
+api: regents
+directory: api/regents/
+name: filter (endpoint)
+file: filter.php
+path: api/regents/filter.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve filtered board of regents members and some metadata (10 results per page)
+authorization: superadmin only
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: search
+      type: string (from search)
+      required: false (can be empty)
+      source: js (url)
+      description: searches for regent names, positions and biographies
+    - name: filter
+      type: string (from selection)
+      required: false (defaults to all)
+      source: js (url)
+      description: filter status of items
+      note: the page labels Active and Hidden are stored as active and inactive, the Expired status is not supported because the regents table has no expiry column
+      values:
+        - all
+        - active
+        - inactive
+    - name: sort
+      type: string (from selection)
+      required: false (defaults to order-asc)
+      source: js (url)
+      description: sort items
+      note: the page option values ascending, descending and name map to order-asc, order-desc and name-asc
+      values:
+        - order-asc
+        - order-desc
+        - name-asc
+        - name-desc
+        - create-desc
+        - create-asc
+    - name: page
+      type: int (from hidden)
+      required: false (defaults to 1)
+      source: js (url)
+      description: page number to retrieve regents for
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: ~400 - ~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+      note:
+        - do not include for alert upon success
+    - name: data
+      type: object
+      returned: always (can be empty)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request
+        - unsuccessful request (empty)
+      properties:
+        - name: regents
+          type: array
+          returned: always (can be empty)
+          description: regents information
+          conditions:
+            - after a successful request
+          properties:
+            - every column in regents table = refer to db
+            - name: created_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who created the regent
+            - name: updated_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who last updated the regent
+        - name: current_page
+          type: int
+          returned: always
+          description: current page number
+          conditions:
+            - after a successful request
+        - name: total_regents
+          type: int
+          returned: always
+          description: overall total of regents regardless of page
+          conditions:
+            - after a successful request
+        - name: total_pages
+          type: int
+          returned: always
+          description: total number of pages (10 results per page)
+          conditions:
+            - after a successful request
+        - name: next_order
+          type: int
+          returned: always
+          description: suggested display order for a new regent (highest order number plus 1), use it to prefill the add form
+          conditions:
+            - after a successful request
+  errors:
+    - status: 401
+      message: You are unauthorized to make this request.
+      when: the user is not logged in as superadmin
+    - status: 405
+      message: Invalid request method.
+      when: the request method is not GET
+    - status: 422
+      message: Invalid filter selection. | Invalid sort selection. | Invalid page number. | Requested page does not exist.
+      when: a parameter is invalid
+    - status: 500
+      message: An unexpected error occured.
+      when: the server failed to process the request (see storage/logs/error.log)
+example:
+  http_status: 200
+  response: |
+    {
+      "message": "Successfully filtered regent items.",
+      "data": {
+        "regents": [
+          {
+            "id": 1,
+            "name": "Hon. Maria Lourdes Aquino",
+            "position": "Chairperson",
+            "biography": "Presides over meetings of the Board of Regents.",
+            "featured_image": "bf6093f4da380c06b20a994a548466fb.webp",
+            "order_number": 1,
+            "status": "active",
+            "author_id": 1,
+            "editor_id": null,
+            "created_at": "2026-10-28 09:15:00",
+            "updated_at": null,
+            "active": 1,
+            "created_by": "mky",
+            "updated_by": null
+          }
+        ],
+        "current_page": 1,
+        "total_regents": 1,
+        "total_pages": 1,
+        "next_order": 2
+      }
+    }

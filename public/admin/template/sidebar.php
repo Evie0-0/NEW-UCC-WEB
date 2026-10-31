@@ -1,149 +1,119 @@
 <?php
-declare(strict_types=1);
-
-use Serv\UserServices;
-
-require_once dirname(__DIR__, 3) . '/bootstrap.php';
-require_once dirname(__DIR__, 3) . '/app/Support/helper.php';
-
-$currentPage = strtolower(basename($_SERVER['SCRIPT_NAME'] ?? ''));
-
-$isActive = static fn (string $file): bool => strtolower($file) === $currentPage;
+$currentPage = strtolower(basename($_SERVER['SCRIPT_NAME']));
 
 $academicsLinks = [
     'units.php'        => 'Units',
     'programs.php'     => 'Programs',
-    'unit-info.php'     => 'Unit Information',
-    'unit-post.php'     => 'Unit Posts',
-    'program-posts.php' => 'Program Posts',
+    'unitinfo.php'     => 'Unit Information',
+    'unitpost.php'     => 'Unit Posts',
+    'programposts.php' => 'Program Posts',
 ];
 $officialsLinks = [
-    'officials.php' => 'Executive Officials',
+    'executive.php' => 'Executive Officials',
     'regents.php'   => 'Board of Regents',
 ];
 $componentsLinks = [
-    'campuses.php'   => 'Campuses',
-    'contact.php'    => 'Contact Information',
-    'about.php'      => 'About UCC',
-    'eservices.php'  => 'E-Services',
-    'archive.php'    => 'Archive',
-    'quick-links.php' => 'Quick Links',
-    'calendar.php'   => 'Calendar',
+    'campuses.php'  => 'Campuses',
+    'contact.php'   => 'Contact Information',
+    'about.php'     => 'About UCC',
+    'eservices.php' => 'E-Services',
+    'archive.php'   => 'Archive',
+    'quicklinks.php' => 'Quick Links',
+    'calendar.php'  => 'Calendar',
 ];
 
-$renderLink = static function (string $file, string $label, string $icon = '') use ($isActive): void {
-    $active = $isActive($file);
-
-    ?>
-
-    <a href="<?= e($file) ?>" <?= $active ? ' class="active" aria-current="page"' : '' ?>>
-        <?php if ($icon !== ''): ?>
-            <i data-lucide="<?= e($icon) ?>"></i>
-        <?php endif; ?>
-
-        <span><?= e($label) ?></span>
-    </a>
-
-    <?php
+$isActive = function (string $file) use ($currentPage): bool {
+    return strtolower($file) === $currentPage;
 };
-
-$renderGroup = static function (array $links, string $label, string $icon) use ($currentPage): void {
-    $open = in_array($currentPage, array_map('strtolower', array_keys($links)), true);
-    $groupId = 'menu-' . preg_replace('/[^a-z0-9-]/', '-', strtolower($label));
-
+$groupHasActive = function (array $links) use ($currentPage): bool {
+    foreach (array_keys($links) as $file) {
+        if (strtolower($file) === $currentPage) {
+            return true;
+        }
+    }
+    return false;
+};
+$renderGroup = function (string $icon, string $label, array $links) use ($isActive, $groupHasActive): void {
+    $open = $groupHasActive($links);
     ?>
-
-    <div class="menu-group<?= $open ? ' open' : '' ?>">
-        <button class="menu-title<?= $open ? ' active' : '' ?>" type="button"
-                aria-expanded="<?= $open ? 'true' : 'false' ?>" aria-controls="<?= e($groupId) ?>">
-            <div>
-                <i data-lucide="<?= e($icon) ?>"></i>
-                <span><?= e($label) ?></span>
+        <div class="menu-group<?= $open ? ' open' : '' ?>">
+            <button class="menu-title<?= $open ? ' active' : '' ?>" type="button" aria-expanded="<?= $open ? 'true' : 'false' ?>">
+                <div>
+                    <i data-lucide="<?= $icon ?>"></i>
+                    <span><?= htmlspecialchars($label) ?></span>
+                </div>
+                <i data-lucide="chevron-down" class="arrow"></i>
+            </button>
+            <div class="submenu">
+                <?php foreach ($links as $file => $text): ?>
+                <a href="<?= $file ?>"<?= $isActive($file) ? ' class="active"' : '' ?>><?= htmlspecialchars($text) ?></a>
+                <?php endforeach; ?>
             </div>
-            <i data-lucide="chevron-down" class="arrow"></i>
-        </button>
-        <div class="submenu" id="<?= e($groupId) ?>">
-            <?php foreach ($links as $file => $text): $active = strtolower($file) === $currentPage; ?>
-                <a href="<?= e($file) ?>"<?= $active ? ' class="active" aria-current="page"' : '' ?>>
-                    <?= e($text) ?>
-                </a>
-            <?php endforeach; ?>
         </div>
-    </div>
-
     <?php
 };
 ?>
-
 <aside class="sidebar">
     <div class="sidebar-top">
         <div class="logo-wrap">
             <img src="assets/images/ucc-LOGO.png" alt="UCC Logo">
             <div>
-                <h2 style="cursor: default;">UCC Admin</h2>
-                <p style="cursor: default;">University of Caloocan City</p>
+                <h2>UCC Admin</h2>
+                <p>University of Caloocan City</p>
             </div>
         </div>
     </div>
+    <div class="gold-line"></div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.php"<?= $isActive('dashboard.php') ? ' class="active"' : '' ?>>
+            <i data-lucide="house"></i>
+            <span>Dashboard</span>
+        </a>
 
-<div class="gold-line"></div>
+        <a href="posts.php"<?= $isActive('posts.php') ? ' class="active"' : '' ?>>
+            <i data-lucide="newspaper"></i>
+            <span>Posts</span>
+        </a>
 
-<?php
-// TEMPORARY DEBUGGING - LOCALHOST ONLY
-if (in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1'], true)) {
-    echo '<!-- Session status: ' .
-        (session_status() === PHP_SESSION_ACTIVE ? 'ACTIVE' : 'NOT ACTIVE') .
-        ' -->';
+        <?php $renderGroup('graduation-cap', 'Academics', $academicsLinks); ?>
+        <?php $renderGroup('users', 'Officials', $officialsLinks); ?>
+        <?php $renderGroup('building-2', 'Components', $componentsLinks); ?>
 
-    echo '<!-- Current session role: ' .
-        htmlspecialchars(
-            (string) ($_SESSION['role'] ?? 'NOT SET'),
-            ENT_QUOTES,
-            'UTF-8'
-        ) .
-        ' -->';
-}
-?>
-
-<nav class="sidebar-nav" aria-label="Admin navigation">
-
-        <?php
-        if (UserServices::isAuthorized([UserServices::SUPERADMIN_KEY, 'admin'])) {
-            $renderLink('index.php', 'Dashboard', 'house');
-            $renderLink('posts.php', 'Posts', 'newspaper');
-            $renderGroup($academicsLinks, 'Academics', 'graduation-cap');
-            $renderGroup($officialsLinks, 'Officials', 'users');
-            $renderGroup($componentsLinks, 'Components', 'building-2');
-            $renderLink('users.php', 'User Management', 'user');
-            $renderLink('audit-trail.php', 'Audit Trail', 'scroll-text');
-        } elseif (UserServices::isAuthorized([UserServices::DEAN_KEY])) {
-            $renderLink('index.php', 'Dashboard', 'house');
-            $renderLink('unit-info.php', 'Unit Information', 'book-open-text');
-            $renderLink('unit-posts.php', 'Unit Posts', 'newspaper');
-        } elseif (UserServices::isAuthorized([UserServices::PROGRAM_HEAD_KEY])) {
-            $renderLink('index.php', 'Dashboard', 'house');
-            $renderLink('program-posts.php', 'Program Posts', 'newspaper');
-        }
-        ?>
+        <a href="users.php"<?= $isActive('users.php') ? ' class="active"' : '' ?>>
+            <i data-lucide="user"></i>
+            <span>User Management</span>
+        </a>
+        <a href="audit.php"<?= $isActive('audit.php') ? ' class="active"' : '' ?>>
+            <i data-lucide="scroll-text"></i>
+            <span>Audit Trail</span>
+        </a>
     </nav>
     <div class="sidebar-bottom">
-        <?php
-            $renderLink('password.php', 'Password', 'lock');
-            $renderLink('logout.php', 'Logout', 'log-out');
-        ?>
+        <a href="password.php"<?= $isActive('password.php') ? ' class="active"' : '' ?>>
+            <i data-lucide="lock"></i>
+            <span>Password</span>
+        </a>
+        <a href="logout.php">
+            <i data-lucide="log-out"></i>
+            <span>Logout</span>
+        </a>
     </div>
     <div class="sidebar-art"></div>
 </aside>
 <script>
-document.querySelectorAll('.sidebar .menu-title').forEach(button => {
-    button.addEventListener('click', () => {
-        const group = button.closest('.menu-group');
-        if (!group) return;
-
-        if (group.querySelector('.submenu a[aria-current="page"]')) return;
-
-        const open = group.classList.toggle('open');
-        button.setAttribute('aria-expanded', String(open));
-    });
-});
+(function () {
+    var sidebar = document.querySelector('.sidebar');
+    if (!sidebar || sidebar.dataset.menuReady) { return; }
+    sidebar.dataset.menuReady = '1';
+    sidebar.addEventListener('click', function (e) {
+        var button = e.target.closest('.menu-title');
+        if (!button || !sidebar.contains(button)) { return; }
+        e.preventDefault();
+        e.stopPropagation();
+        var group = button.closest('.menu-group');
+        var isOpen = group.classList.toggle('open');
+        button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }, true);
+    if (window.lucide) { window.lucide.createIcons(); }
+})();
 </script>

@@ -1,46 +1,40 @@
 <?php
 declare(strict_types=1);
+
 use Core\Token;
 use Serv\ContactServices;
-use Serv\UserServices;
+
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
-if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
-	header('Allow: POST');
-	jsonResponse(405, 'Invalid request method.');
-	exit;
+
+session_start();
+
+if (!isSuperadmin()) {
+    jsonResponse(401, 'You are unauthorized to make this request.');
 }
-if (!UserServices::isAuthorized([
-	UserServices::SUPERADMIN_KEY,
-	UserServices::DEAN_KEY,
-	UserServices::PROGRAM_HEAD_KEY
-])) {
-	jsonResponse(403, 'Unauthorized access.');
-	exit;
+
+session_write_close();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    jsonResponse(405, 'Invalid request method.');
 }
-if (!Token::verify($_POST[Token::KEY] ?? null)) {
-	jsonResponse(403, 'Invalid CSRF token. Refresh the page and try again.');
-	exit;
+
+session_start();
+
+if (!Token::verify($_POST['csrf_key'] ?? null)) {
+    jsonResponse(403, 'Invalid CSRF token.');
 }
+
+session_write_close();
+
 try {
-	$service = new ContactServices();
-	$service->save();
+    $serv = new ContactServices();
+    $serv->save();
 } catch (Throwable $e) {
-	error_log(
-		'Contacts save error: ' .
-		$e->getMessage() .
-		' | File: ' .
-		$e->getFile() .
-		' | Line: ' .
-		$e->getLine()
-	);
-	jsonResponse(
-		500,
-		'DEBUG: ' . $e->getMessage() .
-		' | File: ' . basename($e->getFile()) .
-		' | Line: ' . $e->getLine()
-	);
-	exit;
+    logError($e, 'Failed to process save request.', 'ERROR', [
+        'action' => 'save contact',
+        'endpoint' => 'contacts/save'
+    ]);
+
+    jsonResponse(500);
 }

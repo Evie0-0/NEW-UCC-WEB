@@ -114,6 +114,7 @@
         formModal.classList.add("open"); formModal.setAttribute("aria-hidden", "false");
         icons(); $("programCollege").focus();
     }
+
     function closeForm() {
         formModal.classList.remove("open"); formModal.setAttribute("aria-hidden", "true");
         editingId = null; form.reset();
@@ -131,6 +132,7 @@
         $("programLastUpdatedBy").textContent = p.updatedBy || p.createdBy || "—";
         previewModal.classList.add("open"); previewModal.setAttribute("aria-hidden", "false"); icons();
     }
+    
     function closePreview() { previewModal.classList.remove("open"); previewModal.setAttribute("aria-hidden", "true"); }
 
     async function deleteProgram(p) {

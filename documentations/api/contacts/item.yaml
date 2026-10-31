@@ -1,0 +1,77 @@
+api: contacts
+directory: api/contacts/
+name: item (endpoint)
+file: item.php
+path: api/contacts/item.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve a single contact
+access: superadmin only (session required)
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: id
+      type: int (from hidden)
+      required: true
+      source: js (url)
+      description: id of a contact
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: 401 | 404 | 405 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+      note:
+        - do not include for alert upon success
+    - name: data
+      type: object
+      returned: always (can be empty)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request
+        - unsuccessful request (empty)
+      properties:
+        - name: contact
+          type: object
+          returned: on success
+          description: contact information
+          properties:
+            - every column in contacts table = refer to db
+            - name: created_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who created the contact
+            - name: updated_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who last updated the contact
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "Contact successfully fetched.",
+  "data": {
+    "contact": {
+      "id": 1,
+      "name": "University Registrar",
+      "email": "registrar@ucc.edu.ph",
+      "phone_number": "(02) 5310 1234",
+      "status": "active",
+      "author_id": 1,
+      "editor_id": 1,
+      "created_at": "2026-10-28 09:25:06",
+      "updated_at": "2026-10-28 10:02:11",
+      "active": 1,
+      "created_by": "mky",
+      "updated_by": "mky"
+    }
+  }
+}

@@ -16,6 +16,13 @@ document.addEventListener("DOMContentLoaded", function () {
 	let htmlOverflowBeforeLock = "";
 	let bodyOverflowBeforeLock = "";
 
+	// Reveal the hero text and news elements.
+	document
+		.querySelectorAll(".hero-copy.reveal, .news-section .reveal")
+		.forEach(function (element) {
+			element.classList.add("show");
+		});
+
 	function lockBackgroundScroll() {
 		if (document.body.classList.contains("modal-open")) return;
 
@@ -49,7 +56,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		modal.classList.remove("is-open", "active", "show");
 		modal.setAttribute("aria-hidden", "true");
 
-		if (!document.querySelector(".news-modal.is-open, .calendar-modal.is-open")) {
+		const anotherModalIsOpen = document.querySelector(
+			".news-modal.is-open, .calendar-modal.is-open"
+		);
+
+		if (!anotherModalIsOpen) {
 			unlockBackgroundScroll();
 		}
 	}
@@ -58,17 +69,28 @@ document.addEventListener("DOMContentLoaded", function () {
 		const article = articles[id];
 		if (!article || !newsModal) return;
 
-		newsModalCategory.textContent = "UNIVERSITY NEWS";
-		newsModalTitle.textContent = article.title;
-		newsModalDate.textContent =
-			article.date || "University of Caloocan City";
-		newsModalDescription.innerHTML =
-			article.content || "<p>No article content available.</p>";
+		if (newsModalCategory) {
+			newsModalCategory.textContent = "UNIVERSITY NEWS";
+		}
+
+		if (newsModalTitle) {
+			newsModalTitle.textContent = article.title || "";
+		}
+
+		if (newsModalDate) {
+			newsModalDate.textContent =
+				article.date || "University of Caloocan City";
+		}
+
+		if (newsModalDescription) {
+			newsModalDescription.innerHTML =
+				article.content || "<p>No article content available.</p>";
+		}
 
 		if (newsModalImage) {
 			if (article.image) {
 				newsModalImage.src = article.image;
-				newsModalImage.alt = article.title;
+				newsModalImage.alt = article.title || "";
 				newsModalImage.parentElement.style.display = "block";
 			} else {
 				newsModalImage.removeAttribute("src");
@@ -77,13 +99,15 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 		}
 
-		const body = newsModal.querySelector(".news-modal-body");
-		if (body) body.scrollTop = 0;
+		const modalBody = newsModal.querySelector(".news-modal-body");
+		if (modalBody) {
+			modalBody.scrollTop = 0;
+		}
 
 		openModal(newsModal);
 	}
 
-	// Read More link
+	// Open a news article from its Read More link.
 	document.querySelectorAll(".news-card .read-more").forEach(function (link) {
 		link.addEventListener("click", function (event) {
 			event.preventDefault();
@@ -92,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	});
 
-	// Clicking anywhere else on the card also opens it
+	// Clicking the rest of a news card also opens the article.
 	document.querySelectorAll(".news-card[data-news]").forEach(function (card) {
 		card.addEventListener("click", function (event) {
 			if (event.target.closest("a")) return;
@@ -101,6 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	const calendarButton = document.getElementById("viewFullCalendar");
+
 	if (calendarButton) {
 		calendarButton.addEventListener("click", function (event) {
 			event.preventDefault();
@@ -138,4 +163,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			closeModal(calendarModal);
 		}
 	});
+
+	if (window.lucide) {
+		window.lucide.createIcons();
+	}
 });

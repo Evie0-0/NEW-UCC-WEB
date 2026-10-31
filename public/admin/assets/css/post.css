@@ -552,12 +552,12 @@
     display: none !important;
 }
 
-.upload-placeholder[hidden],
-.image-preview[hidden] {
+#uploadPlaceholder[hidden],
+#imagePreview[hidden] {
     display: none !important;
 }
 
-.image-upload-area .image-preview:not([hidden]) {
+.image-upload-area #imagePreview:not([hidden]) {
     display: block !important;
     flex: 0 0 74px;
 }
@@ -630,10 +630,6 @@
     min-height: 240px;
     background: #f1eee5;
     overflow: hidden;
-}
-
-#previewImageWrap[hidden] {
-    display: none !important;
 }
 
 .preview-image-wrap > img {

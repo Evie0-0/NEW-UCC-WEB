@@ -1,0 +1,79 @@
+api: units
+directory: api/units/
+name: delete (endpoint)
+file: delete.php
+path: api/units/delete.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: deletes a unit (soft delete, the row is kept with active = 0)
+authorization: superadmin only
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross scripting
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true
+      source: js (append)
+      description: id of unit to delete
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: ~400 - ~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+  errors:
+    - status: 401
+      message: You are unauthorized to make this request.
+      when: the user is not logged in as superadmin
+    - status: 403
+      message: Invalid CSRF token.
+      when: csrf_key is missing or wrong
+    - status: 404
+      message: Unit does not exist.
+      when: no active unit has the given id
+    - status: 405
+      message: Invalid request method.
+      when: the request method is not POST
+    - status: 409
+      message: This unit cannot be deleted because it still has 2 programs and 1 user assigned to it.
+      when: the unit still has active programs or active users (the message shows the counts)
+    - status: 422
+      message: Invalid unit id.
+      when: id is missing or not a positive whole number
+    - status: 500
+      message: An unexpected error occured.
+      when: the server failed to process the request (see storage/logs/error.log)
+  side_effects:
+    - an audit trail entry is created (DELETE, entity type Unit)
+    - the logo and dean image files are kept in storage/uploads
+    - unit information and unit posts of the deleted unit are kept in the database but no longer appear on the website
+example:
+  http_status: 200
+  response: |
+    {
+      "message": "Unit successfully deleted.",
+      "data": []
+    }

@@ -1,0 +1,124 @@
+[27-Oct-2026 10:57:45 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'mky'@'localhost' (using password: NO) in C:\xampp\htdocs\app\Core\Database.php:15
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(15): PDO->__construct('mysql:host=loca...', 'mky', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\homepage.php(12): Core\Database::connect()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 15
+[27-Oct-2026 11:01:54 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'mky'@'localhost' (using password: NO) in C:\xampp\htdocs\app\Core\Database.php:15
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(15): PDO->__construct('mysql:host=loca...', 'mky', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\homepage.php(12): Core\Database::connect()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 15
+[27-Oct-2026 11:17:09 Asia/Manila] News page error: SQLSTATE[HY000] [1045] Access denied for user 'mky'@'localhost' (using password: NO)
+[27-Oct-2026 11:17:09 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'mky'@'localhost' (using password: NO) in C:\xampp\htdocs\app\Core\Database.php:15
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(15): PDO->__construct('mysql:host=loca...', 'mky', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\includes\navbar.php(10): Core\Database::connect()
+#2 C:\xampp\htdocs\public\news.php(88): include('C:\\xampp\\htdocs...')
+#3 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 15
+[27-Oct-2026 11:17:14 Asia/Manila] News page error: SQLSTATE[HY000] [1045] Access denied for user 'mky'@'localhost' (using password: NO)
+[27-Oct-2026 11:17:14 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'mky'@'localhost' (using password: NO) in C:\xampp\htdocs\app\Core\Database.php:15
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(15): PDO->__construct('mysql:host=loca...', 'mky', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\includes\navbar.php(10): Core\Database::connect()
+#2 C:\xampp\htdocs\public\news.php(88): include('C:\\xampp\\htdocs...')
+#3 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 15
+[27-Oct-2026 11:24:16 Asia/Manila] PHP Fatal error:  Uncaught Error: Call to undefined function er() in C:\xampp\htdocs\public\community-extension.php:44
+Stack trace:
+#0 C:\xampp\htdocs\public\community-extension.php(59): modalHtml(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\public\community-extension.php on line 44
+[27-Oct-2026 11:32:39 Asia/Manila] PHP Fatal error:  Uncaught Error: Call to undefined function er() in C:\xampp\htdocs\public\community-extension.php:44
+Stack trace:
+#0 C:\xampp\htdocs\public\community-extension.php(59): modalHtml(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\public\community-extension.php on line 44
+[27-Oct-2026 14:37:45 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'mky'@'localhost' (using password: NO) in C:\xampp\htdocs\app\Core\Database.php:15
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(15): PDO->__construct('mysql:host=loca...', 'mky', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\homepage.php(12): Core\Database::connect()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 15
+[27-Oct-2026 14:37:45 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'mky'@'localhost' (using password: NO) in C:\xampp\htdocs\app\Core\Database.php:15
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(15): PDO->__construct('mysql:host=loca...', 'mky', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\homepage.php(12): Core\Database::connect()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 15
+[28-Oct-2026 09:14:05 Asia/Manila] [2026-10-28T09:14:05+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:14:14 Asia/Manila] [2026-10-28T09:14:14+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:14:15 Asia/Manila] [2026-10-28T09:14:15+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:14:41 Asia/Manila] [2026-10-28T09:14:41+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:14:43 Asia/Manila] [2026-10-28T09:14:43+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:15:06 Asia/Manila] [2026-10-28T09:15:06+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:15:06 Asia/Manila] [2026-10-28T09:15:06+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:15:07 Asia/Manila] [2026-10-28T09:15:07+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:15:07 Asia/Manila] [2026-10-28T09:15:07+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:15:07 Asia/Manila] [2026-10-28T09:15:07+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:15:11 Asia/Manila] [2026-10-28T09:15:11+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:15:12 Asia/Manila] [2026-10-28T09:15:12+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:15:12 Asia/Manila] [2026-10-28T09:15:12+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:17:28 Asia/Manila] [2026-10-28T09:17:28+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:17:29 Asia/Manila] [2026-10-28T09:17:29+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:17:29 Asia/Manila] [2026-10-28T09:17:29+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:17:29 Asia/Manila] [2026-10-28T09:17:29+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:17:40 Asia/Manila] [2026-10-28T09:17:40+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:17:41 Asia/Manila] [2026-10-28T09:17:41+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:17:41 Asia/Manila] [2026-10-28T09:17:41+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:22:28 Asia/Manila] [2026-10-28T09:22:28+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:22:29 Asia/Manila] [2026-10-28T09:22:29+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:22:29 Asia/Manila] [2026-10-28T09:22:29+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:22:37 Asia/Manila] [2026-10-28T09:22:37+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:22:38 Asia/Manila] [2026-10-28T09:22:38+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:22:38 Asia/Manila] [2026-10-28T09:22:38+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:30 Asia/Manila] [2026-10-28T09:23:30+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:31 Asia/Manila] [2026-10-28T09:23:31+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:31 Asia/Manila] [2026-10-28T09:23:31+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:31 Asia/Manila] [2026-10-28T09:23:31+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:39 Asia/Manila] [2026-10-28T09:23:39+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:39 Asia/Manila] [2026-10-28T09:23:39+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:39 Asia/Manila] [2026-10-28T09:23:39+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:39 Asia/Manila] [2026-10-28T09:23:39+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:23:46 Asia/Manila] [2026-10-28T09:23:46+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:24:29 Asia/Manila] [2026-10-28T09:24:29+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:25:20 Asia/Manila] [2026-10-28T09:25:20+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:25:20 Asia/Manila] [2026-10-28T09:25:20+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:25:21 Asia/Manila] [2026-10-28T09:25:21+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:31:08 Asia/Manila] [2026-10-28T09:31:08+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 09:31:12 Asia/Manila] [2026-10-28T09:31:12+08:00] [ERROR] [Error] Failed to process save request.: Class "finfo" not found | C:\xampp\htdocs\app\Core\ImageManager.php:61 | action=save about, endpoint=about/save
+[28-Oct-2026 20:24:38 Asia/Manila] [2026-10-28T20:24:38+08:00] [ERROR] [Error] Failed to process filter request.: Class "Serv\ProgramServices" not found | C:\xampp\htdocs\api\programs\filter.php:22 | action=filter program items, endpoint=programs/filter
+[28-Oct-2026 20:25:30 Asia/Manila] [2026-10-28T20:25:30+08:00] [ERROR] [Error] Failed to process filter request.: Class "Serv\ProgramServices" not found | C:\xampp\htdocs\api\programs\filter.php:22 | action=filter program items, endpoint=programs/filter
+[30-Oct-2026 13:19:53 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'p.published_at' in 'where clause' in C:\xampp\htdocs\app\Repositories\PublicCalendarRepository.php:31
+Stack trace:
+#0 C:\xampp\htdocs\app\Repositories\PublicCalendarRepository.php(31): PDO->query('SELECT id, titl...')
+#1 C:\xampp\htdocs\public\homepage.php(20): Repo\PublicCalendarRepository->getOverview()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Repositories\PublicCalendarRepository.php on line 31
+[31-Oct-2026 02:02:41 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1130] Host 'localhost' is not allowed to connect to this MariaDB server in C:\xampp\htdocs\app\Core\Database.php:16
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(16): PDO->__construct('mysql:host=loca...', 'root', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\homepage.php(52): Core\Database::connect()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 16
+[31-Oct-2026 02:03:03 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1130] Host 'localhost' is not allowed to connect to this MariaDB server in C:\xampp\htdocs\app\Core\Database.php:16
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(16): PDO->__construct('mysql:host=loca...', 'root', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\homepage.php(52): Core\Database::connect()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 16
+[31-Oct-2026 02:03:04 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1130] Host 'localhost' is not allowed to connect to this MariaDB server in C:\xampp\htdocs\app\Core\Database.php:16
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(16): PDO->__construct('mysql:host=loca...', 'root', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\homepage.php(52): Core\Database::connect()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 16
+[31-Oct-2026 02:03:04 Asia/Manila] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1130] Host 'localhost' is not allowed to connect to this MariaDB server in C:\xampp\htdocs\app\Core\Database.php:16
+Stack trace:
+#0 C:\xampp\htdocs\app\Core\Database.php(16): PDO->__construct('mysql:host=loca...', 'root', Object(SensitiveParameterValue), Array)
+#1 C:\xampp\htdocs\public\homepage.php(52): Core\Database::connect()
+#2 {main}
+  thrown in C:\xampp\htdocs\app\Core\Database.php on line 16
+[31-Oct-2026 07:21:49 Asia/Manila] Homepage news view tracking error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'ucc.posts_views' doesn't exist

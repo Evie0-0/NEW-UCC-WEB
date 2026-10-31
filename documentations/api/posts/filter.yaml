@@ -1,0 +1,135 @@
+api: posts
+directory: api/posts/
+name: filter (endpoint)
+file: filter.php
+path: api/posts/filter.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve filtered posts items and some metadata
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: search
+      type: string (from search)
+      required: true (can be empty)
+      source: js (url)
+      description: searches for post titles
+    - name: filter
+      type: string (from selection)
+      required: true
+      source: js (url)
+      description: filter status of items
+      values:
+        - all
+        - draft
+        - published
+        - pending
+        - expired
+    - name: sort
+      type: string (from selection)
+      required: true
+      source: js (url)
+      description: sort items
+      values:
+        - create-desc
+        - create-asc
+        - title-desc
+        - title-asc
+        - publish-desc
+        - publish-asc
+        - expiry-desc
+        - expiry-asc
+    - name: page
+      type: string (from hidden)
+      required: true
+      source: js (url)
+      description: page number to retrieve posts for
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: ~400 - ~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+      note:
+        - do not include for alert upon success
+    - name: data
+      type: object
+      returned: always (can be empty)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request
+        - unsuccessful request (empty)
+      properties:
+        - name: posts
+          type: array
+          returned: always (can be empty)
+          description: posts information
+          conditions:
+            - after a successful request
+          properties:
+            - every column in posts table = refer to db
+            - name: display_status
+              type: string
+              returned: always
+              description: name of status
+              conditions:
+                - after a successful request
+                - if result exists
+        - name: current_page
+          type: int
+          returned: always
+          description: current page number
+          conditions:
+            - after a successful request
+        - name: total_posts
+          type: int
+          returned: always
+          description: overall total of posts regardless of page
+          conditions:
+            - after a successful request
+        - name: total_pages
+          type: int
+          returned: always
+          description: total number of pages (10 result per page)
+          conditions:
+            - after a successful requst
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "Successfully filtered post items.",
+  "data": {
+    "posts": [
+      {
+        "id": 12,
+        "title": "Title 5",
+        "excerpt": "Excerpt 5",
+        "content": "Content 5",
+        "featured_image": "61a067af9ff6c181e4f7e05ed21dae07.webp",
+        "category_id": 3,
+        "views": 0,
+        "status": "published",
+        "author_id": 1,
+        "editor_id": 1,
+        "published_at": "2026-10-26 00:00:00",
+        "expires_at": "2026-10-26 00:00:00",
+        "archived_at": null,
+        "created_at": "2026-10-26 04:32:47",
+        "updated_at": "2026-10-26 04:48:40",
+        "active": 1,
+        "display_status": "expired"
+      }
+    ],
+    "current_page": 1,
+    "total_posts": 1,
+    "total_pages": 1
+  }
+}

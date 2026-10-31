@@ -30,6 +30,7 @@ $services = $repo->getAllEServices();
 	<?php include __DIR__ . '/includes/utility-bar.php'; ?>
 	<?php include __DIR__ . '/includes/navbar.php'; ?>
 
+	<!-- PAGE DOTS -->
 	<div class="page-dots" aria-hidden="true">
 		<span class="dot-pattern dot-1"></span>
 		<span class="dot-pattern dot-2"></span>
@@ -37,12 +38,14 @@ $services = $repo->getAllEServices();
 		<span class="dot-pattern dot-4"></span>
 	</div>
 
+	<!-- E-SERVICES MAIN CONTENT -->
 	<main class="eservices-page">
 		<div class="eservices-bg-shape eservices-shape-1"></div>
 		<div class="eservices-bg-shape eservices-shape-2"></div>
 		<div class="eservices-bg-shape eservices-shape-3"></div>
 
 		<div class="eservices-container">
+			<!-- CITY OF CALOOCAN -->
 			<a href="https://caloocancity.gov.ph/" class="eservices-government-card" target="_blank" rel="noopener noreferrer">
 				<div class="government-glow"></div>
 				<div class="government-pattern"></div>

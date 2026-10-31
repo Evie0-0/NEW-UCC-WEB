@@ -1,33 +1,4 @@
 <?php
-declare(strict_types=1);
-
-use Serv\UserServices;
-use Core\Token;
-
-require_once dirname(__DIR__, 2) . '/bootstrap.php';
-require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
-
-if (!UserServices::isAuthenticated()) {
-    header('Location: login.php?error=401');
-    exit;
-}
-
-if (!UserServices::isAuthorized([UserServices::SUPERADMIN_KEY])) {
-    header('Location: login.php?error=403');
-    exit;
-}
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-$username = $_SESSION[UserServices::USERNAME_KEY];
-$role = $_SESSION[UserServices::ROLE_KEY];
-$csrfToken = Token::generate();
-
-session_write_close();
-
-$today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Manila')))->format('Y-m-d');
 $pageTitle = "Posts";
 ?>
 <!DOCTYPE html>
@@ -35,144 +6,26 @@ $pageTitle = "Posts";
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<title>UCC CMS | <?= e($pageTitle) ?> </title>
-	<link rel="icon" type="image/png" href="assets/images/ucc-LOGO.png">
+	<title>UCC Admin | <?= htmlspecialchars($pageTitle) ?> </title>
+	<link rel="icon" type="image/png" href="images/ucc-LOGO.png">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
 	<script src="https://unpkg.com/lucide@latest"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script type="module" src="assets/js/posts.js"></script>
 	<link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/post.css">
-    <style>
-        .featured-thumb [hidden] {
-            display: none !important;
-        }
 
-        .featured-thumb [data-field="imagePlaceholder"] {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #9a8a62;
-        }
 
-        .featured-thumb [data-field="imagePlaceholder"] svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .featured-thumb img:not([hidden]) {
-            object-fit: contain;
-            background-color: #f8f4ea;
-        }
-
-        .posts-table {
-            table-layout: fixed;
-        }
-
-        .posts-table th,
-        .posts-table td {
-            text-align: center !important;
-        }
-
-        .posts-table thead th {
-            text-align: center !important;
-            vertical-align: middle;
-        }
-
-        .posts-table th.col-image { width: 10%; }
-        .posts-table th.col-title { width: 22%; }
-        .posts-table th.col-category { width: 16%; }
-        .posts-table th.col-date, .posts-table th.col-expiry { width: 15%; }
-        .posts-table th.col-status { width: 10%; }
-        .posts-table th.col-actions { width: 16%; }
-
-        .posts-table td:last-child .action-buttons {
-            justify-content: center;
-        }
-
-        .posts-table td[data-field] {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .posts-table tbody td {
-            cursor: default;
-        }
-
-        .status-badge.status-draft {
-            background: #eceeed;
-            color: #52615b;
-        }
-
-        .status-badge.status-pending {
-            background: #fff1c9;
-            color: #795b00;
-        }
-
-        .status-badge.status-expired {
-            background: #fde8e8;
-            color: #b42318;
-        }
-
-        .post-form textarea {
-            outline: none;
-        }
-
-        #postPreviewModal .post-preview-metadata-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) 24px repeat(2, minmax(0, 1fr));
-        }
-
-        #postPreviewModal .post-preview-metadata-grid strong {
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        #postPreviewModal .post-preview-metadata-grid > div:nth-child(3) {
-            grid-column: 4;
-            position: relative;
-        }
-
-        #postPreviewModal .post-preview-metadata-grid > div:nth-child(3)::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: -30px;
-            width: 1px;
-            background: #d8d1c2;
-        }
-
-        @media (max-width: 760px) {
-            #postPreviewModal .post-preview-metadata-grid {
-                grid-template-columns: 1fr;
-            }
-
-            #postPreviewModal .post-preview-metadata-grid > div:nth-child(3) {
-                grid-column: auto;
-                margin-top: 6px;
-                padding-top: 12px;
-            }
-
-            #postPreviewModal .post-preview-metadata-grid > div:nth-child(3)::before {
-                left: 0;
-                right: 0;
-                bottom: auto;
-                width: auto;
-                height: 1px;
-            }
-        }
-
-    </style>
 </head>
-<body data-page-title="<?= e($pageTitle) ?>">
-    <div class="dashboard-layout">
-    	<?php include __DIR__ . '/template/sidebar.php'; ?>
-    	<main class="main-content">
-    		<?php include __DIR__ . '/template/header.php'; ?>
+<body data-page-title="<?= htmlspecialchars($pageTitle) ?>">
+<div class="dashboard-layout">
+	<?php include __DIR__ . '/template/sidebar.php'; ?>
+	<main class="main-content">
+		<?php include __DIR__ . '/template/header.php'; ?>
+
+        </header>
+
             <section class="posts-page">
                 <div class="posts-intro">
                     <div><p>View, organize, and maintain posts published on the university website.</p></div>
@@ -180,34 +33,35 @@ $pageTitle = "Posts";
                 <div class="posts-toolbar">
                     <div class="posts-tools-left">
                         <div class="posts-search">
-                            <input type="search" name="search" placeholder="Search posts..." aria-label="Search posts">
+                            <input type="search" id="postSearch" placeholder="Search posts..." aria-label="Search posts">
                             <i data-lucide="search"></i>
                         </div>
-                        <select name="filter" class="posts-filter" aria-label="Filter posts">
-                            <option value="all">All posts</option>
-                            <option value="published">Published</option>
-                            <option value="draft">Draft</option>
-                            <option value="pending">Pending</option>
-                            <option value="expired">Expired</option>
+                        <select id="postFilter" class="posts-filter" aria-label="Filter posts">
+                            <option value="All">All statuses</option>
+                            <option value="Published">Published</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Archived">Archived</option>
+                            <option value="Expired">Expired</option>
                         </select>
-                        <select name="sort" class="posts-filter" aria-label="Order posts">
-                            <option value="added-desc">Date added (newest first)</option>
-                            <option value="added-asc">Date added (oldest first)</option>
-                            <option value="publish-desc">Publish date (newest first)</option>
-                            <option value="publish-asc">Publish date (oldest first)</option>
-                            <option value="expiry-asc">Expiration date (soonest first)</option>
-                            <option value="expiry-desc">Expiration date (latest first)</option>
-                            <option value="title-asc">Title (A–Z)</option>
-                            <option value="title-desc">Title (Z–A)</option>
+                        <select id="postSort" class="posts-filter" aria-label="Order posts">
+                            <option value="created-desc">Newest created</option>
+                            <option value="created-asc">Oldest created</option>
+                            <option value="date-desc">Publish date: newest</option>
+                            <option value="date-asc">Publish date: oldest</option>
+                            <option value="expiry-asc">Expiry date: soonest</option>
+                            <option value="expiry-desc">Expiry date: latest</option>
+                            <option value="title-asc">Title: A–Z</option>
+                            <option value="title-desc">Title: Z–A</option>
                         </select>
                     </div>
-                    <button type="button" data-action="add" class="post-btn post-btn-primary"><i data-lucide="plus"></i> Add New Post</button>
+                    <button class="post-btn post-btn-primary" id="addPostBtn" type="button"><i data-lucide="plus"></i> Add New Post</button>
                 </div>
 
                 <div class="posts-card">
                     <div class="posts-card-head">
                         <h2>Posts</h2>
-                        <span class="posts-count" id="itemCount">0 posts</span>
+                        <span class="posts-count" id="postsCount">0 posts</span>
                     </div>
                     <div class="posts-table-wrap">
                         <table class="posts-table">
@@ -217,98 +71,60 @@ $pageTitle = "Posts";
                                     <th class="col-title">Title</th>
                                     <th class="col-category">Category</th>
                                     <th class="col-date">Publish Date</th>
-                                    <th class="col-expiry">Expiration Date</th>
+                                    <th class="col-expiry">Expiry Date</th>
                                     <th class="col-status">Status</th>
                                     <th class="col-actions">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableBody"></tbody>
+                            <tbody id="postsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <template id="rowTemplate">
-                    <tr data-post-id>
-                        <td>
-                            <div class="featured-thumb">
-                                <span data-field="imagePlaceholder" aria-hidden="true"><i data-lucide="image"></i></span>
-                                <img data-field="image" alt="" hidden>
-                            </div>
-                        </td>
-                        <td class="post-title-cell" data-field="title"></td>
-                        <td class="category-text" data-field="category"></td>
-                        <td data-field="publishDate"></td>
-                        <td data-field="expirationDate"></td>
-                        <td><span class="status-badge" data-field="status"></span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button type="button" data-action="preview" class="action-btn preview" aria-label="Preview post" title="Preview"
-                                        style="background-color:#fff; color:#8a6900; border-color:#e5c65a;">
-                                    <i data-lucide="eye"></i>
-                                </button>
-                                <button type="button" data-action="edit" class="action-btn edit" aria-label="Edit post" title="Edit"
-                                        style="background-color:#fff; color:#8a6900; border-color:#e5c65a;">
-                                    <i data-lucide="pencil"></i>
-                                </button>
-                                <button type="button" data-action="archive" class="action-btn archive" aria-label="Archive post" title="Archive"
-                                        style="background-color:#fff; color:#8a6900; border-color:#e8e3d8;">
-                                    <i data-lucide="archive"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </template>
+                            <nav class="posts-pagination" id="postsPagination" aria-label="Posts pagination" hidden>
+                <button class="page-btn" id="prevPageBtn" type="button" aria-label="Previous page">
+                    <i data-lucide="chevron-left"></i>
+                </button>
+                <div class="page-numbers" id="pageNumbers"></div>
+                <button class="page-btn" id="nextPageBtn" type="button" aria-label="Next page">
+                    <i data-lucide="chevron-right"></i>
+                </button>
+                <span class="page-total" id="pageTotal">1 page</span>
+            </nav>
 
-                <nav class="posts-pagination" id="pagination" aria-label="Posts pagination" hidden>
-                    <button type="button" name="previous" class="page-btn" id="prevPageBtn" aria-label="Previous page">
-                        <i data-lucide="chevron-left"></i>
-                    </button>
-                    <div class="page-numbers" id="pageNum"></div>
-                    <button type="button" name="next" class="page-btn" id="nextPageBtn" aria-label="Next page">
-                        <i data-lucide="chevron-right"></i>
-                    </button>
-                    <span class="page-total" id="pageTotal">1 page</span>
-                </nav>
-
-                <div class="post-modal" id="modal" aria-hidden="true">
+                <div class="post-modal" id="postModal" aria-hidden="true">
                     <div class="post-modal-backdrop" data-close-modal></div>
                     <div class="post-modal-panel" role="dialog" aria-modal="true" aria-labelledby="postFormTitle">
                         <div class="post-modal-head">
                             <div><h2 id="postFormTitle">Add New Post</h2><p id="postFormDescription">Create a post for the university website.</p></div>
-                            <button type="button" data-action="closeModal" class="modal-close" aria-label="Close post form"><i data-lucide="x"></i></button>
+                            <button class="modal-close" type="button" data-close-modal aria-label="Close post form"><i data-lucide="x"></i></button>
                         </div>
-                        <form class="post-form" id="form" enctype="multipart/form-data">
-                            <input type="hidden" name="<?= e(Token::KEY) ?>" value="<?= e($csrfToken) ?>">
+                        <form class="post-form" id="postForm">
+                    
                             <div class="image-upload-area">
                                 <div class="upload-placeholder" id="uploadPlaceholder"><i data-lucide="image-plus"></i><strong>Featured Image</strong></div>
-                                <img id="imagePreview" class="image-preview" alt="Featured image preview" hidden>
-                                <input type="file" name="featured_image" id="featuredImage" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" hidden>
-                                <button type="button" data-action="uploadFeaturedImage" class="post-btn post-btn-ghost" id="uploadImageBtn"><i data-lucide="upload"></i> Choose Image</button>
-                                <button type="button" data-action="removeFeaturedImage" class="post-btn post-btn-danger" id="removeImageBtn" hidden><i data-lucide="x"></i> Remove Image</button>
+                                <img id="imagePreview" class="image-preview" alt="Featured image preview">
+                                <input type="file" id="featuredImage" accept="image/*" hidden>
+                                <button type="button" class="post-btn post-btn-ghost" id="uploadImageBtn"><i data-lucide="upload"></i> Choose Photo</button>
+                                <button type="button" class="post-btn post-btn-danger" id="removeImageBtn" hidden><i data-lucide="x"></i> Remove Photo</button>
                             </div>
                             <div class="form-grid">
-                                <label class="form-field full-width"><span>Post Title</span><input type="text" name="title" id="postTitle" placeholder="Enter post title" maxlength="180" required></label>
-                                <label class="form-field full-width"><span>Excerpt</span><textarea name="excerpt" id="postExcerpt" rows="3" maxlength="320" placeholder="Write a short summary for the post" required></textarea></label>
-                                <label><span>Category</span><select name="category" id="postCategory" required>
-                                    <option value="" selected disabled>Select a category</option>
-                                </select></label>
-                                <label><span>Status</span><select name="status" required>
-                                    <option value="" selected disabled>Select a status</option>
-                                    <option value="draft">Draft</option>
-                                    <option value="published">Published</option>
-                                </select></label>
-                                <label class="publish-date-field"><span>Publish Date</span><input type="date" name="publish_date" id="postDate" min="<?= e($today) ?>" required></label>
-                                <label class="publish-date-field"><span>Expiration Date</span><input type="date" name="expiration_date" id="postExpiryDate" min="<?= e($today) ?>" required></label>
+                                <label class="form-field full-width"><span>Post Title</span><input type="text" id="postTitle" placeholder="Enter post title" maxlength="180" required></label>
+                                <label class="form-field full-width"><span>Excerpt</span><textarea id="postExcerpt" rows="3" maxlength="320" placeholder="Write a short summary for the post" required></textarea></label>
+                                <label><span>Category</span><select id="postCategory"><option>News</option><option>Announcement</option><option>Event</option><option>Student Life</option><option>Community Extension Services</option><option>Admission</option><option>Alumni</option><option>Careers</option></select></label>
+                                <label><span>Status</span><select id="postStatus"><option>Draft</option><option>Published</option></select></label>
+                                <label class="publish-date-field"><span>Publish Date</span><input type="date" id="postDate"></label>
+                                <label class="publish-date-field"><span>Expiry Date (optional)</span><input type="date" id="postExpiryDate"></label>
                             </div>
-
+                           
                             <label class="content-field"><span>Content</span>
-                                <textarea name="content" id="postContent" class="content-editor" rows="7" placeholder="Write your post content here..." required></textarea>
+                                <textarea id="postContent" class="content-editor" rows="7" placeholder="Write your post content here..." required></textarea>
                             </label>
                             <div class="form-actions">
-                                <button type="button" data-action="cancel" class="post-btn post-btn-ghost form-cancel">Cancel</button>
+                                <button type="button" class="post-btn post-btn-ghost form-cancel" data-close-modal>Cancel</button>
                                 <div class="form-actions-right">
-                                    <button type="button" data-action="showPreview" class="post-btn post-btn-ghost" id="formPreviewBtn"><i data-lucide="eye"></i> Preview</button>
-                                    <button type="submit" data-action="save" class="post-btn post-btn-primary" id="savePostBtn"><i data-lucide="save"></i> Save Post</button>
+                                    <button type="button" class="post-btn post-btn-ghost" id="formPreviewBtn"><i data-lucide="eye"></i> Preview</button>
+                                    <button type="submit" class="post-btn post-btn-primary" id="savePostBtn"><i data-lucide="save"></i> Save Post</button>
                                 </div>
                             </div>
                         </form>
@@ -318,26 +134,28 @@ $pageTitle = "Posts";
                 <div class="post-modal preview-modal" id="postPreviewModal" aria-hidden="true">
                     <div class="post-modal-backdrop" data-close-preview></div>
                     <article class="post-modal-panel post-preview-panel" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
-                        <div class="post-modal-head"><div>
-                            <h2>Post Preview</h2></div>
-                            <button type="button" data-action="closePreview" class="modal-close" aria-label="Close preview"><i data-lucide="x"></i></button></div>
+                        <div class="post-modal-head"><div><h2>Post Preview</h2></div><button class="modal-close" type="button" data-close-preview aria-label="Close preview"><i data-lucide="x"></i></button></div>
                         <div class="public-post-preview">
-                            <div class="preview-image-wrap" id="previewImageWrap" hidden><img id="previewImage" alt="Post featured image" hidden></div>
+                            <div class="preview-image-wrap" id="previewImageWrap"><div class="preview-default-image"><i data-lucide="image"></i><span>Featured image</span></div><img id="previewImage" alt="Post featured image" hidden></div>
                             <div class="preview-article-body"><h2 id="previewTitle">Post title</h2><p class="preview-excerpt" id="previewExcerpt"></p><div class="preview-content" id="previewContent"></div></div>
                         </div>
                         <footer class="post-preview-metadata">
-                            <div class="post-preview-metadata-grid">
-                                <div><span>CREATED BY</span><strong id="previewMetadataCreatedBy">-</strong></div>
-                                <div><span>CREATED AT</span><strong id="previewMetadataDateCreated">-</strong></div>
-                                <div><span>UPDATED BY</span><strong id="previewMetadataLastUpdatedBy">-</strong></div>
-                                <div><span>UPDATED AT</span><strong id="previewMetadataExpiry">-</strong></div>
+                            <div class="post-preview-metadata-grid" style="display:flex; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:56px; justify-items:center; text-align:left;">
+                                <div><span>CREATED BY</span><strong id="previewMetadataCreatedBy">—</strong></div>
+                                <div><span>DATE CREATED</span><strong id="previewMetadataDateCreated">—</strong></div>
+                                <div><span>LAST UPDATED</span><strong id="previewMetadataLastUpdatedBy">—</strong></div>
+                                <div><span>EXPIRY DATE</span><strong id="previewMetadataExpiry">—</strong></div>
                             </div>
                         </footer>
                     </article>
                 </div>
                 <div class="ui-toast" id="uiToast" role="status" aria-live="polite"></div>
             </section>
-        </main>
-    </div>
+
+</main>
+</div>
+<script src="assets/js/ucc-common.js"></script>
+<script src="assets/js/posts.js"></script>
+
 </body>
 </html>

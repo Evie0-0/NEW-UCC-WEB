@@ -57,7 +57,7 @@ $academicsActive = in_array($currentPage, $academicsPages, true);
 			<div class="nav-inner">
 
 				<div class="nav-links">
-					<a href="homepage.php" class="<?= navActive('homepage.php', $currentPage) ?>">HOME</a>
+					<a href="index.php" class="<?= navActive('index.php', $currentPage) ?>">HOME</a>
 
 					<div class="nav-dropdown <?= $aboutActive ? 'active' : '' ?>">
 

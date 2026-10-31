@@ -1,0 +1,81 @@
+api: program-posts
+directory: api/program-posts/
+name: item (endpoint)
+file: item.php
+path: api/program-posts/item.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve a single program post (including its content). Archived posts can be fetched too
+access: superadmin only (session required)
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: id
+      type: int (from hidden)
+      required: true
+      source: js (url)
+      description: id of a program post
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: 401 | 404 | 405 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+      note:
+        - do not include for alert upon success
+    - name: data
+      type: object
+      returned: always (can be empty)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request
+        - unsuccessful request (empty)
+      properties:
+        - name: program_post
+          type: object
+          returned: on success
+          description: program post information
+          properties:
+            - every column in program_posts table = refer to db
+            - display_status, has_expiry, program_name, category_name, created_by and updated_by = same as the filter endpoint
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "Program post successfully fetched.",
+  "data": {
+    "program_post": {
+      "id": 1,
+      "title": "BSCS Hosts Programming Contest",
+      "excerpt": "The annual inter-year programming contest.",
+      "content": "",
+      "featured_image": null,
+      "program_id": 2,
+      "category_id": 8,
+      "views": 0,
+      "status": "published",
+      "author_id": 1,
+      "editor_id": null,
+      "published_at": "2026-10-28 00:00:00",
+      "expires_at": "9999-12-31 00:00:00",
+      "archived_at": null,
+      "created_at": "2026-10-28 09:25:06",
+      "updated_at": null,
+      "active": 1,
+      "display_status": "published",
+      "has_expiry": 0,
+      "program_name": "Bachelor of Science in Public Administration",
+      "category_name": "Program News",
+      "created_by": "mky",
+      "updated_by": null
+    }
+  }
+}

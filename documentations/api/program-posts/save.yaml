@@ -1,0 +1,123 @@
+api: program-posts
+directory: api/program-posts/
+name: save (endpoint)
+file: save.php
+path: api/program-posts/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: saves a program post (creates it when id is 0, updates it otherwise)
+access: superadmin only (session + csrf token required)
+note: editing an archived post keeps it archived (archived_at is not touched)
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross site request forgery
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create - 0 when creating)
+      source: js (append)
+      description: id of the program post when editing
+    - name: program_id
+      type: int (from selection)
+      required: true
+      source: form
+      description: id of the program the post belongs to (program_posts.program_id -> programs.id)
+      note: must be the numeric id of a program (not a code such as BSIT), and the program must exist with active = 1. The error message says whether program_id is missing, not a number, or does not match an active program
+    - name: title
+      type: string (from text)
+      required: true
+      source: form
+      description: title of the post
+      note: maximum of 150 characters (program_posts.title column)
+    - name: excerpt
+      type: string (from text)
+      required: true
+      source: form
+      description: short summary of the post
+      note: maximum of 400 characters (matches the form maxlength)
+    - name: content
+      type: string (from text)
+      required: false
+      source: form or js (append)
+      description: body of the post
+      note: the program posts page has no content field. When omitted, a new post is saved with empty content and an edited post keeps its current content
+    - name: category
+      type: int (from selection)
+      required: false
+      source: form or js (append)
+      description: id of a category whose class is program-posts
+      note: when omitted, an edited post keeps its current category and a new post uses the only category of class program-posts (Program News). If the class ever has several categories, it becomes required for new posts
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of the post
+      values:
+        - draft
+        - published
+      note: case-insensitive, so the form values Draft / Published are accepted. expired, pending and archived are display statuses; archiving is done with the archive endpoint
+    - name: publish_date
+      type: string (from date)
+      required: true
+      source: form
+      description: date the post goes live
+      note: format YYYY-MM-DD. Cannot be in the past when creating, and when editing only if it was changed
+    - name: expiration_date
+      type: string (from date)
+      required: false (blank = no expiry)
+      source: form
+      description: date the post expires
+      note: format YYYY-MM-DD. Cannot be earlier than publish_date, and cannot be in the past when creating or when changed while editing. Because program_posts.expires_at is NOT NULL, a blank value is stored as 9999-12-31
+    - name: featured_image
+      type: file (from file input)
+      required: false
+      source: form or js (append)
+      description: featured image of the post
+      note: JPEG, PNG or WebP, maximum of 10 MB and 5000 x 5000 pixels
+    - name: remove_featured_image
+      type: bool (from hidden)
+      required: false (update only)
+      source: js (append)
+      description: determines whether the stored image should be removed
+      note: cannot be combined with a new featured_image in the same request
+response:
+  content_type: application/json
+  http_code:
+    success: 201 (created) | 200 (updated)
+    errors: 400 | 401 | 403 | 404 | 405 | 413 | 415 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+
+Example:
+HTTP Status: 201
+Response: {
+  "message": "Program post successfully created.",
+  "data": []
+}
+
+HTTP Status: 200
+Response: {
+  "message": "Program post successfully updated.",
+  "data": []
+}

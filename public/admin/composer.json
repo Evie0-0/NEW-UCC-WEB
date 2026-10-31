@@ -1,0 +1,21 @@
+{
+    "name": "mky/ucc-cms",
+    "description": "University of Caloocan City Content Management System",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "mky",
+            "email": "dorenmarkjeralde@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Core\\": "app/Core/",
+            "Serv\\": "app/Services/",
+            "Repo\\": "app/Repositories/"
+        }
+    }
+}

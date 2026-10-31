@@ -1,0 +1,52 @@
+api: posts
+directory: api/posts/
+name: archive (endpoint)
+file: archive.php
+path: api/posts/archive.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: archives an existing post
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross scripting
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true
+      source: js (append)
+      description: id of post to archive
+  response:
+    content_type: application/json
+    http_code:
+      success: 200
+      errors: ~400 - ~500
+    fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+          - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+          - successful request (empty)
+          - unsuccessful request (empty)
+        properties:
+          - None
+
+Example:
+HTTP Status: 200
+Response: {
+  "message": "Post successfully archived.",
+  "data": []
+}

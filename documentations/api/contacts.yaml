@@ -1,0 +1,340 @@
+title: Contacts API Documentation
+api:
+  name: contacts
+  directory: api/contacts/
+  endpoints:
+  - name: filter
+    file: filter.php
+    path: api/contacts/filter.php
+    use_alerts:
+      success: false
+      failure: true
+    description: retrieve filtered contact items and some metadata (10 results per page)
+    access: superadmin only (session required)
+    request:
+      method: GET
+      source: URLSearchParams
+      fields:
+      - name: search
+        type: string (from search)
+        required: false (can be empty)
+        source: js (url)
+        description: searches for contact name, email and phone number
+      - name: filter
+        type: string (from selection)
+        required: false (defaults to all)
+        source: js (url)
+        description: filter status of items
+        values:
+        - all
+        - active
+        - inactive
+        note: case-insensitive; hidden is accepted as an alias of inactive (the contacts page labels it Hidden)
+      - name: sort
+        type: string (from selection)
+        required: false (defaults to created-asc)
+        source: js (url)
+        description: sort items
+        values:
+        - created-asc
+        - created-desc
+        - name-asc
+        - name-desc
+      - name: page
+        type: int (from hidden)
+        required: false (defaults to 1)
+        source: js (url)
+        description: page number to retrieve contacts for
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+        note:
+        - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request
+        - unsuccessful request (empty)
+        properties:
+        - name: contacts
+          type: array
+          returned: always (can be empty)
+          description: contact information
+          conditions:
+          - after a successful request
+          properties:
+          - every column in contacts table = refer to db
+          - name: created_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who created the contact
+          - name: updated_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who last updated the contact
+        - name: current_page
+          type: int
+          returned: always
+          description: current page number
+          conditions:
+          - after a successful request
+        - name: total_contacts
+          type: int
+          returned: always
+          description: overall total of contacts matching the filters regardless of page
+          conditions:
+          - after a successful request
+        - name: total_pages
+          type: int
+          returned: always
+          description: total number of pages (10 results per page)
+          conditions:
+          - after a successful request
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Successfully filtered contact items.",
+        "data": {
+          "contacts": [
+            {
+              "id": 1,
+              "name": "University Registrar",
+              "email": "registrar@ucc.edu.ph",
+              "phone_number": "(02) 5310 1234",
+              "status": "active",
+              "author_id": 1,
+              "editor_id": null,
+              "created_at": "2026-10-28 09:25:06",
+              "updated_at": null,
+              "active": 1,
+              "created_by": "mky",
+              "updated_by": null
+            }
+          ],
+          "current_page": 1,
+          "total_contacts": 1,
+          "total_pages": 1
+        }
+      }
+  - name: item
+    file: item.php
+    path: api/contacts/item.php
+    use_alerts:
+      success: false
+      failure: true
+    description: retrieve a single contact
+    access: superadmin only (session required)
+    request:
+      method: GET
+      source: URLSearchParams
+      fields:
+      - name: id
+        type: int (from hidden)
+        required: true
+        source: js (url)
+        description: id of a contact
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+        note:
+        - do not include for alert upon success
+      - name: data
+        type: object
+        returned: always (can be empty)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request
+        - unsuccessful request (empty)
+        properties:
+        - name: contact
+          type: object
+          returned: on success
+          description: contact information
+          properties:
+          - every column in contacts table = refer to db
+          - name: created_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who created the contact
+          - name: updated_by
+            type: string
+            returned: always (can be null)
+            description: username of the user who last updated the contact
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Contact successfully fetched.",
+        "data": {
+          "contact": {
+            "id": 1,
+            "name": "University Registrar",
+            "email": "registrar@ucc.edu.ph",
+            "phone_number": "(02) 5310 1234",
+            "status": "active",
+            "author_id": 1,
+            "editor_id": 1,
+            "created_at": "2026-10-28 09:25:06",
+            "updated_at": "2026-10-28 10:02:11",
+            "active": 1,
+            "created_by": "mky",
+            "updated_by": "mky"
+          }
+        }
+      }
+  - name: save
+    file: save.php
+    path: api/contacts/save.php
+    use_alerts:
+      success: true
+      failure: true
+    description: saves a contact (creates it when id is 0, updates it otherwise)
+    access: superadmin only (session + csrf token required)
+    request:
+      method: POST
+      source: FormData
+      fields:
+      - name: csrf_key
+        type: string (from hidden)
+        required: true
+        source: js (append)
+        description: csrf token to avoid cross site request forgery
+        note: use Token::generate() on hidden input
+      - name: id
+        type: int (from hidden)
+        required: true (to determine whether to edit or create - 0 when creating)
+        source: js (append)
+        description: id of the contact when editing
+      - name: name
+        type: string (from text)
+        required: true
+        source: form
+        description: name of the contact
+        note: maximum of 150 characters (contacts.name column)
+      - name: email
+        type: string (from email)
+        required: true
+        source: form
+        description: email address of the contact
+        note: must be a valid email address, maximum of 200 characters
+      - name: phone_number
+        type: string (from tel)
+        required: true
+        source: form
+        description: contact number
+        note: maximum of 30 characters; digits, spaces and + ( ) - . /
+      - name: status
+        type: string (from selection)
+        required: true
+        source: form
+        description: status of the contact
+        values:
+        - active
+        - inactive
+        note: case-insensitive; hidden is accepted as an alias of inactive (the contacts page labels it Hidden)
+    response:
+      content_type: application/json
+      http_code:
+        success: 201 (created) | 200 (updated)
+        errors: 401 | 403 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+        properties:
+        - None
+    example: |-
+      Example:
+      HTTP Status: 201
+      Response: {
+        "message": "Contact successfully created.",
+        "data": []
+      }
+
+      HTTP Status: 200
+      Response: {
+        "message": "Contact successfully updated.",
+        "data": []
+      }
+  - name: delete
+    file: delete.php
+    path: api/contacts/delete.php
+    use_alerts:
+      success: true
+      failure: true
+    description: deletes a contact (soft delete - the row is kept with active = 0 and recorded in the audit trail)
+    access: superadmin only (session + csrf token required)
+    request:
+      method: POST
+      source: FormData
+      fields:
+      - name: csrf_key
+        type: string (from hidden)
+        required: true
+        source: js (append)
+        description: csrf token to avoid cross site request forgery
+        note: use Token::generate() on hidden input
+      - name: id
+        type: int (from table row)
+        required: true
+        source: js (append)
+        description: id of the contact to delete
+    response:
+      content_type: application/json
+      http_code:
+        success: 200
+        errors: 401 | 403 | 404 | 405 | 422 | 500
+      fields:
+      - name: message
+        type: string
+        returned: always
+        description: a message describing the outcome of the request
+        conditions:
+        - after a successful or unsuccessful operation
+      - name: data
+        type: object
+        returned: always (can be empty - empty in this case)
+        description: contains the data returned by the endpoint
+        conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+        properties:
+        - None
+    example: |-
+      Example:
+      HTTP Status: 200
+      Response: {
+        "message": "Contact successfully deleted.",
+        "data": []
+      }

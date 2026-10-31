@@ -65,9 +65,11 @@ final class PublicProgramsRepository {
                     AND pp.category_id = 8
                     AND pp.active = 1
                     AND (pp.expires_at IS NULL OR pp.expires_at > NOW())
+                    AND pp.published_at <= NOW()
                     AND pr.status = 'active'
                     AND pr.active = 1
-                ORDER BY pp.published_at DESC";
+                ORDER BY pp.published_at DESC,
+                         pp.id DESC";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':id' => $programId]);

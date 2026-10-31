@@ -1,0 +1,98 @@
+api: eservices
+directory: api/eservices/
+name: save (endpoint)
+file: save.php
+path: api/eservices/save.php
+use_alerts:
+  upon_success: true
+  upon_failure: true
+description: saves an e-service (creates it when id is 0, updates it otherwise)
+access: superadmin only (session + csrf token required)
+request:
+  method: POST
+  source: FormData
+  fields:
+    - name: csrf_key
+      type: string (from hidden)
+      required: true
+      source: js (append)
+      description: csrf token to avoid cross site request forgery
+      note: use Token::generate() on hidden input
+    - name: id
+      type: int (from hidden)
+      required: true (to determine whether to edit or create - 0 when creating)
+      source: js (append)
+      description: id of the e-service when editing
+    - name: name
+      type: string (from text)
+      required: true
+      source: form
+      description: name of the e-service
+      note: maximum of 150 characters (eservices.name column)
+    - name: description
+      type: string (from text)
+      required: true
+      source: form
+      description: description of the e-service
+      note: maximum of 500 characters (matches the form maxlength)
+    - name: url
+      type: string (from url)
+      required: false (can be empty)
+      source: form
+      description: website address of the e-service
+      note: when given, must start with http:// or https:// (maximum of 2048 characters). Stored as an empty string when blank because the url column is NOT NULL
+    - name: status
+      type: string (from selection)
+      required: true
+      source: form
+      description: status of the e-service
+      values:
+        - active
+        - inactive
+      note: case-insensitive, so the form values Active / Inactive are accepted
+    - name: featured_image
+      type: file (from file input)
+      required: false
+      source: form or js (append)
+      description: logo of the e-service
+      note: JPEG, PNG or WebP, maximum of 10 MB and 5000 x 5000 pixels (SVG is not supported by the image manager)
+    - name: remove_featured_image
+      type: bool (from hidden)
+      required: false (update only)
+      source: js (append)
+      description: determines whether the stored image should be removed
+      note: cannot be combined with a new featured_image in the same request
+response:
+  content_type: application/json
+  http_code:
+    success: 201 (created) | 200 (updated)
+    errors: 400 | 401 | 403 | 404 | 405 | 413 | 415 | 422 | 500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+    - name: data
+      type: object
+      returned: always (can be empty - empty in this case)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request (empty)
+        - unsuccessful request (empty)
+      properties:
+        - None
+
+Example:
+HTTP Status: 201
+Response: {
+  "message": "E-service successfully created.",
+  "data": []
+}
+
+HTTP Status: 200
+Response: {
+  "message": "E-service successfully updated.",
+  "data": []
+}

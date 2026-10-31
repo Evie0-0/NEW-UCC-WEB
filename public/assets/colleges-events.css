@@ -1,0 +1,1176 @@
+/* FONT CONSISTENCY */
+.college-events-page,
+.college-events-page button,
+.college-events-page a,
+.college-events-modal,
+.college-events-modal button,
+.college-events-modal a,
+.news-image-lightbox {
+	font-family: "Manrope", sans-serif;
+}
+.college-events-page h1,
+.college-events-page h2,
+.college-events-page h3,
+.college-events-modal h2 {
+	font-family: "Oswald", sans-serif;
+}
+
+
+:root {
+	--ce-green: #07512f;
+	--ce-green-dark: #17452f;
+	--ce-gold: #c6a64e;
+	--ce-text: #263c31;
+	--ce-muted: #505650;
+	--ce-border: rgba(0,59,37,.1);
+	--ce-cream: #f8f8f4;
+	--ce-white: #fff;
+}
+html {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	min-height: 100%;
+}
+body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	width: 100%;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+body > .college-events-page {
+	flex: 1 0 auto;
+	width: 100%;
+}
+body > footer#contact {
+	margin-top: auto;
+	flex-shrink: 0;
+}
+/* BASE */
+.college-events-page.news-page {
+	position: relative;
+	overflow: hidden;
+	background: #f8f8f4;
+	padding: 48px 0 55px;
+	color: #263c31;
+}
+.college-events-page *,
+.college-events-modal *,
+.news-image-lightbox * {
+	box-sizing: border-box;
+}
+.college-events-page .news-container {
+	position: relative;
+	z-index: 3;
+	width: min(1120px,calc(100% - 90px));
+	margin: 0 auto;
+}
+/* HEADING */
+.college-events-page .news-heading {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+	margin-bottom: 17px;
+}
+.college-events-page .news-heading h1 {
+	margin: 0;
+	color: #17452f;
+	font-family: "Oswald",sans-serif;
+	font-size: 42px;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: .7px;
+}
+.college-events-page .news-heading-line {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	width: 235px;
+	margin: 9px 0 10px;
+}
+.college-events-page .news-heading-line span {
+	flex: 1;
+	height: 1px;
+	background: rgba(169,140,74,.48);
+}
+.college-events-page .news-heading-line i {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: #c9a933;
+}
+.college-events-page .news-heading p {
+	max-width: 510px;
+	margin: 0;
+	color: #424a45;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.55;
+}
+/* BREADCRUMB */
+.college-events-eyebrow {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 10px;
+	color: #7a817b;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: .55px;
+	line-height: 1.6;
+}
+.college-events-eyebrow a {
+	color: #07512f;
+	text-decoration: none;
+	transition: color .2s ease;
+}
+.college-events-eyebrow a:hover {
+	color: #c09c38;
+}
+.college-events-eyebrow > span:nth-child(2) {
+	color: #c6a64e;
+}
+.college-events-eyebrow > span:last-child {
+	max-width: 100%;
+	overflow-wrap: anywhere;
+}
+/* BACK TO COLLEGE */
+.college-events-back {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 31px;
+	padding: 0 14px;
+	border: 1px solid rgba(169,140,74,.35);
+	border-radius: 18px;
+	background: rgba(255,255,255,.7);
+	color: #435248;
+	font-family: "Manrope",sans-serif;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: .25px;
+	text-decoration: none;
+	transition: all .25s ease;
+}
+.college-events-back span {
+	font-size: 15px;
+	line-height: 1;
+}
+.college-events-back:hover {
+	transform: translateY(-2px);
+	border-color: #07512f;
+	background: #07512f;
+	color: #fff;
+	box-shadow: 0 5px 12px rgba(0,59,37,.12);
+}
+/* COLLEGE CONTEXT */
+.college-events-context {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	margin: 0 0 17px;
+	padding: 12px 15px;
+	border: 1px solid rgba(0,59,37,.12);
+	border-left: 3px solid #c6a64e;
+	border-radius: 7px;
+	background: rgba(255,255,255,.8);
+	box-shadow: 0 4px 13px rgba(0,59,37,.05);
+}
+.college-events-context-icon {
+	display: flex;
+	flex: 0 0 35px;
+	align-items: center;
+	justify-content: center;
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background: #07512f;
+	color: #fff;
+}
+.college-events-context-icon svg {
+	width: 18px;
+	height: 18px;
+	stroke-width: 1.8;
+}
+.college-events-context > div {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 3px;
+}
+.college-events-context-label {
+	color: #aa8c40;
+	font-size: 9px;
+	font-weight: 800;
+	letter-spacing: .8px;
+}
+.college-events-context strong {
+	color: #17452f;
+	font-size: 12px;
+	font-weight: 800;
+	line-height: 1.5;
+}
+.college-events-context small {
+	color: #68716b;
+	font-size: 10px;
+	font-weight: 500;
+	line-height: 1.5;
+}
+/* PROGRAM FILTERS */
+.college-events-page .news-filters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 14px;
+}
+.college-events-page .news-filter {
+	min-height: 31px;
+	height: auto;
+	padding: 7px 20px;
+	border: 1px solid rgba(169,140,74,.28);
+	border-radius: 18px;
+	background: rgba(255,255,255,.7);
+	color: #435248;
+	font-family: "Manrope",sans-serif;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: .3px;
+	line-height: 1.35;
+	text-align: center;
+	cursor: pointer;
+	transition: all .25s ease;
+}
+.college-events-page .news-filter:hover {
+	transform: translateY(-2px);
+	border-color: #9f8650;
+	background: #fff;
+	box-shadow: 0 5px 12px rgba(0,59,37,.08);
+}
+.college-events-page .news-filter.active {
+	border-color: #0a5132;
+	background: #07512f;
+	color: #fff;
+	box-shadow: 0 5px 12px rgba(0,59,37,.15);
+}
+/* FEATURED EVENT */
+.college-events-page .news-featured {
+	position: relative;
+	display: grid;
+	grid-template-columns: 1.1fr .9fr;
+	min-height: 300px;
+	margin-bottom: 20px;
+	overflow: hidden;
+	border: 1px solid rgba(0,59,37,.2);
+	border-radius: 9px;
+	background: #fff;
+	box-shadow: 0 6px 20px rgba(0,59,37,.14);
+	animation: newsFadeUp .55s ease both;
+}
+.college-events-page .news-featured:empty {
+	display: none;
+}
+.college-events-page .news-featured-image {
+	position: relative;
+	min-height: 300px;
+	overflow: hidden;
+	background: #eef1ed;
+}
+.college-events-page .news-featured-image::after {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg,transparent 55%,rgba(255,255,255,.1));
+	content: "";
+	pointer-events: none;
+}
+.college-events-page .news-featured-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform .6s ease;
+}
+.college-events-page .news-featured:hover .news-featured-image img {
+	transform: scale(1.035);
+}
+.college-events-page .news-featured-content {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-width: 0;
+	overflow: hidden;
+	padding: 30px 35px;
+	background: linear-gradient(135deg,#fff 0%,#fcfcf8 62%,#f3f4ef 100%);
+}
+.college-events-page .news-featured-content::before {
+	position: absolute;
+	top: -85px;
+	right: -70px;
+	width: 230px;
+	height: 230px;
+	border: 1px dashed rgba(184,155,75,.395);
+	border-radius: 50%;
+	content: "";
+	pointer-events: none;
+}
+.college-events-page .news-featured-glow {
+	position: absolute;
+	right: -80px;
+	bottom: -120px;
+	width: 270px;
+	height: 270px;
+	border-radius: 50%;
+	background: radial-gradient(circle,rgba(19,94,58,.322),transparent 68%);
+	pointer-events: none;
+}
+.college-events-page .news-badge,
+.college-events-page .news-featured-category {
+	position: relative;
+	z-index: 2;
+	width: max-content;
+	max-width: 100%;
+	padding: 5px 10px;
+	border-radius: 5px;
+	background: #07512f;
+	color: #fff;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: .35px;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+.college-events-page .news-featured-content h2 {
+	position: relative;
+	z-index: 2;
+	max-width: 450px;
+	margin: 12px 0 9px;
+	color: #183e2c;
+	font-family: "Oswald",sans-serif;
+	font-size: 29px;
+	font-weight: 600;
+	line-height: 1.12;
+	letter-spacing: .35px;
+	overflow-wrap: anywhere;
+}
+.college-events-page .news-meta {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 7px;
+	color: #aa8c40;
+	font-size: 11px;
+}
+.college-events-page .news-meta span {
+	font-size: 12px;
+}
+.college-events-page .news-gold-divider {
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	max-width: 210px;
+	height: 2px;
+	margin: 12px 0 10px;
+	background: linear-gradient(90deg,#c6a64e,rgba(198,166,78,.08));
+}
+.college-events-page .news-featured-content p {
+	position: relative;
+	z-index: 2;
+	max-width: 410px;
+	margin: 0 0 15px;
+	color: #505650;
+	font-size: 12px;
+	line-height: 1.55;
+}
+.college-events-page .news-read-more {
+	position: relative;
+	z-index: 4;
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 17px;
+	width: max-content;
+	min-width: 105px;
+	padding: 7px 9px 7px 12px;
+	border: 0;
+	border-radius: 16px;
+	background: #07512f;
+	color: #fff;
+	font-family: "Manrope",sans-serif;
+	font-size: 10px;
+	font-weight: 800;
+	text-decoration: none;
+	cursor: pointer;
+	transition: all .25s ease;
+}
+.college-events-page .news-read-more span {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 17px;
+	height: 17px;
+	border-radius: 50%;
+	background: #fff;
+	color: #07512f;
+	font-size: 11px;
+	transition: transform .25s ease;
+}
+.college-events-page .news-read-more:hover {
+	transform: translateY(-2px);
+	background: #c09c38;
+	box-shadow: 0 5px 12px rgba(0,59,37,.16);
+}
+.college-events-page .news-read-more:hover span {
+	transform: translateX(3px);
+}
+/* FEATURED PROGRAM LABEL */
+.college-events-page .news-featured-program {
+	position: relative;
+	z-index: 2;
+	width: fit-content;
+	max-width: 100%;
+	margin-top: 10px;
+	padding: 5px 9px;
+	border: 1px solid rgba(169,140,74,.25);
+	border-radius: 4px;
+	color: #68716b;
+	background: rgba(255,255,255,.75);
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 1.5;
+	overflow-wrap: anywhere;
+}
+/* SECTION TITLE */
+.college-events-page .news-section-title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 15px;
+	margin: 0 0 9px;
+}
+.college-events-page .news-section-title > div {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
+}
+.college-events-page .news-section-title span {
+	color: #2c4839;
+	font-size: 15px;
+	font-weight: 900;
+	letter-spacing: .2px;
+}
+.college-events-page .news-mini-line {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+.college-events-page .news-mini-line i {
+	display: block;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: #c6a64e;
+}
+.college-events-page .news-mini-line i:nth-child(2) {
+	width: 28px;
+	height: 1px;
+	border-radius: 0;
+}
+.college-events-page .news-mini-line i:nth-child(3) {
+	width: 4px;
+	height: 4px;
+}
+.college-events-page .college-events-count {
+	flex-shrink: 0;
+	color: #8e805f;
+	font-size: 10px;
+	font-weight: 800;
+}
+/* EVENT GRID */
+.college-events-page .news-grid-wrapper {
+	position: relative;
+}
+.college-events-page .news-grid {
+	display: grid;
+	grid-template-columns: repeat(3,minmax(0,1fr));
+	gap: 10px;
+}
+.college-events-page .news-card {
+	min-width: 0;
+	overflow: hidden;
+	border: 1px solid rgba(0,59,37,.08);
+	border-radius: 9px;
+	background: #fff;
+	box-shadow: 0 4px 13px rgba(0,59,37,.08);
+	transition: transform .3s ease,box-shadow .3s ease;
+	animation: newsFadeUp .45s ease both;
+}
+.college-events-page .news-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 10px 24px rgba(0,59,37,.14);
+}
+.college-events-page .news-card-image {
+	position: relative;
+	display: block;
+	height: 145px;
+	overflow: hidden;
+	background: #edf0eb;
+}
+.college-events-page .news-card-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform .5s ease;
+}
+.college-events-page .news-card:hover .news-card-image img {
+	transform: scale(1.06);
+}
+.college-events-page .news-card-category {
+	position: absolute;
+	z-index: 2;
+	bottom: 8px;
+	left: 9px;
+	width: max-content;
+	max-width: calc(100% - 18px);
+	padding: 4px 7px;
+	border-radius: 4px;
+	background: rgba(3,67,41,.93);
+	color: #fff;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: .25px;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+.college-events-page .news-card-content {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding: 10px 12px 12px;
+}
+.college-events-page .news-card h3 {
+	min-height: 54px;
+	margin: 0 0 7px;
+	color: #263b31;
+	font-family: "Manrope",sans-serif;
+	font-size: 13px;
+	font-weight: 800;
+	line-height: 1.34;
+	overflow-wrap: anywhere;
+}
+.college-events-page .news-card-date {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	color: #8e805f;
+	font-size: 11px;
+	font-weight: 700;
+}
+.college-events-page .news-card-date span {
+	color: #c1a044;
+	font-size: 9px;
+}
+.college-events-page .news-card-line {
+	width: 100%;
+	height: 1px;
+	margin: 8px 0;
+	background: linear-gradient(90deg,#c6a64e,rgba(198,166,78,.05));
+}
+.college-events-page .news-card-program,
+.college-events-page .college-event-program {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	max-width: 100%;
+	margin-top: 8px;
+	padding: 5px 7px;
+	border: 1px solid rgba(169,140,74,.2);
+	border-radius: 4px;
+	color: #68716b;
+	background: #fffefa;
+	font-size: 9px;
+	font-weight: 700;
+	line-height: 1.45;
+	overflow-wrap: anywhere;
+}
+.college-events-page .news-card-program svg,
+.college-events-page .college-event-program svg {
+	flex-shrink: 0;
+	width: 12px;
+	height: 12px;
+	color: #c1a044;
+}
+.college-events-page .news-card-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 15px;
+	min-width: 83px;
+	margin-top: 9px;
+	padding: 6px 7px 6px 9px;
+	border: 0;
+	border-radius: 12px;
+	background: #07512f;
+	color: #fff;
+	font-family: "Manrope",sans-serif;
+	font-size: 10px;
+	font-weight: 800;
+	text-decoration: none;
+	cursor: pointer;
+	transition: all .25s ease;
+}
+.college-events-page .news-card-button span {
+	font-size: 10px;
+}
+.college-events-page .news-card-button:hover {
+	transform: translateX(2px);
+	background: #c09c38;
+}
+/* EMPTY STATE */
+.college-events-page .news-empty,
+.college-events-page .news-card-empty {
+	grid-column: 1/-1;
+	padding: 45px 20px;
+	border: 1px solid rgba(0,59,37,.1);
+	border-radius: 9px;
+	background: #fff;
+	text-align: center;
+	box-shadow: 0 4px 13px rgba(0,59,37,.08);
+}
+.college-events-page .news-empty h3,
+.college-events-page .news-card-empty h3 {
+	margin: 0 0 7px;
+	color: #17452f;
+	font-family: "Oswald",sans-serif;
+	font-size: 22px;
+	font-weight: 600;
+}
+.college-events-page .news-empty p,
+.college-events-page .news-card-empty p {
+	margin: 0;
+	color: #68716b;
+	font-size: 11px;
+	line-height: 1.7;
+}
+/* SLIDER ARROWS */
+.college-events-page .news-slider-arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 27px;
+	height: 27px;
+	padding: 0;
+	border: 1px solid rgba(0,59,37,.08);
+	border-radius: 50%;
+	background: #fff;
+	color: #5b665f;
+	font-size: 22px;
+	line-height: 1;
+	box-shadow: 0 4px 12px rgba(0,59,37,.1);
+	cursor: pointer;
+	transform: translateY(-50%);
+	transition: all .25s ease;
+}
+.college-events-page .news-slider-arrow:hover:not(:disabled) {
+	transform: translateY(-50%) scale(1.08);
+	background: #07512f;
+	color: #fff;
+}
+.college-events-page .news-slider-arrow:disabled {
+	opacity: .3;
+	cursor: not-allowed;
+}
+.college-events-page .news-slider-prev {
+	left: -14px;
+}
+.college-events-page .news-slider-next {
+	right: -14px;
+}
+/* PAGINATION
+   Supports the original News page class names and the current JS class names. */
+.college-events-page .news-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 9px;
+	margin-top: 17px;
+}
+.college-events-page .news-page-number,
+.college-events-page .news-page-arrow,
+.college-events-page .news-page-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid rgba(169,140,74,.2);
+	background: #fff;
+	color: #3f4b45;
+	font-family: "Manrope",sans-serif;
+	font-size: 12px;
+	font-weight: 800;
+	cursor: pointer;
+	transition: all .2s ease;
+}
+.college-events-page .news-page-number,
+.college-events-page .news-page-button {
+	width: 24px;
+	min-width: 24px;
+	height: 24px;
+	padding: 0;
+	border-radius: 50%;
+}
+.college-events-page .news-page-number:hover,
+.college-events-page .news-page-button:hover {
+	transform: translateY(-2px);
+	border-color: #07512f;
+	color: #07512f;
+}
+.college-events-page .news-page-number.active,
+.college-events-page .news-page-button.active {
+	border-color: #07512f;
+	background: #07512f;
+	color: #fff;
+	box-shadow: 0 4px 10px rgba(0,59,37,.15);
+}
+.college-events-page .news-page-arrow {
+	padding: 7px 11px;
+	border-radius: 14px;
+}
+.college-events-page .news-page-arrow:hover:not(:disabled) {
+	background: #07512f;
+	color: #fff;
+}
+.college-events-page .news-page-arrow:disabled {
+	opacity: .35;
+	cursor: not-allowed;
+}
+.college-events-page .news-page-ellipsis {
+	padding: 0 2px;
+	color: #8e805f;
+	font-size: 12px;
+}
+/* VIEW ALL */
+.college-events-page .news-view-all {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	width: 205px;
+	min-height: 32px;
+	margin: 15px auto 0;
+	padding: 0 12px;
+	border: 1px solid rgba(183,150,58,.48);
+	border-radius: 17px;
+	background: rgba(255,255,255,.7);
+	color: #a48539;
+	font-family: "Manrope",sans-serif;
+	font-size: 12px;
+	font-weight: 900;
+	letter-spacing: .2px;
+	cursor: pointer;
+	transition: all .25s ease;
+}
+.college-events-page .news-view-all span {
+	font-size: 13px;
+}
+.college-events-page .news-view-all:hover {
+	transform: translateY(-2px);
+	border-color: #07512f;
+	background: #07512f;
+	color: #fff;
+	box-shadow: 0 6px 14px rgba(0,59,37,.12);
+}
+/* BACKGROUND DECORATIONS */
+.college-events-page .news-decor {
+	position: absolute;
+	z-index: 1;
+	pointer-events: none;
+}
+.college-events-page .news-decor-top {
+	top: -40px;
+	right: -25px;
+	width: 180px;
+	height: 180px;
+	border: 1px dashed rgba(185,151,61,.22);
+	border-left-color: transparent;
+	border-radius: 50%;
+	transform: rotate(25deg);
+}
+.college-events-page .news-decor-top::after {
+	position: absolute;
+	top: 27px;
+	left: 22px;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: #c7a94f;
+	box-shadow: 16px 15px 0 rgba(199,169,79,.45),32px 30px 0 rgba(199,169,79,.25),48px 45px 0 rgba(199,169,79,.15);
+	content: "";
+}
+.college-events-page .news-decor-right {
+	top: 320px;
+	right: 10px;
+	width: 105px;
+	height: 260px;
+	border-right: 1px dashed rgba(185,151,61,.18);
+	border-radius: 0 80% 80% 0;
+	transform: rotate(-13deg);
+}
+.college-events-page .news-decor-bottom {
+	bottom: -90px;
+	left: -70px;
+	width: 250px;
+	height: 170px;
+	border-radius: 50% 50% 0 0;
+	background: radial-gradient(circle at 50% 0,rgba(5,81,47,.08),rgba(5,81,47,.03) 60%,transparent 61%);
+}
+.college-events-page .news-decor-bottom::after {
+	position: absolute;
+	top: 70px;
+	left: 85px;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: #c7a94f;
+	box-shadow: 12px 0 #c7a94f,24px 0 #c7a94f,36px 0 rgba(199,169,79,.7),48px 0 rgba(199,169,79,.5),60px 0 rgba(199,169,79,.35);
+	content: "";
+}
+/* PAGE DOTS USED IN THE PHP */
+.college-events-page ~ .page-dots,
+body > .page-dots {
+	pointer-events: none;
+}
+.page-dots {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	overflow: hidden;
+	pointer-events: none;
+}
+.dot-pattern {
+	position: absolute;
+	width: 70px;
+	height: 70px;
+	background-image: radial-gradient(rgba(198,166,78,.5) 1px,transparent 1px);
+	background-size: 10px 10px;
+	opacity: .18;
+}
+.dot-1 {
+	top: 95px;
+	left: 2%;
+}
+.dot-2 {
+	top: 400px;
+	right: 2%;
+}
+.dot-3 {
+	bottom: 160px;
+	left: 3%;
+}
+.dot-4 {
+	right: 8%;
+	bottom: 45px;
+}
+/* EVENT MODAL*/
+.college-events-modal {
+	position: fixed;
+	z-index: 10000;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity .25s ease,visibility .25s ease;
+}
+.college-events-modal.active,
+.college-events-modal[aria-hidden="false"] {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+}
+.college-events-modal .news-modal-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0,28,18,.76);
+	backdrop-filter: blur(3px);
+}
+.college-events-modal .news-modal-dialog {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	width: min(720px,100%);
+	max-height: 88vh;
+	overflow: hidden;
+	border: 1px solid rgba(198,166,78,.3);
+	border-radius: 9px;
+	background: #fff;
+	box-shadow: 0 18px 55px rgba(0,0,0,.25);
+	transform: translateY(12px);
+	transition: transform .25s ease;
+}
+.college-events-modal.active .news-modal-dialog,
+.college-events-modal[aria-hidden="false"] .news-modal-dialog {
+	transform: translateY(0);
+}
+.college-events-modal .news-modal-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 18px;
+	padding: 21px 24px 17px;
+	border-bottom: 1px solid rgba(0,59,37,.1);
+	background: linear-gradient(135deg,#fff 0%,#fcfcf8 100%);
+}
+.college-events-modal .news-modal-heading {
+	min-width: 0;
+}
+.college-events-modal .news-modal-label {
+	display: block;
+	margin-bottom: 7px;
+	color: #aa8c40;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: .8px;
+}
+.college-events-modal .news-modal-header h2 {
+	margin: 0;
+	color: #183e2c;
+	font-family: "Oswald",sans-serif;
+	font-size: 26px;
+	font-weight: 600;
+	line-height: 1.2;
+	overflow-wrap: anywhere;
+}
+.college-events-modal .news-modal-close {
+	display: flex;
+	flex: 0 0 30px;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: 1px solid rgba(0,59,37,.12);
+	border-radius: 50%;
+	background: #fff;
+	color: #07512f;
+	font-size: 22px;
+	line-height: 1;
+	cursor: pointer;
+	transition: all .2s ease;
+}
+.college-events-modal .news-modal-close:hover {
+	background: #07512f;
+	color: #fff;
+}
+.college-events-modal .news-modal-body {
+	padding: 20px 24px 24px;
+	overflow-y: auto;
+}
+.college-events-modal .news-modal-image {
+	height: 270px;
+	margin: 0 0 15px;
+	overflow: hidden;
+	border-radius: 5px;
+	background: #eef1ed;
+}
+.college-events-modal .news-modal-image a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	cursor: zoom-in;
+}
+.college-events-modal .news-modal-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.college-events-modal .news-modal-meta {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+.college-events-modal .news-modal-category {
+	padding: 5px 9px;
+	border-radius: 4px;
+	background: #07512f;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: .3px;
+}
+.college-events-modal .news-modal-date {
+	color: #8e805f;
+	font-size: 11px;
+	font-weight: 700;
+}
+.college-events-modal .college-events-modal-program {
+	margin-bottom: 12px;
+	color: #8e805f;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.7;
+	overflow-wrap: anywhere;
+}
+.college-events-modal .news-modal-accent {
+	width: 100%;
+	max-width: 210px;
+	height: 2px;
+	margin: 12px 0 10px;
+	background: linear-gradient(90deg,#c6a64e,rgba(198,166,78,.08));
+}
+.college-events-modal .news-modal-placeholder,
+.college-events-modal .event-modal-description {
+	margin: 0;
+	color: #505650;
+	font-family: "Manrope",sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.8;
+	white-space: pre-line;
+	overflow-wrap: anywhere;
+}
+.college-events-modal .news-modal-footer {
+	padding: 13px 24px;
+	border-top: 1px solid rgba(0,59,37,.1);
+	background: #fcfcf8;
+	color: #68716b;
+	font-size: 10px;
+	font-weight: 700;
+}
+/* IMAGE LIGHTBOX*/
+.news-image-lightbox {
+	position: fixed;
+	z-index: 11000;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 25px;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity .25s ease,visibility .25s ease;
+}
+.news-image-lightbox.active,
+.news-image-lightbox[aria-hidden="false"] {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+}
+.news-image-lightbox-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0,0,0,.9);
+}
+.news-image-lightbox-content {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: min(1200px,100%);
+	height: 85vh;
+}
+.news-image-lightbox-content img {
+	display: block;
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+.news-image-lightbox-close {
+	position: absolute;
+	top: -16px;
+	right: -16px;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	border: 1px solid rgba(255,255,255,.35);
+	border-radius: 50%;
+	background: rgba(255,255,255,.12);
+	color: #fff;
+	font-size: 24px;
+	line-height: 1;
+	cursor: pointer;
+	transition: background .2s ease;
+}
+.news-image-lightbox-close:hover {
+	background: #07512f;
+}
+
+/* FOCUS STATES */
+.college-events-page button:focus-visible,
+.college-events-page a:focus-visible,
+.college-events-modal button:focus-visible,
+.news-image-lightbox button:focus-visible {
+	outline: 2px solid #c6a64e;
+	outline-offset: 3px;
+}
+/* ANIMATION */
+@keyframes newsFadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+
+
+
+
+/* FORCE THE SHARED NAVBAR, DROPDOWN, UTILITY BAR, AND FOOTER TO USE MANROPE */
+body header,
+body header *,
+body nav,
+body nav *,
+body .navbar,
+body .navbar *,
+body .navbar-container,
+body .navbar-container *,
+body .nav-links,
+body .nav-links *,
+body .nav-menu,
+body .nav-menu *,
+body .dropdown,
+body .dropdown *,
+body .dropdown-menu,
+body .dropdown-menu *,
+body .submenu,
+body .submenu *,
+body .utility-bar,
+body .utility-bar *,
+body footer#contact,
+body footer#contact * {
+	font-family: "Manrope", sans-serif !important;
+}
+

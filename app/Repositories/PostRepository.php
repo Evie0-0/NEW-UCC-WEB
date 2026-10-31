@@ -57,13 +57,19 @@ final class PostRepository {
     }
 
     public function fetchItemById(int $id): array|false {
-        $query = "
-            SELECT p.*, author.username AS author_username, editor.username AS editor_username
-            FROM posts AS p
-            LEFT JOIN users AS author ON author.id = p.author_id
-            LEFT JOIN users AS editor ON editor.id = p.editor_id
-            WHERE p.id = ?
-            AND p.active = 1";
+        $query = "SELECT *,
+            CASE
+                WHEN status = 'published'
+                    AND expires_at < CURRENT_DATE
+                THEN 'expired'
+                WHEN status = 'published'
+                    AND published_at > CURRENT_DATE
+                THEN 'pending'
+                ELSE status
+            END AS display_status
+            FROM posts
+            WHERE id = ?
+            AND active = 1";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$id]);
 
@@ -81,11 +87,8 @@ final class PostRepository {
         $params = [];
 
         if ($data['search'] !== '') {
-            $conditions[] = '(title LIKE :search_title OR category_id IN (
-                SELECT id FROM categories WHERE name LIKE :search_category
-            ))';
-            $params['search_title'] = "%{$data['search']}%";
-            $params['search_category'] = "%{$data['search']}%";
+            $conditions[] = 'title LIKE :search';
+            $params['search'] = "%{$data['search']}%";
         }
 
         $filterCondition = match ($data['filter']) {
@@ -108,8 +111,9 @@ final class PostRepository {
         };
 
         $conditions[] = $filterCondition;
+        $where = implode(' AND ', $conditions);
 
-        return [implode(' AND ', $conditions), $params];
+        return [$where, $params];
     }
 
     /** @param array<string, mixed> $data */
@@ -120,6 +124,7 @@ final class PostRepository {
             FROM posts
             WHERE $where
         ";
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute($params);
 
@@ -132,8 +137,8 @@ final class PostRepository {
         [$where, $params] = $this->buildWhere($data);
 
         $orderBy = match ($data['sort']) {
-            'added-desc' => 'created_at DESC',
-            'added-asc' => 'created_at ASC',
+            'create-desc' => 'created_at DESC',
+            'create-asc' => 'created_at ASC',
             'title-desc' => 'title DESC',
             'title-asc' => 'title ASC',
             'publish-desc' => 'published_at DESC',
@@ -143,8 +148,7 @@ final class PostRepository {
             default => throw new InvalidArgumentException('Invalid post sort.')
         };
 
-        $query = "SELECT posts.*,
-            (SELECT name FROM categories WHERE categories.id = posts.category_id) AS display_category,
+        $query = "SELECT *,
             CASE
                 WHEN status = 'published'
                     AND expires_at < CURRENT_DATE
@@ -159,6 +163,7 @@ final class PostRepository {
             ORDER BY $orderBy, id DESC
             LIMIT 10 OFFSET :offset
         ";
+
         $stmt = $this->conn->prepare($query);
 
         foreach ($params as $key => $value) {

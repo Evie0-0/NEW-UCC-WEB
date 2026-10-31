@@ -3,41 +3,38 @@ declare(strict_types=1);
 
 use Core\Token;
 use Serv\ContactServices;
-use Serv\UserServices;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/app/Support/helper.php';
 
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
+session_start();
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
-    header('Allow: POST');
+if (!isSuperadmin()) {
+    jsonResponse(401, 'You are unauthorized to make this request.');
+}
+
+session_write_close();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     jsonResponse(405, 'Invalid request method.');
-    exit;
 }
 
-if (!UserServices::isAuthorized([
-    UserServices::SUPERADMIN_KEY,
-    UserServices::DEAN_KEY,
-    UserServices::PROGRAM_HEAD_KEY
-])) {
-    jsonResponse(403, 'Unauthorized access.');
-    exit;
+session_start();
+
+if (!Token::verify($_POST['csrf_key'] ?? null)) {
+    jsonResponse(403, 'Invalid CSRF token.');
 }
 
-if (!Token::verify($_POST[Token::KEY] ?? null)) {
-    jsonResponse(403, 'Invalid CSRF token. Refresh the page and try again.');
-    exit;
-}
+session_write_close();
 
 try {
-    $service = new ContactServices();
-    $service->delete();
+    $serv = new ContactServices();
+    $serv->delete();
 } catch (Throwable $e) {
-    logError($e, 'Failed to delete contact.', 'ERROR', [
+    logError($e, 'Failed to process delete request.', 'ERROR', [
+        'action' => 'delete contact',
         'endpoint' => 'contacts/delete'
     ]);
-    jsonResponse(500, 'Unable to delete contact. Please try again.');
-    exit;
+
+    jsonResponse(500);
 }

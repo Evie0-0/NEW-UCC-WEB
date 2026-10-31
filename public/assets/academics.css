@@ -1,0 +1,1083 @@
+:root {
+  --green-950: #02471e;
+  --green-900: #004b25;
+  --green-800: #006039;
+  --green-700: #087342;
+  --green-600: #12804a;
+  --green-100: #e9f4ed;
+  --gold: #eab72e;
+  --gold-light: #f8d86b;
+  --cream: #f8faf7;
+  --text: #142019;
+  --muted: #6b756f;
+  --white: #fff;
+  --border: #dfe7e1;
+  --shadow: 0 18px 50px rgba(0, 58, 36, .10);
+  --radius: 24px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: "Manrope", sans-serif;
+  color: var(--text);
+  background: var(--cream);
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+
+.dot-grid {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  z-index: 1;
+  background-image: radial-gradient(
+    circle,
+    #dcf27c 2px,
+    transparent 2px
+  );
+  background-size: 13px 13px;
+}
+
+
+/* BACK TO TOP */
+.back-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: #8df072;
+  color: #003b29;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: .25s;
+  z-index: 80;
+}
+.back-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+.back-top:hover {
+  background: #b3c042;
+  transform: translateY(-3px);
+}
+
+/* Reveal animation */
+.reveal { opacity: 0; transform: translateY(25px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.show { opacity: 1; transform: none; }
+
+
+
+
+/*COLLEGE OF BUSINESS & ACCOUNTANCY*/
+.cba-page {
+    background: #fff;
+    overflow: hidden;
+}
+.cba-hero {
+    position: relative;
+    min-height: 345px;
+    background:
+        linear-gradient(
+            90deg,
+            #005b20 0%,
+            #00652c 45%,
+            #017d39 100%
+        );
+    color: #fff;
+    overflow: hidden;
+}
+.cba-hero-img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    z-index:0;
+}
+.cba-hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,rgba(0,59,37,.92),rgba(0,75,45,.72),rgba(0,59,37,.55));
+    z-index:1;
+}
+.cba-hero-wave{
+    z-index:4;
+}
+.cba-hero-inner {
+    width: min(1550px, calc(100% - 80px));
+    min-height: 355px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 450px 1fr;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+/* DEAN */
+.cba-dean {
+    height: 100%;
+    min-height: 355px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgba(234,183,46,.65);
+    text-align: center;
+}
+.cba-dean-photo {
+    width: 200px;
+    height: 200px;
+    padding: 5px;
+    border: 3px solid #eab72e;
+    border-radius: 50%;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,.18);
+}
+.cba-dean-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.cba-dean h2 {
+    margin: 12px 0 3px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    line-height: 1.1;
+    color: #fff;
+}
+.cba-dean p {
+    margin: 0;
+    color: rgba(255,255,255,.9);
+    font-size: 12px;
+    font-weight: 500;
+    transform: translateY(-6px);
+}
+/* HERO TITLE */
+.cba-hero-content {
+    position: relative;
+    height: 100%;
+    padding: 45px 30px 25px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transform: translateY(-30px) !important;
+}
+.cba-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 17px;
+    color: #eab72e;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+.cba-breadcrumb b {
+    color: rgba(234,183,46,.7);
+}
+.cba-breadcrumb-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 4px;
+}
+.cba-breadcrumb-dots i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #eab72e;
+}
+.cba-breadcrumb-dots span {
+    width: 35px;
+    height: 1px;
+    background: #eab72e;
+}
+.cba-hero h1 {
+    position: relative;
+    z-index: 3;
+    margin: 0;
+    font-family: "Oswald", sans-serif;
+    font-size: clamp(42px, 5vw, 67px);
+    font-weight: 700;
+    line-height: .98;
+    letter-spacing: -1px;
+    color: #fff;
+    max-width: 700px;
+}
+.cba-hero h1 strong {
+    display: block;
+    color: #2db3bd;
+    font-weight: 700;
+}
+/* BUILDING DECORATION */
+.cba-building {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: .55;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+.cba-building img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter:
+        grayscale(.3)
+        brightness(.8)
+        sepia(.2)
+        saturate(1.2);
+}
+/* GOLD WAVE */
+.cba-hero-wave {
+    position: absolute;
+    left: -5%;
+    bottom: -48px;
+    width: 110%;
+    height: 82px;
+    background: #fff;
+    border-radius: 50% 50% 0 0 / 80% 80% 0 0;
+    z-index: 4;
+}
+.cba-hero-wave::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -5px;
+    width: 35%;
+    height: 10px;
+    background: #eab72e;
+    border-radius: 0 100% 0 0;
+}
+
+/*ABOUT*/
+.cba-about {
+    position: relative;
+    padding: 25px 0 45px;
+    background: #fff;
+    overflow: hidden;
+}
+.cba-about::before {
+    content: "CBA";
+    position: absolute;
+    right: -20px;
+    top:-15px;
+    font-family: "Oswald", sans-serif;
+    font-size: 200px;
+    font-weight: 700;
+    line-height: 1;
+    color: rgba(0, 59, 37, 0.1);
+    pointer-events: none;
+} 
+.cba-about::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 90px;
+    width: 90px;
+    height: 1px;
+    background: #eab72e;
+    opacity: .7;
+}
+.cba-section-title {
+    position: relative;
+    margin-bottom: 38px;
+    z-index: 1;
+}
+.cba-section-title h2 {
+    margin: 0;
+    font-family: "Oswald", sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: #003b25;
+}
+.cba-section-title span {
+    display: block;
+    width: 270px;
+    height: 3px;
+    margin-top: 9px;
+    background: #eab72e;
+}
+.cba-about-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: .85fr 1fr 1fr;
+    gap: 30px;
+    align-items: stretch;
+}
+/* CBA LOGO */
+.cba-about-logo {
+    position: relative;
+    min-height: 270px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e7ebe7;
+    border-radius: 16px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(234,183,46,.10),
+            transparent 62%
+        ),
+        #fafaf7;
+    overflow: hidden;
+}
+.cba-about-logo::before {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    left: -75px;
+    top: -75px;
+    border: 2px solid rgba(234, 184, 46, 0.604);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 12px rgba(234, 184, 46, 0.271),
+        0 0 0 24px rgba(234,183,46,.025);
+}
+
+.cba-about-logo::after {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    right: -75px;
+    bottom: -75px;
+    border: 2px solid rgba(0, 59, 37, 0.393);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 12px rgba(0, 59, 37, 0.164),
+        0 0 0 24px rgba(0,59,37,.02);
+}
+.cba-about-logo img {
+    position: relative;
+    z-index: 2;
+    width: min(245px, 75%);
+    max-height: 220px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 18px rgba(0,59,37,.08));
+}
+/* VISION/MISSION */
+.cba-about-block {
+    position: relative;
+    min-height: 270px;
+    padding: 28px 30px 30px;
+    border: 1px solid #e7ebe7;
+    border-left: 3px solid #eab72e;
+    border-radius: 0 16px 16px 0;
+    background: #fff;
+    box-shadow: 0 8px 25px rgba(0,59,36,.045);
+    overflow: hidden;
+}
+/* tiny top accent */
+.cba-about-block::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 70px;
+    height: 2px;
+    background: #003b25;
+}
+.cba-about-block:first-of-type {
+    border-left: none;
+}
+/* large decorative quotation mark */
+.cba-quote {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    margin: 0;
+    font-family: Georgia, serif;
+    font-size: 90px;
+    line-height: .8;
+    color: rgba(234, 184, 46, 0.418);
+    font-weight: 700;
+    z-index: 1;
+}
+
+/* small section number */
+.cba-about-block::after {
+    content: "01";
+    position: absolute;
+    right: 22px;
+    bottom: 18px;
+    font-family: "Oswald", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: rgba(0, 59, 37, 0.344);
+}
+.cba-about-block:last-child::after {
+    content: "02";
+}
+
+.cba-about-block h3 {
+    position: relative;
+    z-index: 2;
+    margin: 8px 0 14px;
+    font-family: "Oswald", sans-serif;
+    font-size: 22px;
+    letter-spacing: .5px;
+    color: #003b25;
+}
+.cba-about-block p {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+    color: #3b443f;
+    font-size: 13px;
+    line-height: 1.75;
+}
+/*PROGRAMS*/
+.cba-programs {
+    position: relative;
+    padding: 55px 0 75px;
+    background:
+        linear-gradient(
+            180deg,
+            #f8f9f6 0%,
+            #ffffff 100%
+        );
+}
+.cba-programs::before {
+    content: "";
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    right: -180px;
+    top: 80px;
+    border: 1px solid rgba(0,59,37,.05);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.cba-programs::after {
+    content: "";
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    right: -110px;
+    top: 150px;
+    border: 1px solid rgba(234,183,46,.12);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.cba-program-heading {
+    position: relative;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.cba-program-heading h2 {
+    display: inline-block;
+    margin: 0;
+    font-family: "Oswald", sans-serif;
+    color: #003b25;
+    font-size: 31px;
+    letter-spacing: .7px;
+}
+.cba-program-heading p {
+    margin: 7px 0 0;
+    color: #737b76;
+    font-size: 12px;
+}
+.cba-heading-dots {
+    position: absolute;
+    top: 8px;
+    left: calc(50% + 105px);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.cba-heading-dots i {
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #eab72e;
+}
+.cba-heading-line {
+    position: absolute;
+    top: 12px;
+    width: 58px;
+    height: 1px;
+    background: #eab72e;
+}
+.cba-heading-line:first-child {
+    right: calc(50% + 105px);
+}
+/* FILTERS */
+.cba-filters {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 30px;
+}
+.cba-filters button:hover,
+.cba-filters button.active {
+    color: #fff;
+    border-color: #003b25;
+    background: #003b25;
+    box-shadow: 0 7px 18px rgba(0,59,37,.15);
+}
+.cba-filters button {
+    padding: 9px 17px;
+    border: 1px solid #dfe5df;
+    border-radius: 999px;
+    background: rgba(255,255,255,.85);
+    color: #314039;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .2px;
+    cursor: pointer;
+    transition: all .25s ease;
+}
+.cba-filters button:hover,
+.cba-filters button.active {
+    color: #fff;
+    border-color: #006039;
+    background: #006039;
+    box-shadow: 0 5px 12px rgba(0,75,45,.12);
+}
+
+
+/* PROGRAM GRID */
+.cba-program-grid {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+}
+.cba-program-card {
+	position: relative;
+	min-height: 200px;
+	padding: 24px 23px 20px;
+	border: 1px solid #e1e6e2;
+	border-radius: 14px;
+	background: #fff;
+	box-shadow:
+		0 5px 18px rgba(0,59,36,.035),
+		0 1px 2px rgba(0,0,0,.02);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transition:
+		transform .3s ease,
+		box-shadow .3s ease,
+		border-color .3s ease;
+}
+/* GOLD TOP LINE */
+.cba-program-card::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 0;
+	height: 3px;
+	background: #eab72e;
+	transition: width .35s ease;
+}
+/* FAINT NUMBER WATERMARK */
+.cba-program-card::after {
+	content: attr(data-number);
+	position: absolute;
+	right: 15px;
+	top: 10px;
+	font-family: "Oswald", sans-serif;
+	font-size: 90px;
+	line-height: 1;
+	color: rgba(0,59,37,.025);
+	pointer-events: none;
+}
+.cba-program-card:hover {
+	transform: translateY(-7px);
+	border-color: #cbd9d0;
+	box-shadow:
+		0 18px 40px rgba(0,59,36,.11),
+		0 3px 8px rgba(0,59,36,.04);
+}
+.cba-program-card:hover::before {
+	width: 100%;
+}
+.cba-program-number {
+	position: relative;
+	z-index: 2;
+	width: 31px;
+	height: 31px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20px;
+	border: 1px solid #eab72e;
+	border-radius: 50%;
+	color: #a97900;
+	background: #fffdf5;
+	font-family: "Oswald", sans-serif;
+	font-size: 11px;
+	font-weight: 700;
+}
+/* CARD TITLE */
+.cba-program-card h3 {
+	position: relative;
+	z-index: 2;
+	margin: 0 0 14px;
+	padding-right: 20px;
+	color: #123c29;
+	font-family: "Manrope", sans-serif;
+	font-size: 15px;
+	line-height: 1.45;
+	font-weight: 800;
+}
+.cba-program-card h3::after {
+	content: "";
+	display: block;
+	width: 360px;
+	height: 2px;
+	margin-top: 12px;
+	background: #eab72e;
+}
+/* HIDE CARD DESCRIPTION */
+.cba-program-card p {
+	display: none;
+}
+
+/* READ MORE BUTTON */
+.cba-program-card a {
+	position: relative;
+	z-index: 2;
+	margin-top: 10px;
+	padding: 7px 14px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	align-self: flex-end;
+	gap: 10px;
+	border: 1px solid #027b16;
+	border-radius: 8px;
+	background: #fff;
+	color: #026220;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: .6px;
+	text-transform: uppercase;
+	text-decoration: none;
+	transition: all .25s ease;
+}
+.cba-program-card a span {
+	width: auto;
+	height: auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+	color: #025829;
+	font-size: 15px;
+	line-height: 1;
+	transition: transform .25s ease;
+}
+.cba-program-card a:hover {
+	border-color: #04a833d0;
+	background: #01672f;
+	color: #fff;
+}
+.cba-program-card a:hover span {
+	color: #fff;
+	background: transparent;
+	transform: translateX(3px);
+}
+
+/*QUICK LINKS*/
+.cba-quick-links {
+    background: #003b29;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.cba-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 12px 20px;
+}
+.cba-quick-grid > a {
+    min-height: 62px;
+    padding: 5px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-right: 1px solid rgba(255,255,255,.16);
+    color: #fff;
+}
+.cba-quick-grid > a:last-child {
+    border-right: none;
+}
+.cba-quick-icon {
+    width: 45px;
+    height: 45px;
+    flex: 0 0 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff;
+    color: #003b29;
+}
+.cba-quick-icon svg {
+    width: 22px;
+    height: 22px;
+}
+.cba-quick-grid strong {
+    display: block;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+}
+.cba-quick-grid span {
+    display: block;
+    margin-top: 3px;
+    color: rgba(255,255,255,.75);
+    font-size: 9px;
+}
+.cba-quick-grid > a > b {
+    margin-left: auto;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 400;
+}
+.cba-quick-grid > a:hover .cba-quick-icon {
+    background: #b6d62b;
+    transform: scale(1.05);
+}
+
+
+/*COLLEGE OF CRIMINAL JUSTICE EDUCATION*/
+.ccje-about {
+    position: relative;
+    overflow: hidden;
+}
+
+.ccje-about::before {
+    content: "CCJE";
+    position: absolute;
+    right: 10px;
+    top: -20px;
+    font-family: "Oswald", sans-serif;
+    font-size: 200px;
+    font-weight: 700;
+    line-height: 1;
+    color: rgba(0, 59, 37, 0.1);
+    pointer-events: none;
+    z-index: 0;
+}
+.ccje-page .cba-about::before {
+    content: "CCJE";
+}
+
+.ccje-page .cba-hero h1 strong {
+    color: #22da4d;
+}
+
+.ccje-page .cba-dean h2 {
+    margin-bottom: 12px;
+}
+
+.ccje-page .cba-dean h2 {
+    font-size: 20px;
+}
+
+.ccje-page .cba-about-logo::after {
+    border-color: rgba(2, 90, 57, 0.536);
+    box-shadow:
+        0 0 0 12px rgba(4, 114, 37, 0.16),
+        0 0 0 24px rgba(0, 59, 37, 0.03);
+}
+
+.ccje-page .container {
+    width: min(1350px, calc(100% - 120px));
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ccje-page .cba-about-logo img {
+    width: 90%;
+    max-width: 320px;
+    max-height: 250px;
+}
+
+.coe-page .ccje-about::before {
+    content: "CE";
+}
+
+.coe-page .cba-hero h1 strong {
+    color: #f38434;
+}
+
+.law-page .ccje-about::before {
+    content: "CL";
+}
+
+.law-page .cba-hero h1 strong {
+    color: #f84e34;
+}
+
+.clas-page .ccje-about::before {
+    content: "CLAS";
+}
+
+.clas-page .cba-hero h1 strong {
+    color: #9c9c9c;
+}
+
+
+
+
+
+/*PROGRAM DETAILS MODAL*/
+.program-modal{
+	position:fixed;
+	inset:0;
+	z-index:9999;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	padding:30px;
+	opacity:0;
+	visibility:hidden;
+	pointer-events:none;
+	transition:opacity .3s ease,visibility .3s ease;
+}
+
+.program-modal.show{
+	opacity:1;
+	visibility:visible;
+	pointer-events:auto;
+}
+
+.program-modal-backdrop{
+	position:absolute;
+	inset:0;
+	background:rgba(0,31,20,.72);
+	backdrop-filter:blur(5px);
+	-webkit-backdrop-filter:blur(5px);
+}
+
+.program-modal-dialog{
+	position:relative;
+	z-index:2;
+	width:min(850px,100%);
+	max-height:min(720px,90vh);
+	display:flex;
+	flex-direction:column;
+	overflow:hidden;
+	background:#fff;
+	border:1px solid rgba(214,174,43,.35);
+	border-radius:18px;
+	box-shadow:
+		0 30px 80px rgba(0,30,18,.28),
+		0 8px 25px rgba(0,59,36,.14);
+	transform:translateY(25px) scale(.97);
+	transition:transform .3s ease;
+}
+
+.program-modal.show .program-modal-dialog{
+	transform:translateY(0) scale(1);
+}
+
+/* HEADER */
+.program-modal-header{
+	position:relative;
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:20px;
+	padding:22px 26px;
+	background:linear-gradient(135deg,#003b25 0%,#075f43 100%);
+	border-bottom:3px solid #eab72e;
+}
+
+.program-modal-heading{
+	display:flex;
+	align-items:center;
+	gap:13px;
+}
+
+.program-modal-label{
+	color:#f7c340;
+	font-size:12px;
+	font-weight:800;
+	letter-spacing:.14em;
+	text-transform:uppercase;
+}
+
+.program-modal-number{
+	width:38px;
+	height:38px;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-shrink:0;
+	border:1px solid rgba(234,183,46,.8);
+	border-radius:50%;
+	background:rgba(255,255,255,.08);
+	color:#f7c340;
+	font-family:"Oswald",sans-serif;
+	font-size:13px;
+	font-weight:600;
+}
+
+/* CLOSE ICON */
+
+.program-modal-close{
+	width:38px;
+	height:38px;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex-shrink:0;
+	padding:0;
+	border:1px solid rgba(255,255,255,.25);
+	border-radius:50%;
+	background:rgba(255,255,255,.08);
+	color:#fff;
+	font-size:26px;
+	line-height:1;
+	cursor:pointer;
+	transition:
+		background .2s ease,
+		border-color .2s ease,
+		transform .2s ease;
+}
+
+.program-modal-close:hover{
+	background:#eab72e;
+	border-color:#eab72e;
+	color:#003b25;
+	transform:rotate(90deg);
+}
+
+/* BODY */
+
+.program-modal-body{
+	position:relative;
+	overflow-y:auto;
+	padding:32px 36px 36px;
+	background:#fff;
+}
+
+.program-modal-accent{
+	width:55px;
+	height:3px;
+	margin-bottom:17px;
+	border-radius:10px;
+	background:linear-gradient(90deg,#075532,#eab72e);
+}
+
+.program-modal-body h2{
+	margin:0 0 20px;
+	padding-right:20px;
+	color:#123c29;
+	font-family:"Oswald",sans-serif;
+	font-size:28px;
+	font-weight:600;
+	line-height:1.15;
+	letter-spacing:.01em;
+	text-transform:uppercase;
+}
+
+.program-modal-body p{
+	margin:0;
+	color:#59625d;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:14px;
+	line-height:1.8;
+}
+
+.program-modal-footer{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:20px;
+	padding:15px 26px;
+	border-top:1px solid #e1e7e3;
+	background:#f7faf8;
+}
+
+.program-modal-footer>span{
+	color:#617069;
+	font-size:8px;
+	font-weight:800;
+	letter-spacing:.12em;
+}
+
+.program-modal-close-btn{
+	padding:9px 18px;
+	border:1px solid #003b25;
+	border-radius:7px;
+	background:#003b25;
+	color:#fff;
+	font-size:9px;
+	font-weight:800;
+	letter-spacing:.08em;
+	cursor:pointer;
+	transition:all .2s ease;
+}
+
+.program-modal-close-btn:hover{
+	background:#eab72e;
+	border-color:#eab72e;
+	color:#003b25;
+}
+
+/* BODY LOCK WHEN MODAL IS OPEN */
+
+body.program-modal-open{
+	overflow:hidden;
+}
+
+/* SCROLLBAR */
+
+.program-modal-body::-webkit-scrollbar{
+	width:6px;
+}
+
+.program-modal-body::-webkit-scrollbar-track{
+	background:#f1f5f2;
+}
+
+.program-modal-body::-webkit-scrollbar-thumb{
+	background:#b7c7be;
+	border-radius:10px;
+}
+
+.program-modal-body::-webkit-scrollbar-thumb:hover{
+	background:#075532;
+}
+

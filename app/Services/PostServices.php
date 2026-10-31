@@ -16,7 +16,7 @@ use Throwable;
 final class PostServices {
     private const STATUS_KEYS = ['draft', 'published'];
     private const FILTER_KEYS = ['all', 'draft', 'published', 'pending', 'expired'];
-    private const SORT_KEYS = ['added-desc', 'added-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiry-desc', 'expiry-asc'];
+    private const SORT_KEYS = ['create-desc', 'create-asc', 'title-desc', 'title-asc', 'publish-desc', 'publish-asc', 'expiry-desc', 'expiry-asc'];
     private const PER_PAGE = 10;
 
     public function save(): void {
@@ -34,9 +34,9 @@ final class PostServices {
     }
 
     private function create(): void {
-        $title = is_string($_POST['title'] ?? null) ? trim($_POST['title']) : '';
-        $excerpt = is_string($_POST['excerpt'] ?? null) ? trim($_POST['excerpt']) : '';
-        $content = is_string($_POST['content'] ?? null) ? trim($_POST['content']) : '';
+        $title = trim(validateString($_POST['title'] ?? '', 'Title'));
+        $excerpt = trim(validateString($_POST['excerpt'] ?? '', 'Excerpt'));
+        $content = trim(validateString($_POST['content'] ?? '', 'Content'));
         $featuredImage = $_FILES['featured_image'] ?? null;
         $category = validateInt($_POST['category'] ?? null, 1, null);
         $status = $_POST['status'] ?? '';
@@ -100,35 +100,17 @@ final class PostServices {
             jsonResponse(422, 'Expiration date cannot be earlier than the publish date.');
         }
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $authorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
-
-        if ($authorId === false) {
-            unset(
-                $_SESSION[UserServices::USER_ID_KEY],
-                $_SESSION[UserServices::USERNAME_KEY],
-                $_SESSION[UserServices::ROLE_KEY],
-                $_SESSION[UserServices::UNIT_ID_KEY],
-                $_SESSION[UserServices::PROGRAM_ID_KEY]
-            );
-
-            session_write_close();
-
-            jsonResponse(401, 'Your session has expired. Please log in again.', [
-                'redirect' => 'login.php',
-            ]);
-        }
-
-        session_write_close();
-
         $featuredImageFile = null;
 
-        if ($tempFeaturedImage !== null) {
-            $featuredImageFile = $imageHandler->store($tempFeaturedImage);
-        }
+       if ($tempFeaturedImage !== null) {
+           $featuredImageFile = $imageHandler->store($tempFeaturedImage);
+       }
+
+       session_start();
+
+       $authorId = $_SESSION['user_id'];
+
+       session_write_close();
 
        $data = [
            'title' => $title,
@@ -240,41 +222,27 @@ final class PostServices {
             jsonResponse(422, 'Invalid status selection.');
         }
 
+        $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
+
         if ($publishDate === false) {
             jsonResponse(422, 'Publish date must be a valid date.');
+        }
+
+        if ($publishDate < $today->format('Y-m-d')) {
+            jsonResponse(422, 'Publish date cannot be in the past.');
         }
 
         if ($expirationDate === false) {
             jsonResponse(422, 'Expiration date must be a valid date.');
         }
 
+        if ($expirationDate < $today->format('Y-m-d')) {
+            jsonResponse(422, 'Expiration date cannot be in the past.');
+        }
+
         if ($expirationDate < $publishDate) {
             jsonResponse(422, 'Expiration date cannot be earlier than the publish date.');
         }
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $editorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
-
-        if ($editorId === false) {
-            unset(
-                $_SESSION[UserServices::USER_ID_KEY],
-                $_SESSION[UserServices::USERNAME_KEY],
-                $_SESSION[UserServices::ROLE_KEY],
-                $_SESSION[UserServices::UNIT_ID_KEY],
-                $_SESSION[UserServices::PROGRAM_ID_KEY]
-            );
-
-            session_write_close();
-
-            jsonResponse(401, 'Your session has expired. Please log in again.', [
-                'redirect' => 'login.php',
-            ]);
-        }
-
-        session_write_close();
 
         $oldFeaturedImage = $fetchedPost['featured_image'] ?? null;
         $featuredImageFile = $oldFeaturedImage;
@@ -286,6 +254,12 @@ final class PostServices {
             $newFeaturedImageFile = $imageHandler->store($tempFeaturedImage);
             $featuredImageFile = $newFeaturedImageFile;
         }
+
+        session_start();
+
+        $editorId = $_SESSION['user_id'];
+
+        session_write_close();
 
         $data = [
             'title' => $title,
@@ -355,10 +329,16 @@ final class PostServices {
     }
 
     public function filter(): void {
-        $search = is_string($_GET['search'] ?? null) ? trim($_GET['search']) : '';
-        $filter = is_string($_GET['filter'] ?? null) ? $_GET['filter'] : '';
-        $sort = is_string($_GET['sort'] ?? null) ? $_GET['sort'] : '';
+        $search = $_GET['search'] ?? '';
+        $filter = $_GET['filter'] ?? '';
+        $sort = $_GET['sort'] ?? '';
         $page = validateInt($_GET['page'] ?? 1, 1, null);
+
+        if (!is_string($search)) {
+            jsonResponse(422, 'Search must be a valid string.');
+        }
+
+        $search = trim($search);
 
         if (!in_array($filter, self::FILTER_KEYS, true)) {
             jsonResponse(422, 'Invalid filter selection.');
@@ -380,21 +360,22 @@ final class PostServices {
 
         $repo = new PostRepository(Database::connect());
         $totalPosts = $repo->countFiltered($data);
-        $totalPages = ceil($totalPosts / self::PER_PAGE);
+        $totalPages = (int) ceil($totalPosts / self::PER_PAGE);
 
         if ($page > max(1, $totalPages)) {
             jsonResponse(422, 'Requested page does not exist.');
         }
 
+        $offset = ($page - 1) * self::PER_PAGE;
         $posts = $repo->filter([
             ...$data,
-            'offset' => ($page - 1) * self::PER_PAGE
+            'offset' => $offset
         ]);
 
         jsonResponse(200, 'Successfully filtered post items.', [
-            'items' => $posts,
+            'posts' => $posts,
             'current_page' => $page,
-            'total_items' => $totalPosts,
+            'total_posts' => $totalPosts,
             'total_pages' => $totalPages
         ]);
     }
@@ -445,27 +426,9 @@ final class PostServices {
         $fetchedCategories = $repo->fetchItemsByClass('university-posts');
         $categoryName = array_column($fetchedCategories, 'name', 'id')[$category] ?? null;
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        session_start();
 
-        $editorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
-
-        if ($editorId === false) {
-            unset(
-                $_SESSION[UserServices::USER_ID_KEY],
-                $_SESSION[UserServices::USERNAME_KEY],
-                $_SESSION[UserServices::ROLE_KEY],
-                $_SESSION[UserServices::UNIT_ID_KEY],
-                $_SESSION[UserServices::PROGRAM_ID_KEY]
-            );
-
-            session_write_close();
-
-            jsonResponse(401, 'Your session has expired. Please log in again.', [
-                'redirect' => 'login.php',
-            ]);
-        }
+        $editorId = $_SESSION['user_id'];
 
         session_write_close();
 
@@ -505,16 +468,8 @@ final class PostServices {
     }
 
     public function unarchive(): void {
-        $id = validateInt($_POST['id'] ?? null, 1, null);
-        $category = validateInt($_POST['category'] ?? null, 1, null);
-
-        if ($id === false) {
-            throw new InvalidArgumentException('Invalid post id.');
-        }
-
-        if ($category === false) {
-            throw new InvalidArgumentException('Invalid category id.');
-        }
+        $id = validateId($_POST['id'] ?? null, 'post id');
+        $category = validateId($_POST['category'] ?? null, 'category id');
 
         $repo = new PostRepository(Database::connect());
         $post = $repo->fetchItemById($id);
@@ -579,16 +534,8 @@ final class PostServices {
     }
 
     public function delete(): void {
-        $id = validateInt($_POST['id'] ?? null, 1, null);
-        $category = validateInt($_POST['category'] ?? null, 1, null);
-
-        if ($id === false) {
-            throw new InvalidArgumentException('Invalid post id.');
-        }
-
-        if ($category === false) {
-            throw new InvalidArgumentException('Invalid category id.');
-        }
+        $id = validateId($_POST['id'] ?? null, 'post id');
+        $category = validateId($_POST['category'] ?? null, 'category id');
 
         $repo = new PostRepository(Database::connect());
         $post = $repo->fetchItemById($id);
@@ -615,23 +562,7 @@ final class PostServices {
 
         session_start();
 
-        $editorId = validateInt($_SESSION[UserServices::USER_ID_KEY] ?? null, 1, null);
-
-        if ($editorId === false) {
-            unset(
-                $_SESSION[UserServices::USER_ID_KEY],
-                $_SESSION[UserServices::USERNAME_KEY],
-                $_SESSION[UserServices::ROLE_KEY],
-                $_SESSION[UserServices::UNIT_ID_KEY],
-                $_SESSION[UserServices::PROGRAM_ID_KEY]
-            );
-
-            session_write_close();
-
-            jsonResponse(401, 'Your session has expired. Please log in again.', [
-                'redirect' => 'login.php',
-            ]);
-        }
+        $editorId = $_SESSION['user_id'] ?? 1;
 
         session_write_close();
 

@@ -1,0 +1,96 @@
+api: units
+directory: api/units/
+name: item (endpoint)
+file: item.php
+path: api/units/item.php
+use_alerts:
+  upon_success: false
+  upon_failure: true
+description: retrieve a unit (college)
+authorization: superadmin only
+request:
+  method: GET
+  source: URLSearchParams
+  fields:
+    - name: id
+      type: int (from hidden)
+      required: true
+      source: js (url)
+      description: id of a unit
+response:
+  content_type: application/json
+  http_code:
+    success: 200
+    errors: ~400 - ~500
+  fields:
+    - name: message
+      type: string
+      returned: always
+      description: a message describing the outcome of the request
+      conditions:
+        - after a successful or unsuccessful operation
+      note:
+        - do not include for alert upon success
+    - name: data
+      type: object
+      returned: always (can be empty)
+      description: contains the data returned by the endpoint
+      conditions:
+        - successful request
+        - unsuccessful request (empty)
+      properties:
+        - name: unit
+          type: object
+          returned: always
+          description: unit information
+          conditions:
+            - after a successful request
+          properties:
+            - every column in units table = refer to db
+            - name: created_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who created the unit
+            - name: updated_by
+              type: string
+              returned: always (can be null)
+              description: username of the user who last updated the unit
+  errors:
+    - status: 401
+      message: You are unauthorized to make this request.
+      when: the user is not logged in as superadmin
+    - status: 404
+      message: Unit does not exist.
+      when: no active unit has the given id
+    - status: 405
+      message: Invalid request method.
+      when: the request method is not GET
+    - status: 422
+      message: Invalid unit id.
+      when: id is missing or not a positive whole number
+    - status: 500
+      message: An unexpected error occured.
+      when: the server failed to process the request (see storage/logs/error.log)
+example:
+  http_status: 200
+  response: |
+    {
+      "message": "Unit successfully fetched.",
+      "data": {
+        "unit": {
+          "id": 4,
+          "name": "College of Computer Studies",
+          "logo": "bf6093f4da380c06b20a994a548466fb.webp",
+          "dean": "Dr. Maria Santos",
+          "dean_image": "61a067af9ff6c181e4f7e05ed21dae07.webp",
+          "status": "active",
+          "author_id": 1,
+          "editor_id": 1,
+          "created_at": "2026-10-28 09:15:00",
+          "updated_at": "2026-10-28 10:02:11",
+          "active": 1,
+          "created_by": "mky",
+          "updated_by": "mky"
+        }
+      }
+    }

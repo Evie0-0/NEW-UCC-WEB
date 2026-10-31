@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Repo;
 
-use InvalidArgumentException;
 use PDO;
 
 final class AuditTrailRepository {
@@ -26,91 +25,5 @@ final class AuditTrailRepository {
             $data['entity_id'],
             $data['user_id']
         ]);
-    }
-
-    /** @return list<string> */
-    public function actions(): array {
-        $query = '
-            SELECT DISTINCT action
-            FROM audit_trail
-            WHERE active = 1
-            ORDER BY action ASC';
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-
-        return ['all', ...$stmt->fetchAll(PDO::FETCH_COLUMN)];
-    }
-
-    /** @param array<string, mixed> $data */
-    /** @return array{0: string, 1: array<string, mixed>} */
-    private function buildWhere(array $data): array {
-        $conditions = [
-            'active = 1'
-        ];
-
-        $params = [];
-
-        if ($data['search'] !== '') {
-            $conditions[] = '(description LIKE :search_description OR user_id IN (
-                SELECT id FROM users WHERE username LIKE :search_username
-            ))';
-            $params['search_description'] = "%{$data['search']}%";
-            $params['search_username'] = "%{$data['search']}%";
-        }
-
-        if ($data['filter'] !== 'all') {
-            $conditions[] = 'action = :action';
-            $params['action'] = $data['filter'];
-        }
-
-        return [implode(' AND ', $conditions), $params];
-    }
-
-    /** @param array<string, mixed> $data */
-    public function countFiltered(array $data): int {
-        [$where, $params] = $this->buildWhere($data);
-
-        $query = "SELECT COUNT(*)
-            FROM audit_trail
-            WHERE $where";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute($params);
-
-        return (int) $stmt->fetchColumn();
-    }
-
-    /** @param array<string, mixed> $data */
-    /** @return array<int, array<string, mixed>> */
-    public function filter(array $data): array {
-        [$where, $params] = $this->buildWhere($data);
-
-        $orderBy = match ($data['sort']) {
-            'added-desc' => 'created_at DESC',
-            'added-asc' => 'created_at ASC',
-            'description-desc' => 'description DESC',
-            'description-asc' => 'description ASC',
-            'username-asc' => 'username ASC',
-            'username-desc' => 'username DESC',
-            default => throw new InvalidArgumentException('Invalid audit trail sort.')
-        };
-
-        $query = "
-            SELECT audit_trail.*,
-                (SELECT username FROM users WHERE users.id = audit_trail.user_id) AS username
-            FROM audit_trail
-            WHERE $where
-            ORDER BY $orderBy, id DESC
-            LIMIT 10 OFFSET :offset
-        ";
-        $stmt = $this->conn->prepare($query);
-
-        foreach ($params as $key => $value) {
-            $stmt->bindValue(":$key", $value, PDO::PARAM_STR);
-        }
-
-        $stmt->bindValue(':offset', $data['offset'], PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll();
     }
 }
