@@ -67,6 +67,106 @@ final class PublicUniversityNewsRepository
         return $this->conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getNewsById(int $postId): array
+{
+    if ($postId < 1) {
+        return [];
+    }
+
+        $sql = "SELECT
+                    p.id,
+                    c.name AS category,
+                    p.title,
+                    p.excerpt,
+                    p.content,
+                    p.featured_image,
+                    p.published_at,
+                    p.views
+                FROM posts p
+                INNER JOIN categories c ON c.id = p.category_id
+                WHERE p.id = ?
+                AND p.active = 1
+                AND p.status = 'published'
+                AND p.category_id = 1
+                AND (p.expires_at IS NULL OR p.expires_at > NOW())
+                AND p.published_at <= NOW()
+                LIMIT 1";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$postId]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    
+public function getPostById(int $postId): array
+{
+    if ($postId < 1) {
+        return [];
+    }
+
+    $sql = "SELECT
+                p.id,
+                p.title,
+                p.excerpt,
+                p.content,
+                p.featured_image,
+                p.category_id,
+                p.published_at,
+                p.status,
+                p.active,
+                p.expires_at,
+                COALESCE(c.name, 'University Update') AS category
+            FROM posts p
+            LEFT JOIN categories c
+                ON c.id = p.category_id
+            WHERE p.id = ?
+            LIMIT 1";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([$postId]);
+
+    $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$post) {
+        return [];
+    }
+
+    // Only display active and published posts.
+    if (
+        (int) $post['active'] !== 1 ||
+        $post['status'] !== 'published'
+    ) {
+        return [];
+    }
+
+    // Check whether the article has expired.
+    $expiresAt = $post['expires_at'] ?? null;
+
+    if (
+        !empty($expiresAt) &&
+        $expiresAt !== '0000-00-00 00:00:00' &&
+        strtotime($expiresAt) !== false &&
+        strtotime($expiresAt) <= time()
+    ) {
+        return [];
+    }
+
+    // Do not display articles scheduled for a future date.
+    $publishedAt = $post['published_at'] ?? null;
+
+    if (
+        !empty($publishedAt) &&
+        strtotime($publishedAt) !== false &&
+        strtotime($publishedAt) > time()
+    ) {
+        return [];
+    }
+
+    return $post;
+}
+
+
     /**
      * Increment a news post's lifetime view count at most once per visitor
      * during each rolling 24-hour period.

@@ -2310,3 +2310,46 @@ body.news-modal-open{
 .news-card .read-more{
 	cursor:pointer;
 }
+
+
+
+
+
+
+
+
+
+.calendar-modal {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+}
+.calendar-modal.show {
+	display: flex;
+}
+.calendar-modal-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.65);
+}
+.calendar-modal-dialog {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 850px;
+	max-height: 85vh;
+	overflow: hidden;
+	background: #fff;
+	border-radius: 16px;
+}
+.calendar-modal-content {
+	max-height: 65vh;
+	overflow-y: auto;
+}
+body.modal-open {
+	overflow: hidden;
+}

@@ -1,35 +1,25 @@
 <?php
-
 require_once __DIR__ . '/../app/Repositories/PublicAdmissionRepository.php';
-
 use Core\Database;
 use Repo\PublicAdmissionRepository;
-
 $admissionRepository = new PublicAdmissionRepository(Database::connect());
 $admissionPosts = $admissionRepository->getAdmissionPosts();
-
-//Turns a datetime into "a day ago", "3 months ago", "2 years ago", etc.
 if (!function_exists('timeAgo')) {
 	function timeAgo(?string $datetime): string
 	{
 		if (empty($datetime)) {
 			return 'recently';
 		}
-
 		try {
 			$then = new DateTimeImmutable($datetime);
 		} catch (Exception $e) {
 			return 'recently';
 		}
-
 		$now = new DateTimeImmutable('now');
-
 		if ($then > $now) {
 			return 'just now';
 		}
-
 		$diff = $then->diff($now);
-
 		if ($diff->y > 0) {
 			return $diff->y === 1 ? 'a year ago' : $diff->y . ' years ago';
 		}
@@ -45,18 +35,41 @@ if (!function_exists('timeAgo')) {
 		if ($diff->i > 0) {
 			return $diff->i === 1 ? 'a minute ago' : $diff->i . ' minutes ago';
 		}
-
 		return 'just now';
 	}
 }
+function admissionEscape(?string $value): string
+{
+	return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+}
 function admissionImagePath(?string $filename): string
 {
-	return !empty($filename)
-		? 'image.php?f=' . rawurlencode($filename)
-		: 'images/UCC2.png';
+	if (empty($filename)) {
+		return 'images/UCC2.png';
+	}
+	return 'image.php?f=' . rawurlencode(basename($filename));
+}
+$posts = [];
+foreach ($admissionPosts as $post) {
+	$postId = (int)($post['id'] ?? 0);
+	$title = $post['title'] ?? 'Untitled Admission Announcement';
+	$content = $post['excerpt'] ?? '';
+	if (trim($content) === '') {
+		$content = mb_strimwidth(strip_tags($post['content'] ?? ''), 0, 180, '...', 'UTF-8');
+	}
+	$publishedDate = $post['published_at'] ?? $post['created_at'] ?? null;
+	$posts[] = [
+		'id' => $postId,
+		'title' => $title,
+		'category' => $post['name'] ?? 'ADMISSION',
+		'image' => admissionImagePath($post['featured_image'] ?? null),
+		'excerpt' => $content,
+		'date' => timeAgo($publishedDate),
+		'search' => strtolower($title . ' ' . ($post['name'] ?? 'Admission') . ' ' . $content),
+		'published_date' => $publishedDate
+	];
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,321 +84,196 @@ function admissionImagePath(?string $filename): string
 	<link rel="stylesheet" href="assets/utility-bar.css">
 	<link rel="stylesheet" href="assets/navbar.css">
 	<link rel="stylesheet" href="assets/footer.css">
-	<style>
-		html, body { min-height: 100%; }
-		body { min-height: 100vh; display: flex; flex-direction: column; }
-		.admission-news-page { flex: 1 0 auto; min-height: 0; }
-	</style>
+	<link rel="stylesheet" href="assets/admission.css">
 </head>
-<body>
-	<!-- PAGE DOTS -->
-	<div class="page-dots" aria-hidden="true">
-		<span class="dot-pattern dot-1"></span>
-		<span class="dot-pattern dot-2"></span>
-		<span class="dot-pattern dot-3"></span>
-		<span class="dot-pattern dot-4"></span>
-	</div>
+<body class="student-life-page">
 	<?php include __DIR__ . '/includes/utility-bar.php'; ?>
 	<?php include __DIR__ . '/includes/navbar.php'; ?>
-	
-	<!-- MAIN CONTENT -->
-	<main class="admission-news-page">
-		<div class="admission-news-container">
-			<div class="admission-news-heading">
-				<h1>ADMISSION NEWS</h1>
-				<div class="admission-heading-line"></div>
-				<div class="admission-heading-dots">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
-			</div>
-
-		<!-- ADMISSION PROCESS -->
-		<?php if (empty($admissionPosts)): ?>
-			<p class="admission-empty">No post available for Admission</p>
-		<?php else: ?>
-		<?php foreach ($admissionPosts as $index => $post): ?>
-			<div
-				class="admission-post admission-modal-trigger"
-				data-article="<?= $index ?>"
-			>
-				<div class="admission-post-image">
-					<img
-						src="<?= htmlspecialchars(
-							admissionImagePath($post['featured_image'] ?? null),
-							ENT_QUOTES,
-							'UTF-8'
-						) ?>"
-						alt="<?= htmlspecialchars(
-							$post['title'] ?? '',
-							ENT_QUOTES,
-							'UTF-8'
-						) ?>"
-					>
-				</div>
-
-				<div class="admission-post-content">
-					<span class="admission-category">
-						<?= htmlspecialchars(
-							$post['name'] ?? 'UCC UPDATE',
-							ENT_QUOTES,
-							'UTF-8'
-						) ?>
+	<main>
+		<section class="student-hero">
+			<div class="student-hero-pattern"></div>
+			<div class="student-hero-inner">
+				<div class="student-hero-copy">
+					<span class="student-eyebrow">
+						<i data-lucide="graduation-cap"></i>
+						UNIVERSITY OF CALOOCAN CITY
 					</span>
-
-					<h2>
-						<?= htmlspecialchars(
-							$post['title'] ?? '',
-							ENT_QUOTES,
-							'UTF-8'
-						) ?>
-					</h2>
-
-					<div class="admission-meta">
-						<i data-lucide="calendar-days"></i>
-						<span
-							title="<?= !empty($post['published_at'])
-								? htmlspecialchars(date('F j, Y', strtotime($post['published_at'])), ENT_QUOTES, 'UTF-8')
-								: '' ?>"
-						>
-							Published <?= htmlspecialchars(timeAgo($post['published_at'] ?? null), ENT_QUOTES, 'UTF-8') ?>
-						</span>
+					<h1>Admission<br>Announcements</h1>
+					<p>Stay informed about admission schedules, application requirements, enrollment announcements, and important updates for aspiring University of Caloocan City students.</p>
+					<div class="student-hero-note">
+						<i data-lucide="calendar-check"></i>
+						Your journey toward becoming a UCCian starts here.
 					</div>
-
-					<div class="admission-title-line"></div>
-
-					<p>
-						<?= htmlspecialchars(
-							$post['excerpt'] ?? '',
-							ENT_QUOTES,
-							'UTF-8'
-						) ?>
-					</p>
-
-					<a
-						href="#"
-						class="admission-read-more"
-						data-modal-trigger="<?= $index ?>"
-					>
-						READ MORE
-
-						<span class="admission-arrow">
-							<i data-lucide="arrow-right"></i>
-						</span>
-					</a>
 				</div>
 			</div>
-
-			<?php if ($index < count($admissionPosts) - 1): ?>
-				<div class="admission-divider"></div>
+		</section>
+		<section class="student-search-section">
+			<div class="student-search-card">
+				<div class="search-card-heading">
+					<div class="search-icon-wrap">
+						<i data-lucide="search"></i>
+					</div>
+					<div>
+						<span>ADMISSION CONNECTION</span>
+						<h2>Find Admission Updates</h2>
+					</div>
+				</div>
+				<div class="student-search-controls">
+					<input type="search" class="student-search-input" id="admissionSearch" placeholder="Search admission announcements..." aria-label="Search admission announcements">
+					<button type="button" class="student-search-button" id="admissionSearchButton">
+						<i data-lucide="search"></i>
+						SEARCH
+					</button>
+				</div>
+				<p class="search-hint">Enter a keyword such as enrollment, application, requirements, or admission schedule.</p>
+			</div>
+		</section>
+		<section class="student-section" id="admission-posts">
+			<div class="student-section-heading">
+				<div>
+					<span class="section-eyebrow">STAY UPDATED</span>
+					<h2>Latest Admission News</h2>
+					<p>Explore the latest announcements and important information for incoming and continuing students.</p>
+				</div>
+				<a href="#admission-posts" class="student-explore-link">
+					EXPLORE UPDATES
+					<i data-lucide="arrow-right"></i>
+				</a>
+			</div>
+			<?php if (empty($posts)): ?>
+				<div class="no-student-posts">
+					<i data-lucide="inbox"></i>
+					<p>No admission announcements are available at the moment. Please check back soon.</p>
+				</div>
+			<?php else: ?>
+				<div class="student-grid" id="admissionGrid">
+					<?php foreach ($posts as $index => $post): ?>
+						<?php $articleUrl = $post['id'] > 0 ? 'postArticle.php?id=' . $post['id'] : '#'; ?>
+						<article class="student-card admission-card" data-search="<?= admissionEscape($post['search']) ?>">
+							<a href="<?= admissionEscape($articleUrl) ?>" class="student-card-image-link" <?= $post['id'] <= 0 ? 'aria-disabled="true"' : '' ?>>
+								<div class="student-card-visual">
+									<img src="<?= admissionEscape($post['image']) ?>" alt="<?= admissionEscape($post['title']) ?>" loading="lazy">
+									<span class="student-card-number"><?= str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT) ?></span>
+									<span class="student-image-label">ADMISSION</span>
+								</div>
+							</a>
+							<div class="student-card-content">
+								<h3><?= admissionEscape($post['title']) ?></h3>
+								<div class="student-card-date">
+									<i data-lucide="calendar-days"></i>
+									<span title="<?= !empty($post['published_date']) ? admissionEscape(date('F j, Y', strtotime($post['published_date']))) : '' ?>">
+										Published <?= admissionEscape($post['date']) ?>
+									</span>
+								</div>
+								<p><?= admissionEscape($post['excerpt']) ?></p>
+								<div class="student-card-footer">
+									<a href="<?= admissionEscape($articleUrl) ?>" class="student-read-more" <?= $post['id'] <= 0 ? 'aria-disabled="true"' : '' ?>>
+										READ MORE
+										<i data-lucide="arrow-right"></i>
+									</a>
+								</div>
+							</div>
+						</article>
+					<?php endforeach; ?>
+				</div>
+				<div class="student-no-results" id="noAdmissionResults" style="display: none;">
+					<div class="no-results-icon">
+						<i data-lucide="search-x"></i>
+					</div>
+					<h3>No Admission Updates Found</h3>
+					<p>Try another keyword or clear your search to see all admission announcements.</p>
+					<button type="button" class="student-search-button" id="resetAdmissionSearch">CLEAR SEARCH</button>
+				</div>
 			<?php endif; ?>
-		<?php endforeach; ?>
-		<?php endif; ?>
-			
-		<div class="admission-location-decoration" aria-hidden="true">
-			<div class="admission-location-pin">
-				<i data-lucide="map-pin"></i>
+		</section>
+		<section class="student-help">
+			<div class="student-help-icon">
+				<i data-lucide="headset"></i>
 			</div>
-			<div class="admission-dotted-path"></div>
-		</div>
-		<div class="admission-bg-shape admission-bg-shape-1"></div>
-		<div class="admission-bg-shape admission-bg-shape-2"></div>
-		</div>
+			<div class="student-help-content">
+				<h3>Need Help With Your Admission?</h3>
+				<p>For questions about application requirements, admission procedures, and enrollment, contact the University of Caloocan City.</p>
+			</div>
+			<a href="contacts.php" class="student-help-link">
+				CONTACT UCC
+				<i data-lucide="arrow-right"></i>
+			</a>
+		</section>
 	</main>
-
-
-
-	<!-- ADMISSION ARTICLE MODAL -->
-	<div class="student-modal" id="admissionModal" aria-hidden="true">
-		<div class="student-modal-backdrop"></div>
-		<div class="student-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="admissionModalTitle">
-			<div class="student-modal-header">
-				<div class="student-modal-heading">
-					<span class="student-modal-label" id="admissionModalCategory">ADMISSION</span>
-				</div>
-				<button class="student-modal-close" type="button" aria-label="Close" data-modal-close>×</button>
-			</div>
-			<div class="student-modal-body">
-				<div class="student-modal-accent"></div>
-				<h2 id="admissionModalTitle"></h2>
-				<div id="admissionModalContent"></div>
-			</div>
-			<div class="student-modal-footer">
-				<span>UNIVERSITY OF CALOOCAN CITY</span>
-			</div>
-		</div>
-	</div>
-
-	<!-- FULL IMAGE LIGHTBOX -->
-	<div class="policy-lightbox" id="policyLightbox" aria-hidden="true">
-		<div class="policy-lightbox-backdrop" data-policy-close></div>
-		<div class="policy-lightbox-content">
-			<button type="button" class="policy-lightbox-close" aria-label="Close image" data-policy-close>
-				<i data-lucide="x"></i>
-			</button>
-			<img id="policyLightboxImage" src="" alt="Admission Image">
-		</div>
-	</div>
-
-	<!-- SHARED FOOTER -->
 	<?php include __DIR__ . '/includes/footer.php'; ?>
-	<button class="back-top" id="backTop" aria-label="Back to top">↑</button>
-
-
-
-	<!-- JAVASCRIPT -->
-	<script>
-	const admissionArticles = <?= json_encode(
-		array_values($admissionPosts),
-		JSON_HEX_TAG
-			| JSON_HEX_APOS
-			| JSON_HEX_QUOT
-			| JSON_HEX_AMP
-			| JSON_THROW_ON_ERROR
-	) ?>;
-	</script>
-
+	<button class="back-top" id="backTop" aria-label="Back to top">
+		<i data-lucide="arrow-up"></i>
+	</button>
 	<script src="https://unpkg.com/lucide@latest"></script>
 	<script src="js/script.js"></script>
 	<script>
-		
-		document.addEventListener("DOMContentLoaded",function(){
-			if(typeof lucide!=="undefined"){
+		document.addEventListener("DOMContentLoaded", function () {
+			if (typeof lucide !== "undefined") {
 				lucide.createIcons();
 			}
-			const admissionModal=document.getElementById("admissionModal");
-			const admissionModalCategory=document.getElementById("admissionModalCategory");
-			const admissionModalTitle=document.getElementById("admissionModalTitle");
-			const admissionModalContent=document.getElementById("admissionModalContent");
-			const policyLightbox=document.getElementById("policyLightbox");
-			const policyLightboxImage=document.getElementById("policyLightboxImage");
-			if(!admissionModal){
-				return;
-			}
-			
-			function openAdmissionModal(articleIndex) {
-				const article = admissionArticles[Number(articleIndex)];
+			const searchInput = document.getElementById("admissionSearch");
+			const searchButton = document.getElementById("admissionSearchButton");
+			const resetButton = document.getElementById("resetAdmissionSearch");
+			const cards = document.querySelectorAll(".admission-card");
+			const noResults = document.getElementById("noAdmissionResults");
+			const section = document.getElementById("admission-posts");
 
-				if (!article) {
-					return;
-				}
+			function filterAdmissionPosts() {
+				if (!searchInput) return;
 
-				admissionModalCategory.textContent =
-					article.name || "ADMISSION";
+				const query = searchInput.value.trim().toLowerCase();
+				let visibleCount = 0;
 
-				admissionModalTitle.textContent =
-					article.title || "";
+				cards.forEach(function (card) {
+					const matches = query === "" || card.dataset.search.toLowerCase().includes(query);
+					card.style.display = matches ? "" : "none";
 
-				// The content field contains HTML stored in the database.
-				admissionModalContent.innerHTML =
-					article.content || "";
-
-				admissionModal.classList.add("active");
-				admissionModal.setAttribute("aria-hidden", "false");
-
-				document.body.classList.add("student-modal-open");
-
-				const modalBody = admissionModal.querySelector(
-					".student-modal-body"
-				);
-
-				if (modalBody) {
-					modalBody.scrollTop = 0;
-				}
-
-				// Re-render icons if the article content includes Lucide icons.
-				if (typeof lucide !== "undefined") {
-					lucide.createIcons();
-				}
-			}
-
-			function closeAdmissionModal(){
-				admissionModal.classList.remove("active");
-				admissionModal.setAttribute("aria-hidden","true");
-				document.body.classList.remove("student-modal-open");
-			}
-
-			function openPolicyLightbox(imageSrc){
-				if(!policyLightbox||!policyLightboxImage){
-					return;
-				}
-				policyLightboxImage.src=imageSrc;
-				policyLightbox.classList.add("active");
-				policyLightbox.setAttribute("aria-hidden","false");
-			}
-			
-			function closePolicyLightbox(){
-				if(!policyLightbox||!policyLightboxImage){
-					return;
-				}
-				policyLightbox.classList.remove("active");
-				policyLightbox.setAttribute("aria-hidden","true");
-				policyLightboxImage.src="";
-			}
-			/* WHOLE CARD CLICK */
-			document.querySelectorAll(".admission-modal-trigger").forEach(card=>{
-				card.addEventListener("click",function(event){
-					if(event.target.closest("a")){
-						return;
+					if (matches) {
+						visibleCount++;
 					}
-					openAdmissionModal(this.dataset.article);
 				});
-			});
-			/* READ MORE */
-			document.querySelectorAll("[data-modal-trigger]").forEach(button=>{
-				button.addEventListener("click",function(event){
-					event.preventDefault();
-					event.stopPropagation();
-					openAdmissionModal(this.dataset.modalTrigger);
-				});
-			});
-			/* ALL ADMISSION IMAGES INSIDE MODALS */
-			admissionModal.addEventListener("click",function(event){
-				const imageTrigger=event.target.closest(".policy-image-trigger");
-				if(!imageTrigger){
-					return;
+
+				if (noResults) {
+					noResults.style.display = visibleCount === 0 && query !== "" ? "block" : "none";
 				}
-				event.preventDefault();
-				event.stopPropagation();
-				const imageSrc=imageTrigger.dataset.policyImage||imageTrigger.getAttribute("href");
-				openPolicyLightbox(imageSrc);
-			});
-			/* ADMISSION MODAL BACKDROP + CLOSE BUTTON */
-			admissionModal.querySelectorAll("[data-modal-close]").forEach(button=>{
-				button.addEventListener("click",function(event){
-					event.preventDefault();
-					event.stopPropagation();
-					closeAdmissionModal();
-				});
-			});
-			/* POLICY LIGHTBOX BACKDROP + CLOSE BUTTON */
-			if(policyLightbox){
-				policyLightbox.querySelectorAll("[data-policy-close]").forEach(button=>{
-					button.addEventListener("click",function(event){
-						event.preventDefault();
-						event.stopPropagation();
-						closePolicyLightbox();
-					});
+			}
+			if (searchInput) {
+				searchInput.addEventListener("input", filterAdmissionPosts);
+				searchInput.addEventListener("keydown", function (event) {
+					if (event.key === "Enter") {
+						filterAdmissionPosts();
+						section.scrollIntoView({ behavior: "smooth" });
+					}
+					if (event.key === "Escape") {
+						searchInput.value = "";
+						filterAdmissionPosts();
+					}
 				});
 			}
-			/* ESCAPE KEY */
-			document.addEventListener("keydown",function(event){
-				if(event.key!=="Escape"){
-					return;
-				}
-				if(policyLightbox&&policyLightbox.classList.contains("active")){
-					closePolicyLightbox();
-					return;
-				}
-				if(admissionModal.classList.contains("active")){
-					closeAdmissionModal();
-				}
-			});
+			if (searchButton) {
+				searchButton.addEventListener("click", function () {
+					filterAdmissionPosts();
+					section.scrollIntoView({ behavior: "smooth" });
+				});
+			}
+			if (resetButton) {
+				resetButton.addEventListener("click", function () {
+					searchInput.value = "";
+					filterAdmissionPosts();
+					searchInput.focus();
+				});
+			}
+			const backTop = document.getElementById("backTop");
+			if (backTop) {
+				window.addEventListener("scroll", function () {
+					backTop.classList.toggle("show", window.scrollY > 350);
+				});
+				backTop.addEventListener("click", function () {
+					window.scrollTo({ top: 0, behavior: "smooth" });
+				});
+			}
+			filterAdmissionPosts();
 		});
 	</script>
 </body>
 </html>
-
-
-

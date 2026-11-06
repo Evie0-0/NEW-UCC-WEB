@@ -387,7 +387,7 @@ input {
   box-shadow:0 8px 18px rgba(0,50,30,.08),0 16px 30px rgba(0,50,30,.08);
 }
 
-.campus-card.featured{
+.campus-card.featured {
 	display: flex;
 	flex-direction: column;
 	border-radius: 18px;
@@ -395,18 +395,18 @@ input {
 }
 
 .featured .campus-image-wrap {
-  position:relative;
-  height:205px;
-  flex-shrink:0;
-  overflow:hidden;
+	position: relative;
+	height: 300px;
+	flex: 0 0 300px;
+	overflow: hidden;
 }
 .featured .campus-image-wrap img {
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center center;
-  transition:transform .6s ease,filter .5s ease;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center center;
+	transition: transform .6s ease, filter .5s ease;
 }
 .featured:hover .campus-image-wrap img {
   transform:scale(1.025);
@@ -439,17 +439,18 @@ input {
 }
 
 .campus-card-body {
-  position:relative;
-  flex:1;
-  overflow:hidden;
-	padding:16px 20px 30px;
-  color:#fff;
-  background:
-    linear-gradient(120deg,rgba(255,255,255,.035) 1px,transparent 1px),
-    linear-gradient(30deg,rgba(255,255,255,.025) 1px,transparent 1px),
-    radial-gradient(circle at 92% 15%,rgba(214,181,44,.11),transparent 28%),
-    linear-gradient(135deg,#00613a,#00512f 55%,#003d26);
-  background-size:35px 35px,35px 35px,auto,auto;
+	position: relative;
+	flex: 0 0 auto;
+	min-height: 180px;
+	overflow: hidden;
+	padding: 16px 20px 20px;
+	color: #fff;
+	background:
+		linear-gradient(120deg,rgba(255,255,255,.035) 1px,transparent 1px),
+		linear-gradient(30deg,rgba(255,255,255,.025) 1px,transparent 1px),
+		radial-gradient(circle at 92% 15%,rgba(214,181,44,.11),transparent 28%),
+		linear-gradient(135deg,#00613a,#00512f 55%,#003d26);
+	background-size: 35px 35px,35px 35px,auto,auto;
 }
 .campus-card-body::before {
   content:"";

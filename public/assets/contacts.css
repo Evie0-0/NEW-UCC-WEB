@@ -76,7 +76,7 @@ button, input { font: inherit; }
   position: relative;
   min-height: 400px;
   overflow: hidden;
-  background-image: url("images/HERO-CONTACTS.jpg");
+  background-image: url("../images/HERO-CONTACTS.jpg");
   background-size: 100% 100%;
   background-position: center center;
   background-repeat: no-repeat;

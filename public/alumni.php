@@ -1,35 +1,26 @@
 <?php
-
+declare(strict_types=1);
 require_once __DIR__ . '/../app/Repositories/PublicAlumniRepository.php';
-
 use Core\Database;
 use Repo\PublicAlumniRepository;
-
 $alumniRepository = new PublicAlumniRepository(Database::connect());
 $alumniPosts = $alumniRepository->getAlumniPosts();
-
-//Turns a datetime into "a day ago", "3 months ago", "2 years ago", etc.
 if (!function_exists('timeAgo')) {
 	function timeAgo(?string $datetime): string
 	{
 		if (empty($datetime)) {
 			return 'recently';
 		}
-
 		try {
 			$then = new DateTimeImmutable($datetime);
 		} catch (Exception $e) {
 			return 'recently';
 		}
-
 		$now = new DateTimeImmutable('now');
-
 		if ($then > $now) {
 			return 'just now';
 		}
-
 		$diff = $then->diff($now);
-
 		if ($diff->y > 0) {
 			return $diff->y === 1 ? 'a year ago' : $diff->y . ' years ago';
 		}
@@ -45,9 +36,39 @@ if (!function_exists('timeAgo')) {
 		if ($diff->i > 0) {
 			return $diff->i === 1 ? 'a minute ago' : $diff->i . ' minutes ago';
 		}
-
 		return 'just now';
 	}
+}
+function alumniEscape(?string $value): string
+{
+	return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+}
+function alumniImagePath(?string $filename): string
+{
+	if (empty($filename)) {
+		return 'images/UCC2.png';
+	}
+	return 'image.php?f=' . rawurlencode(basename($filename));
+}
+$posts = [];
+foreach ($alumniPosts as $post) {
+	$postId = (int)($post['id'] ?? 0);
+	$title = $post['title'] ?? 'Untitled Alumni Announcement';
+	$content = $post['excerpt'] ?? '';
+	if (trim($content) === '') {
+		$content = mb_strimwidth(strip_tags($post['content'] ?? ''), 0, 180, '...', 'UTF-8');
+	}
+	$publishedDate = $post['published_at'] ?? $post['created_at'] ?? null;
+	$posts[] = [
+		'id' => $postId,
+		'title' => $title,
+		'category' => $post['name'] ?? 'UCC ALUMNI',
+		'image' => alumniImagePath($post['featured_image'] ?? null),
+		'excerpt' => $content,
+		'date' => timeAgo($publishedDate),
+		'search' => strtolower($title . ' ' . ($post['name'] ?? 'Alumni') . ' ' . $content),
+		'published_date' => $publishedDate
+	];
 }
 ?>
 <!DOCTYPE html>
@@ -64,344 +85,190 @@ if (!function_exists('timeAgo')) {
 	<link rel="stylesheet" href="assets/utility-bar.css">
 	<link rel="stylesheet" href="assets/navbar.css">
 	<link rel="stylesheet" href="assets/footer.css">
-	<style>
-		html, body { min-height: 100%; }
-		body { min-height: 100vh; display: flex; flex-direction: column; }
-		.alumni-page { flex: 1 0 auto; min-height: 0; }
-	</style>
+	<link rel="stylesheet" href="assets/alumni.css">
 </head>
-<body>
+<body class="student-life-page">
 	<?php include __DIR__ . '/includes/utility-bar.php'; ?>
 	<?php include __DIR__ . '/includes/navbar.php'; ?>
-
-	<div class="page-dots" aria-hidden="true">
-		<span class="dot-pattern dot-1"></span>
-		<span class="dot-pattern dot-2"></span>
-		<span class="dot-pattern dot-3"></span>
-		<span class="dot-pattern dot-4"></span>
-	</div>
-
-	<!-- ALUMNI CONTENT -->
-	<main class="alumni-page">
-		<div class="alumni-decor alumni-decor-top" aria-hidden="true"></div>
-		<div class="alumni-decor alumni-decor-right" aria-hidden="true"></div>
-		<div class="alumni-decor alumni-decor-bottom" aria-hidden="true"></div>
-
-		<section class="alumni-container">
-			<div class="alumni-heading">
-				<div class="alumni-heading-content">
-					<div class="alumni-eyebrow">
-						<span></span>
-						UCC ALUMNI
-						<i></i>
+	<main>
+		<section class="student-hero">
+			<div class="student-hero-pattern"></div>
+			<div class="student-hero-inner">
+				<div class="student-hero-copy">
+					<span class="student-eyebrow">
+						<i data-lucide="graduation-cap"></i>
+						UNIVERSITY OF CALOOCAN CITY
+					</span>
+					<h1>UCC Alumni<br>Community</h1>
+					<p>Stay connected with the University of Caloocan City and discover the latest alumni stories, achievements, announcements, and opportunities within the UCC community.</p>
+					<div class="student-hero-note">
+						<i data-lucide="users"></i>
+						Once a UCCian, always a part of the UCC family.
 					</div>
-					<h1>ALUMNI</h1>
-					<div class="alumni-heading-line">
-						<span></span>
-						<i></i>
-						<span></span>
-					</div>
-					<p>Stay connected with the University of Caloocan City and discover the latest updates, stories, and opportunities for the UCC alumni community.</p>
 				</div>
 			</div>
-
-			<?php if (empty($alumniPosts)): ?>
-
-				<!-- EMPTY STATE -->
-				<section class="alumni-empty">
-					<div class="alumni-empty-pattern" aria-hidden="true"></div>
-					<div class="alumni-empty-icon">
-						<i data-lucide="graduation-cap"></i>
-					</div>
-					<div class="alumni-empty-content">
-						<span class="alumni-empty-label">UCC ALUMNI</span>
-						<h2>No posts to show</h2>
-						<div class="alumni-empty-line">
-							<span></span>
-							<i></i>
-							<span></span>
-						</div>
-					</div>
-					<div class="alumni-empty-corner alumni-empty-corner-left" aria-hidden="true"></div>
-					<div class="alumni-empty-corner alumni-empty-corner-right" aria-hidden="true"></div>
-				</section>
-
-				<div class="alumni-bottom-message">
-					<div class="alumni-bottom-icon">
-						<i data-lucide="users"></i>
+		</section>
+		<section class="student-search-section">
+			<div class="student-search-card">
+				<div class="search-card-heading">
+					<div class="search-icon-wrap">
+						<i data-lucide="search"></i>
 					</div>
 					<div>
-						<strong>UCC ALUMNI COMMUNITY</strong>
-						<span>Check back again for future alumni updates and posts.</span>
+						<span>ALUMNI CONNECTION</span>
+						<h2>Find Alumni Updates</h2>
 					</div>
 				</div>
-
+				<div class="student-search-controls">
+					<input type="search" class="student-search-input" id="alumniSearch" placeholder="Search alumni updates..." aria-label="Search alumni updates">
+					<button type="button" class="student-search-button" id="alumniSearchButton">
+						<i data-lucide="search"></i>
+						SEARCH
+					</button>
+				</div>
+				<p class="search-hint">Enter a keyword such as alumni, achievements, reunion, activities, or announcements.</p>
+			</div>
+		</section>
+		<section class="student-section" id="alumni-posts">
+			<div class="student-section-heading">
+				<div>
+					<span class="section-eyebrow">UCC ALUMNI COMMUNITY</span>
+					<h2>Latest Alumni Updates</h2>
+					<p>Discover stories, announcements, and opportunities from the UCC alumni community.</p>
+				</div>
+				<a href="#alumni-posts" class="student-explore-link">
+					EXPLORE UPDATES
+					<i data-lucide="arrow-right"></i>
+				</a>
+			</div>
+			<?php if (empty($posts)): ?>
+				<div class="no-student-posts">
+					<i data-lucide="inbox"></i>
+					<p>No alumni updates are available at the moment. Please check back soon.</p>
+				</div>
 			<?php else: ?>
-
-				<!-- ALUMNI POSTS -->
-				<?php foreach ($alumniPosts as $index => $post): ?>
-					<div
-						class="admission-post admission-modal-trigger"
-						data-article="<?= $index ?>"
-					>
-						<div class="admission-post-image">
-							<img
-								src="<?= htmlspecialchars(!empty($post['featured_image']) ? 'image.php?f=' . rawurlencode((string)$post['featured_image']) : 'images/UCC2.png', ENT_QUOTES, 'UTF-8') ?>"
-								alt="<?= htmlspecialchars($post['title'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-							>
-						</div>
-
-						<div class="admission-post-content">
-							<span class="admission-category">
-								<?= htmlspecialchars($post['name'] ?? 'UCC ALUMNI', ENT_QUOTES, 'UTF-8') ?>
-							</span>
-
-							<h2>
-								<?= htmlspecialchars($post['title'] ?? '', ENT_QUOTES, 'UTF-8') ?>
-							</h2>
-
-							<div class="admission-meta">
-								<i data-lucide="calendar-days"></i>
-								<span
-									title="<?= !empty($post['published_at'])
-										? htmlspecialchars(date('F j, Y', strtotime($post['published_at'])), ENT_QUOTES, 'UTF-8')
-										: '' ?>"
-								>
-									Published <?= htmlspecialchars(timeAgo($post['published_at'] ?? null), ENT_QUOTES, 'UTF-8') ?>
-								</span>
-							</div>
-
-							<div class="admission-title-line"></div>
-
-							<p>
-								<?= htmlspecialchars($post['excerpt'] ?? '', ENT_QUOTES, 'UTF-8') ?>
-							</p>
-
-							<a
-								href="#"
-								class="admission-read-more"
-								data-modal-trigger="<?= $index ?>"
-							>
-								READ MORE
-								<span class="admission-arrow">
-									<i data-lucide="arrow-right"></i>
-								</span>
+				<div class="student-grid" id="alumniGrid">
+					<?php foreach ($posts as $index => $post): ?>
+						<?php $articleUrl = $post['id'] > 0 ? 'postArticle.php?id=' . $post['id'] : '#'; ?>
+						<article class="student-card alumni-card" data-search="<?= alumniEscape($post['search']) ?>">
+							<a href="<?= alumniEscape($articleUrl) ?>" class="student-card-image-link" <?= $post['id'] <= 0 ? 'aria-disabled="true"' : '' ?>>
+								<div class="student-card-visual">
+									<img src="<?= alumniEscape($post['image']) ?>" alt="<?= alumniEscape($post['title']) ?>" loading="lazy" decoding="async">
+									<span class="student-card-number"><?= str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT) ?></span>
+									<span class="student-image-label">UCC ALUMNI</span>
+								</div>
 							</a>
-						</div>
+							<div class="student-card-content">
+								<span class="student-card-category">
+									<?= alumniEscape($post['category']) ?>
+								</span>
+								<h3><?= alumniEscape($post['title']) ?></h3>
+								<div class="student-card-date">
+									<i data-lucide="calendar-days"></i>
+									<span title="<?= !empty($post['published_date']) ? alumniEscape(date('F j, Y', strtotime($post['published_date']))) : '' ?>">
+										Published <?= alumniEscape($post['date']) ?>
+									</span>
+								</div>
+								<p><?= alumniEscape($post['excerpt']) ?></p>
+								<div class="student-card-footer">
+									<a href="<?= alumniEscape($articleUrl) ?>" class="student-read-more" <?= $post['id'] <= 0 ? 'aria-disabled="true"' : '' ?>>
+										READ MORE
+										<i data-lucide="arrow-right"></i>
+									</a>
+								</div>
+							</div>
+						</article>
+					<?php endforeach; ?>
+				</div>
+				<div class="student-no-results" id="noAlumniResults">
+					<div class="no-results-icon">
+						<i data-lucide="search-x"></i>
 					</div>
-
-					<?php if ($index < count($alumniPosts) - 1): ?>
-						<div class="admission-divider"></div>
-					<?php endif; ?>
-				<?php endforeach; ?>
-
+					<h3>No Alumni Updates Found</h3>
+					<p>Try another keyword or clear your search to see all alumni announcements.</p>
+					<button type="button" class="student-search-button" id="resetAlumniSearch">CLEAR SEARCH</button>
+				</div>
 			<?php endif; ?>
 		</section>
+		<section class="student-help">
+			<div class="student-help-icon">
+				<i data-lucide="users"></i>
+			</div>
+			<div class="student-help-content">
+				<h3>Stay Connected With UCC</h3>
+				<p>Keep in touch with your university community and stay updated on alumni news, activities, achievements, and future opportunities.</p>
+			</div>
+			<a href="#alumni-posts" class="student-help-link">
+				EXPLORE ALUMNI NEWS
+				<i data-lucide="arrow-right"></i>
+			</a>
+		</section>
 	</main>
-
-	<?php if (!empty($alumniPosts)): ?>
-		<!-- ALUMNI ARTICLE MODAL -->
-		<div class="student-modal" id="admissionModal" aria-hidden="true">
-			<div class="student-modal-backdrop"></div>
-			<div class="student-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="admissionModalTitle">
-				<div class="student-modal-header">
-					<div class="student-modal-heading">
-						<span class="student-modal-label" id="admissionModalCategory">ALUMNI</span>
-					</div>
-					<button class="student-modal-close" type="button" aria-label="Close" data-modal-close>×</button>
-				</div>
-				<div class="student-modal-body">
-					<div class="student-modal-accent"></div>
-					<h2 id="admissionModalTitle"></h2>
-					<div id="admissionModalContent"></div>
-				</div>
-				<div class="student-modal-footer">
-					<span>UNIVERSITY OF CALOOCAN CITY</span>
-				</div>
-			</div>
-		</div>
-
-
-
-		<!-- FULL IMAGE LIGHTBOX -->
-		<div class="policy-lightbox" id="policyLightbox" aria-hidden="true">
-			<div class="policy-lightbox-backdrop"></div>
-			<div class="policy-lightbox-content">
-				<button type="button" class="policy-lightbox-close" aria-label="Close image" data-policy-close>
-					<i data-lucide="x"></i>
-				</button>
-				<img id="policyLightboxImage" src="" alt="Alumni Image">
-			</div>
-		</div>
-
-	<?php endif; ?>
-
-
-
 	<?php include __DIR__ . '/includes/footer.php'; ?>
-
-
-
-	<button class="back-top" id="backTop" aria-label="Back to top">↑</button>
-
-	<?php if (!empty($alumniPosts)): ?>
-		<script>
-		const admissionArticles = <?= json_encode(
-			array_values($alumniPosts),
-			JSON_HEX_TAG
-				| JSON_HEX_APOS
-				| JSON_HEX_QUOT
-				| JSON_HEX_AMP
-				| JSON_THROW_ON_ERROR
-		) ?>;
-		</script>
-	<?php endif; ?>
-
-	<script src="https://unpkg.com/lucide@latest"></script>
+	<button class="back-top" id="backTop" aria-label="Back to top">
+		<i data-lucide="arrow-up"></i>
+	</button>
+	<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 	<script src="js/script.js"></script>
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			if (typeof lucide !== "undefined") {
 				lucide.createIcons();
 			}
-
-			const admissionModal = document.getElementById("admissionModal");
-
-
-			// No posts means no modal
-			if (!admissionModal) {
-				return;
-			}
-
-			const admissionModalCategory = document.getElementById("admissionModalCategory");
-			const admissionModalTitle = document.getElementById("admissionModalTitle");
-			const admissionModalContent = document.getElementById("admissionModalContent");
-			const policyLightbox = document.getElementById("policyLightbox");
-			const policyLightboxImage = document.getElementById("policyLightboxImage");
-
-			function openAdmissionModal(articleIndex) {
-				const article = admissionArticles[Number(articleIndex)];
-
-				if (!article) {
-					return;
-				}
-
-				admissionModalCategory.textContent = article.name || "ALUMNI";
-				admissionModalTitle.textContent = article.title || "";
-
-				
-				admissionModalContent.innerHTML = article.content || "";
-
-				admissionModal.classList.add("active");
-				admissionModal.setAttribute("aria-hidden", "false");
-				document.body.classList.add("student-modal-open");
-
-				const modalBody = admissionModal.querySelector(".student-modal-body");
-				if (modalBody) {
-					modalBody.scrollTop = 0;
-				}
-
-				if (typeof lucide !== "undefined") {
-					lucide.createIcons();
+			const searchInput = document.getElementById("alumniSearch");
+			const searchButton = document.getElementById("alumniSearchButton");
+			const resetButton = document.getElementById("resetAlumniSearch");
+			const cards = document.querySelectorAll(".alumni-card");
+			const noResults = document.getElementById("noAlumniResults");
+			const section = document.getElementById("alumni-posts");
+			function filterAlumniPosts() {
+				if (!searchInput) return;
+				const query = searchInput.value.trim().toLowerCase();
+				let visibleCount = 0;
+				cards.forEach(function (card) {
+					const matches = card.dataset.search.includes(query);
+					card.style.display = matches ? "" : "none";
+					if (matches) visibleCount++;
+				});
+				if (noResults) {
+					noResults.style.display = visibleCount === 0 ? "block" : "none";
 				}
 			}
-
-			function closeAdmissionModal() {
-				admissionModal.classList.remove("active");
-				admissionModal.setAttribute("aria-hidden", "true");
-				document.body.classList.remove("student-modal-open");
-			}
-
-			function openPolicyLightbox(imageSrc) {
-				if (!policyLightbox || !policyLightboxImage) {
-					return;
-				}
-				policyLightboxImage.src = imageSrc;
-				policyLightbox.classList.add("active");
-				policyLightbox.setAttribute("aria-hidden", "false");
-			}
-
-			function closePolicyLightbox() {
-				if (!policyLightbox || !policyLightboxImage) {
-					return;
-				}
-				policyLightbox.classList.remove("active");
-				policyLightbox.setAttribute("aria-hidden", "true");
-				policyLightboxImage.src = "";
-			}
-
-			// WHOLE CARD CLICK 
-			document.querySelectorAll(".admission-modal-trigger").forEach(card => {
-				card.addEventListener("click", function (event) {
-					if (event.target.closest("a")) {
-						return;
+			if (searchInput) {
+				searchInput.addEventListener("input", filterAlumniPosts);
+				searchInput.addEventListener("keydown", function (event) {
+					if (event.key === "Enter") {
+						filterAlumniPosts();
+						section.scrollIntoView({ behavior: "smooth" });
 					}
-					openAdmissionModal(this.dataset.article);
-				});
-			});
-
-			// READ MORE 
-			document.querySelectorAll("[data-modal-trigger]").forEach(button => {
-				button.addEventListener("click", function (event) {
-					event.preventDefault();
-					event.stopPropagation();
-					openAdmissionModal(this.dataset.modalTrigger);
-				});
-			});
-
-
-			// IMAGES INSIDE THE MODAL 
-			admissionModal.addEventListener("click", function (event) {
-				const imageTrigger = event.target.closest(".policy-image-trigger");
-				if (!imageTrigger) {
-					return;
-				}
-				event.preventDefault();
-				event.stopPropagation();
-				const imageSrc = imageTrigger.dataset.policyImage || imageTrigger.getAttribute("href");
-				openPolicyLightbox(imageSrc);
-			});
-
-
-			// MODAL BACKDROP + CLOSE BUTTON 
-			admissionModal.querySelectorAll("[data-modal-close]").forEach(button => {
-				button.addEventListener("click", function (event) {
-					event.preventDefault();
-					event.stopPropagation();
-					closeAdmissionModal();
-				});
-			});
-
-			const backdrop = admissionModal.querySelector(".student-modal-backdrop");
-			if (backdrop) {
-				backdrop.addEventListener("click", closeAdmissionModal);
-			}
-
-
-			// LIGHTBOX BACKDROP + CLOSE BUTTON 
-			if (policyLightbox) {
-				policyLightbox.querySelectorAll("[data-policy-close]").forEach(button => {
-					button.addEventListener("click", function (event) {
-						event.preventDefault();
-						event.stopPropagation();
-						closePolicyLightbox();
-					});
+					if (event.key === "Escape") {
+						searchInput.value = "";
+						filterAlumniPosts();
+					}
 				});
 			}
-
-			// ESCAPE KEY 
-			document.addEventListener("keydown", function (event) {
-				if (event.key !== "Escape") {
-					return;
-				}
-				if (policyLightbox && policyLightbox.classList.contains("active")) {
-					closePolicyLightbox();
-					return;
-				}
-				if (admissionModal.classList.contains("active")) {
-					closeAdmissionModal();
-				}
-			});
+			if (searchButton) {
+				searchButton.addEventListener("click", function () {
+					filterAlumniPosts();
+					section.scrollIntoView({ behavior: "smooth" });
+				});
+			}
+			if (resetButton) {
+				resetButton.addEventListener("click", function () {
+					searchInput.value = "";
+					filterAlumniPosts();
+					searchInput.focus();
+				});
+			}
+			const backTop = document.getElementById("backTop");
+			if (backTop) {
+				window.addEventListener("scroll", function () {
+					backTop.classList.toggle("show", window.scrollY > 350);
+				});
+				backTop.addEventListener("click", function () {
+					window.scrollTo({ top: 0, behavior: "smooth" });
+				});
+			}
 		});
 	</script>
 </body>

@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Unable to load college events data:", error);
         return;
     }
-    
     let currentPage = 1;
     let showAllEvents = false;
     const itemsPerPage = 6;
@@ -32,18 +31,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const newsModalDescription = document.getElementById("newsModalDescription");
     const newsImageLightbox = document.getElementById("newsImageLightbox");
     const newsLightboxImage = document.getElementById("newsLightboxImage");
-
     if (!featuredNews || !newsGrid || !newsPagination || !newsPrev || !newsNext || !viewAllEvents || !eventsCount || !moreEventsTitle || !newsModal || !newsModalTitle || !newsModalImage || !newsModalImageLink || !newsModalDescription || !newsImageLightbox || !newsLightboxImage) return;
-
     function getFilteredEvents() {
         return eventsData;
     }
-
     function getExcerpt(text, limit = 125) {
         const value = String(text || "").trim();
         return value.length <= limit ? value : value.substring(0, limit).trim() + "...";
     }
-
     function escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, character => ({
             "&": "&amp;",
@@ -53,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "'": "&#039;"
         })[character]);
     }
-
     // Accept the storage image endpoint, the exact fallback, or an absolute HTTP(S) image URL.
     function getSafeImagePath(path) {
         if (typeof path !== "string" || path.includes("..")) return fallbackImage;
@@ -61,7 +55,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (/^https?:\/\//i.test(path)) return path;
         return fallbackImage;
     }
-
+    // Open the selected college event using the shared article page.
+    function openEventArticle(index) {
+        const event = eventsData[index];
+        if (!event || !event.id) {
+            console.error("Unable to open college event: event ID is missing.");
+            return;
+        }
+        const params = new URLSearchParams();
+        params.set("id", event.id);
+        params.set("type", "college");
+        const currentCollege = new URLSearchParams(window.location.search).get("college");
+        if (currentCollege) {
+            params.set("college", currentCollege);
+        }
+        window.location.href = `postArticle.php?${params.toString()}`;
+    }
     function createEventCard(event) {
         const eventIndex = eventsData.indexOf(event);
         return `
@@ -77,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             </article>`;
     }
-
     function renderFeatured() {
         const items = getFilteredEvents();
         if (!items.length) {
@@ -105,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>`;
         setImageFallbacks(featuredNews);
     }
-
     function renderCards() {
         const items = getFilteredEvents();
         const cardItems = items.slice(1);
@@ -130,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateArrowButtons(totalPages);
         setImageFallbacks(newsGrid);
     }
-
     function setImageFallbacks(container) {
         container.querySelectorAll("img").forEach(image => {
             image.addEventListener("error", () => {
@@ -141,7 +147,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }, { once: true });
         });
     }
-
     function renderPagination(totalPages) {
         newsPagination.innerHTML = "";
         if (showAllEvents || totalPages <= 1) return;
@@ -170,7 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
         next.addEventListener("click", () => changePage(currentPage + 1));
         newsPagination.appendChild(next);
     }
-
     function changePage(page) {
         const totalPages = Math.ceil(Math.max(0, getFilteredEvents().length - 1) / itemsPerPage);
         if (page < 1 || page > totalPages) return;
@@ -178,19 +182,16 @@ document.addEventListener("DOMContentLoaded", () => {
         renderCards();
         scrollToEvents();
     }
-
     // style.display is used because the CSS display rule overrides the hidden attribute
     function setArrowsVisible(visible) {
         newsPrev.style.display = visible ? "" : "none";
         newsNext.style.display = visible ? "" : "none";
     }
-
     function updateArrowButtons(totalPages) {
         setArrowsVisible(!(showAllEvents || totalPages <= 1));
         newsPrev.disabled = currentPage === 1;
         newsNext.disabled = currentPage === totalPages;
     }
-
     function scrollToEvents() {
         const page = document.querySelector(".college-events-page");
         if (!page) return;
@@ -199,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
             behavior: "smooth"
         });
     }
-
     function updateViewAllButton() {
         // Hide the button when everything already fits on the first page
         const hasMore = getFilteredEvents().slice(1).length > itemsPerPage;
@@ -208,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ? "<span>▤</span> SHOW LESS EVENTS"
             : "<span>▤</span> VIEW ALL EVENTS";
     }
-
     function openEventModal(index) {
         const event = eventsData[index];
         if (!event) return;
@@ -231,14 +230,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const closeButton = newsModal.querySelector(".news-modal-close");
         if (closeButton) closeButton.focus();
     }
-
     function closeEventModal() {
         closeEventImageLightbox();
         newsModal.classList.remove("active");
         newsModal.setAttribute("aria-hidden", "true");
         document.body.classList.remove("news-modal-open");
     }
-
     function openEventImageLightbox() {
         const image = newsModalImageLink.dataset.image;
         if (!image) return;
@@ -249,20 +246,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const closeButton = newsImageLightbox.querySelector(".news-image-lightbox-close");
         if (closeButton) closeButton.focus();
     }
-
     function closeEventImageLightbox() {
         newsImageLightbox.classList.remove("active");
         newsImageLightbox.setAttribute("aria-hidden", "true");
         newsLightboxImage.removeAttribute("src");
     }
-
+    // Both featured and regular Read More buttons open the full article page.
     featuredNews.addEventListener("click", event => {
         const trigger = event.target.closest("[data-event-index]");
-        if (trigger) openEventModal(Number(trigger.dataset.eventIndex));
+        if (trigger) openEventArticle(Number(trigger.dataset.eventIndex));
     });
     newsGrid.addEventListener("click", event => {
         const trigger = event.target.closest("[data-event-index]");
-        if (trigger) openEventModal(Number(trigger.dataset.eventIndex));
+        if (trigger) openEventArticle(Number(trigger.dataset.eventIndex));
     });
     newsModalImageLink.addEventListener("click", event => {
         event.preventDefault();

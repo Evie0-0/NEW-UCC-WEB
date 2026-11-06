@@ -370,22 +370,3 @@
 }
 .about-toast.show { opacity: 1; transform: translateY(0); }
 
-@media (max-width: 900px) {
-    .about-search { min-width: 150px; }
-    .about-filter { min-width: 125px; }
-}
-@media (max-width: 760px) {
-    .about-page { padding: 22px 18px 30px; }
-    .about-intro { margin-bottom: 18px; }
-    .about-toolbar { flex-wrap: wrap; }
-    .about-tools-left { width: 100%; height: auto; flex-direction: column; align-items: stretch; }
-    .about-search, .about-filter { width: 100%; min-width: 0; }
-    .about-toolbar > #addPostBtn { width: 100%; }
-    .about-form-grid { grid-template-columns: 1fr; }
-    .about-modal-panel { width: calc(100% - 20px); max-height: calc(100vh - 20px); }
-    .about-form { padding: 20px; }
-    .about-form-actions { flex-direction: column; align-items: stretch; gap: 12px; }
-    .about-form-actions-right { flex-direction: column; gap: 10px; }
-    .about-preview-body { padding: 22px 20px; }
-    .about-preview-meta { padding: 16px 20px; gap: 24px; }
-}
