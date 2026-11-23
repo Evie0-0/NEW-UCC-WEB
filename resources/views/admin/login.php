@@ -10,7 +10,7 @@ declare(strict_types=1);
         <h1>Sign In</h1>
 
         <form id="form" method="post">
-            <input type="hidden" name="csrf_token" value="<?= $thisi->helper->escape($data['csrf_token']) ?>">
+            <input type="hidden" name="csrf_token" value="<?= $this->helper->escape($data['csrf_token']) ?>">
 
             <div>
                 <label for="username">Username</label>

@@ -34,7 +34,7 @@ class UccDevelopmentContainer extends Container
             'Helpers\\Helper' => 'getHelperService',
             'Middleware\\AuthenticationMiddleware' => 'getAuthenticationMiddlewareService',
             'Middleware\\AuthorizationMiddleware' => 'getAuthorizationMiddlewareService',
-            'Middleware\\CSRFMiddleware' => 'getCSRFMiddlewareService',
+            'Middleware\\CsrfProtectionMiddleware' => 'getCsrfProtectionMiddlewareService',
             'Symfony\\Component\\HttpFoundation\\RequestStack' => 'getRequestStackService',
         ];
 
@@ -99,11 +99,11 @@ class UccDevelopmentContainer extends Container
         ]), new \Symfony\Component\DependencyInjection\Argument\ServiceLocator($container->getService ??= $container->getService(...), [
             'Middleware\\AuthenticationMiddleware' => ['services', 'Middleware\\AuthenticationMiddleware', 'getAuthenticationMiddlewareService', false],
             'Middleware\\AuthorizationMiddleware' => ['services', 'Middleware\\AuthorizationMiddleware', 'getAuthorizationMiddlewareService', false],
-            'Middleware\\CSRFMiddleware' => ['services', 'Middleware\\CSRFMiddleware', 'getCSRFMiddlewareService', false],
+            'Middleware\\CsrfProtectionMiddleware' => ['services', 'Middleware\\CsrfProtectionMiddleware', 'getCsrfProtectionMiddlewareService', false],
         ], [
             'Middleware\\AuthenticationMiddleware' => 'Middleware\\AuthenticationMiddleware',
             'Middleware\\AuthorizationMiddleware' => 'Middleware\\AuthorizationMiddleware',
-            'Middleware\\CSRFMiddleware' => 'Middleware\\CSRFMiddleware',
+            'Middleware\\CsrfProtectionMiddleware' => 'Middleware\\CsrfProtectionMiddleware',
         ]), ($container->services['logger.error'] ?? $container->get('logger.error', 1)), ($container->services['Core\\ViewRenderer'] ?? $container->get('Core\\ViewRenderer', 1)), ($container->services['Helpers\\Helper'] ??= new \Helpers\Helper()));
     }
 
@@ -138,13 +138,13 @@ class UccDevelopmentContainer extends Container
     }
 
     /**
-     * Gets the public 'Middleware\CSRFMiddleware' shared autowired service.
+     * Gets the public 'Middleware\CsrfProtectionMiddleware' shared autowired service.
      *
-     * @return \Middleware\CSRFMiddleware
+     * @return \Middleware\CsrfProtectionMiddleware
      */
-    protected static function getCSRFMiddlewareService($container)
+    protected static function getCsrfProtectionMiddlewareService($container)
     {
-        return $container->services['Middleware\\CSRFMiddleware'] = new \Middleware\CSRFMiddleware();
+        return $container->services['Middleware\\CsrfProtectionMiddleware'] = new \Middleware\CsrfProtectionMiddleware(($container->services['Core\\ViewRenderer'] ?? $container->get('Core\\ViewRenderer', 1)), ($container->services['Helpers\\Helper'] ??= new \Helpers\Helper()));
     }
 
     /**

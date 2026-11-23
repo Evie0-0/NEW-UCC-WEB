@@ -13,9 +13,12 @@ $routes->add('admin.login', new Route(
     '/admin/login',
     [
         '_controller' => [ PageController::class => 'adminLogin' ],
+        '_view' => 'admin/login',
         '_middleware' => [ AuthenticationMiddleware::class ],
         '_security' => [
-            'redirect_authenticated' => '/admin/'
+            'redirect_authenticated' => '/admin/',
+            'include_csrf_token' => true,
+            'no_store' => true
         ],
         '_data' => [
             'site' => [
@@ -34,15 +37,17 @@ $routes->add('admin.dashboard', new Route(
     '/admin/',
     [
         '_controller' => [ PageController::class => 'adminDashboard' ],
+        '_view' => 'admin/dashboard',
         '_middleware' => [ AuthenticationMiddleware::class, AuthorizationMiddleware::class ],
         '_security' => [
-            'allowed_roles' => [ 'admin', 'superadmin' ]
+            'allowed_roles' => [ 'admin', 'superadmin' ],
+            'no_store' => true
         ],
         '_data' => [
             'site' => [
                 'page_title' => 'Dashboard'
             ]
-        ]
+        ],
     ],
     methods: ['GET']
 ));

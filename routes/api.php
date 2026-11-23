@@ -13,8 +13,8 @@ $routes->add('api.user.login', new Route(
     [
         '_controller' => [ UserController::class => 'login' ],
         '_middleware' => [ CsrfProtectionMiddleware::class ],
-        '_additional' => [
-            'no_store' = true
+        '_security' => [
+            'no_store' => true
         ]
     ],
     methods: [ 'POST' ]
