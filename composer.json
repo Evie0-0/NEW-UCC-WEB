@@ -1,0 +1,30 @@
+{
+    "name": "ucc/ucc-cms",
+    "description": "University of Caloocan City Content Management System",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "mky",
+            "email": "dorenmarkjeralde@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.8",
+        "monolog/monolog": "^3.13",
+        "symfony/http-client": "^7.4",
+        "symfony/http-foundation": "^7.4",
+        "symfony/dependency-injection": "^7.4",
+        "symfony/config": "^7.4",
+        "symfony/routing": "^7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Core\\": "src/Core/",
+            "Services\\": "src/Services/",
+            "Repositories\\": "src/Repositories/",
+            "Controllers\\": "src/Controllers/",
+            "Middleware\\": "src/Middleware/",
+            "Helpers\\": "src/Helpers/"
+        }
+    }
+}

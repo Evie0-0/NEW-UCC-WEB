@@ -1,0 +1,35 @@
+[20-Nov-2026 06:51:47 Asia/Manila] PHP Warning:  Undefined array key "base_path" in /home/mky/Documents/cur_projects/ucc_cms/bootstrap/app.php on line 112
+[20-Nov-2026 11:50:16 Asia/Manila] PHP Warning:  Undefined array key "base_path" in /home/mky/Documents/cur_projects/ucc_cms/bootstrap/app.php on line 112
+[20-Nov-2026 18:10:44 Asia/Manila] PHP Warning:  Undefined array key "base_path" in /home/mky/Documents/cur_projects/ucc_cms/bootstrap/app.php on line 112
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Deprecated:  Helpers\Helper::result(): Implicitly marking parameter $title as nullable is deprecated, the explicit nullable type must be used instead in /home/mky/Documents/cur_projects/ucc_cms/src/Helpers/Helper.php on line 9
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 8
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 8
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 10
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 10
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 10
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 16
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 16
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 18
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 18
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 18
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 22
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 22
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 22
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 8
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 8
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 10
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 10
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 10
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 16
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 16
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 18
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 18
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 18
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Undefined variable $view in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 22
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 22
+[22-Nov-2026 03:27:50 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 22
+[22-Nov-2026 03:38:09 Asia/Manila] PHP Warning:  Undefined array key "error" in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 13
+[22-Nov-2026 03:38:09 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 13
+[22-Nov-2026 03:38:44 Asia/Manila] PHP Warning:  Undefined array key "error" in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 13
+[22-Nov-2026 03:38:44 Asia/Manila] PHP Warning:  Trying to access array offset on null in /home/mky/Documents/cur_projects/ucc_cms/resources/views/errors/error.php on line 13
+[22-Nov-2026 08:24:14 Asia/Manila] PHP Deprecated:  Helpers\Helper::result(): Implicitly marking parameter $title as nullable is deprecated, the explicit nullable type must be used instead in /home/mky/Documents/cur_projects/ucc_cms/src/Helpers/Helper.php on line 9
