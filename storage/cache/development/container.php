@@ -24,8 +24,6 @@ class UccDevelopmentContainer extends Container
             'Core\\Database' => true,
             'Core\\ViewRenderer' => true,
             'Symfony\\Component\\Routing\\RouteCollection' => true,
-            'logger.app' => true,
-            'logger.error' => true,
         ];
         $this->methodMap = [
             'Controllers\\PageController' => 'getPageControllerService',
@@ -35,7 +33,6 @@ class UccDevelopmentContainer extends Container
             'Middleware\\AuthenticationMiddleware' => 'getAuthenticationMiddlewareService',
             'Middleware\\AuthorizationMiddleware' => 'getAuthorizationMiddlewareService',
             'Middleware\\CsrfProtectionMiddleware' => 'getCsrfProtectionMiddlewareService',
-            'Symfony\\Component\\HttpFoundation\\RequestStack' => 'getRequestStackService',
         ];
 
         $this->aliases = [];
@@ -55,8 +52,9 @@ class UccDevelopmentContainer extends Container
     {
         return [
             'PDO' => true,
-            'Psr\\Log\\LoggerInterface' => true,
+            'Repositories\\AuditLogRepository' => true,
             'Repositories\\UserRepository' => true,
+            'Services\\AuditLogService' => true,
             'Services\\UserService' => true,
         ];
     }
@@ -78,9 +76,10 @@ class UccDevelopmentContainer extends Container
      */
     protected static function getUserControllerService($container)
     {
-        $a = ($container->services['Helpers\\Helper'] ??= new \Helpers\Helper());
+        $a = self::getPDOService($container);
+        $b = ($container->services['Helpers\\Helper'] ??= new \Helpers\Helper());
 
-        return $container->services['Controllers\\UserController'] = new \Controllers\UserController(new \Services\UserService(new \Repositories\UserRepository(($container->services['Core\\Database'] ?? $container->get('Core\\Database', 1))->connect()), $a), ($container->services['logger.app'] ?? $container->get('logger.app', 1)), $a);
+        return $container->services['Controllers\\UserController'] = new \Controllers\UserController(new \Services\UserService(new \Repositories\UserRepository($a), new \Services\AuditLogService(new \Repositories\AuditLogRepository($a), $b), $a, $b), $b);
     }
 
     /**
@@ -104,7 +103,7 @@ class UccDevelopmentContainer extends Container
             'Middleware\\AuthenticationMiddleware' => 'Middleware\\AuthenticationMiddleware',
             'Middleware\\AuthorizationMiddleware' => 'Middleware\\AuthorizationMiddleware',
             'Middleware\\CsrfProtectionMiddleware' => 'Middleware\\CsrfProtectionMiddleware',
-        ]), ($container->services['logger.error'] ?? $container->get('logger.error', 1)), ($container->services['Core\\ViewRenderer'] ?? $container->get('Core\\ViewRenderer', 1)), ($container->services['Helpers\\Helper'] ??= new \Helpers\Helper()));
+        ]), ($container->services['Core\\ViewRenderer'] ?? $container->get('Core\\ViewRenderer', 1)), ($container->services['Helpers\\Helper'] ??= new \Helpers\Helper()));
     }
 
     /**
@@ -148,12 +147,12 @@ class UccDevelopmentContainer extends Container
     }
 
     /**
-     * Gets the public 'Symfony\Component\HttpFoundation\RequestStack' shared service.
+     * Gets the private 'PDO' shared service.
      *
-     * @return \Symfony\Component\HttpFoundation\RequestStack
+     * @return \Core\Database
      */
-    protected static function getRequestStackService($container)
+    protected static function getPDOService($container)
     {
-        return $container->services['Symfony\\Component\\HttpFoundation\\RequestStack'] = new \Symfony\Component\HttpFoundation\RequestStack();
+        return ($container->services['Core\\Database'] ?? $container->get('Core\\Database', 1))->connect();
     }
 }

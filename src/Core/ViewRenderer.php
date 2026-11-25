@@ -6,49 +6,36 @@ namespace Core;
 use Helpers\Helper;
 use InvalidArgumentException;
 use RuntimeException;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Throwable;
 
 final class ViewRenderer {
     public function __construct(
-        private readonly string $viewsPath,
         private readonly string $basePath,
         private readonly array $siteConfig,
-        private readonly Helper $helper,
-        private readonly RequestStack $requestStack
+        private readonly Helper $helper
     ) {}
 
-    public function render(string $view, array $data = []): string {
-        $data['site'] = array_replace($this->siteConfig, $data['site'] ?? []);
-        $data['user'] ??= [];
+    public function render(string $view, array $responseData = []): string {
+        $responseData['site'] = array_replace($this->siteConfig, $responseData['site'] ?? []);
 
-        $request = $this->requestStack->getCurrentRequest();
-
-        if (str_starts_with($view, 'admin/') && $request !== null && $request->hasPreviousSession()) {
-            $data['user'] = $request->getSession()->get('user', []);
-        }
-
-        return $this->getContent($view, $data);
+        return $this->getContent($view, $responseData);
     }
 
-    public function renderError(array $data = []): string {
-        return $this->render('errors/error', $data);
+    public function partial(string $type, string $view, array $responseData = []): string {
+        return $this->getContent($type . '/partials/' . $view, $responseData);
     }
 
-    public function partial(string $type, string $view, array $data = []): string {
-        return $this->getContent($type . '/partials/' . $view, $data);
+    public function asset(string $type, string $path): string {
+        return '/assets/' . $type . '/' . $path;
     }
 
-    public function asset(string $path): string {
-        return rtrim($this->basePath, '/') . '/assets/' . ltrim($path, '/');
-    }
-
-    private function getContent(string $view, array $data): string {
+    // Changed responsedata into data for easy access for pages
+    private function getContent(string $view, array $responseData): string {
         if (!preg_match('~\A[a-zA-Z0-9_-]+(?:/[a-zA-Z0-9_-]+)*\z~D', $view)) {
             throw new InvalidArgumentException("Invalid view: {$view}.");
         }
 
-        $file = rtrim($this->viewsPath, '/') . '/' . $view . '.php';
+        $file = $this->basePath . '/resources/views/' . $view . '.php';
 
         if (!is_file($file)) {
             throw new RuntimeException("View to render not found: {$view}");
@@ -61,6 +48,9 @@ final class ViewRenderer {
         }
 
         try {
+            // Name of data used in html pages
+            $data = $responseData;
+
             require $file;
 
             if (ob_get_level() !== $bufferLevel + 1) {

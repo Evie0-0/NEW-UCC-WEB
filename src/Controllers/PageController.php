@@ -21,17 +21,21 @@ final class PageController {
         return $this->showPage($request);
     }
 
+    public function adminPost(Request $request): Response {
+        return $this->showPage($request);
+    }
+
     private function showPage(Request $request): Response {
-        $view = $request->attributes->get('_view');
+        $view = $request->attributes->get('view');
 
         if (!is_string($view) || $view === '') {
             throw new LogicException('The page route must define a view.');
         }
 
         $data = $request->attributes->all('_data');
-        $security = $request->attributes->all('_security');
+        $data['csrf_token'] ??= '';
 
-        if (($security['include_csrf_token'] ?? false) === true) {
+        if (($request->attributes->all('_security')['include_csrf_token'] ?? false) === true) {
             $session = $request->getSession();
             $token = $session->get('csrf_token');
 
@@ -41,6 +45,12 @@ final class PageController {
             }
 
             $data['csrf_token'] = $token;
+        }
+
+        $data['user'] ??= [];
+
+        if ($request->attributes->get('include_user_info') === true && $request->hasPreviousSession()) {
+            $data['user'] = $request->getSession()->get('user', []);
         }
 
         return new Response($this->view->render($view, $data));

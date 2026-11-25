@@ -5,16 +5,12 @@ use Core\Database;
 use Core\ViewRenderer;
 use Dotenv\Dotenv;
 use Helpers\Helper;
-use Monolog\ErrorHandler;
-use Monolog\Handler\RotatingFileHandler;
-use Monolog\Level;
-use Monolog\Logger;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouteCollection;
-define
-('BASE_PATH', dirname(__DIR__));
+
+define('BASE_PATH', dirname(__DIR__));
+
 $logsDirectory = BASE_PATH . '/storage/logs';
 
 if (!is_dir($logsDirectory)) {
@@ -27,7 +23,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
 ini_set('log_errors', '1');
-ini_set('error_log', $logsDirectory . '/php-error.log');
+ini_set('error_log', $logsDirectory . '/error.log');
 
 require_once BASE_PATH . '/vendor/autoload.php';
 
@@ -39,26 +35,6 @@ $config = [
 ];
 
 date_default_timezone_set($config['app']['timezone']);
-
-$errorLogger = new Logger('error');
-$errorLogger->pushHandler(
-    new RotatingFileHandler(
-        filename: $logsDirectory . '/error.log',
-        maxFiles: 30,
-        level: Level::Notice
-    )
-);
-
-ErrorHandler::register($errorLogger);
-
-$appLogger = new Logger('app');
-$appLogger->pushHandler(
-    new RotatingFileHandler(
-        filename: $logsDirectory . '/app.log',
-        maxFiles: 30,
-        level: Level::Info
-    )
-);
 
 $env = $config['app']['env'];
 
@@ -104,17 +80,29 @@ if ($autoRebuild) {
 require_once $cachePath;
 
 $container = new $containerClass();
-$container->set(Database::class, new Database(
-$config['database']));
-$container->set('logger.app', $appLogger);
-$container->set('logger.error', $errorLogger);
+
+$logFormat = $container->get(Helper::class)->errorLog(...);
+
+set_exception_handler($logFormat);
+set_error_handler(
+    static function (int $severity, string $message, string $file, int $line) use ($logFormat): bool {
+        if ((error_reporting() & $severity) === 0) {
+            return false;
+        }
+
+        $logFormat(new ErrorException($message, 0, $severity, $file, $line));
+
+        return true;
+    },
+    E_WARNING | E_USER_WARNING | E_NOTICE | E_USER_NOTICE | E_DEPRECATED | E_USER_DEPRECATED,
+);
+
+$container->set(Database::class, new Database($config['database']));
 
 $container->set(ViewRenderer::class, new ViewRenderer(
-    BASE_PATH . '/resources/views',
-    $config['app']['base_path'],
+    BASE_PATH,
     $config['app']['site'],
-    $container->get(Helper::class),
-    $container->get(RequestStack::class)
+    $container->get(Helper::class)
 ));
 
 $webRoutes = require BASE_PATH . '/routes/web.php';

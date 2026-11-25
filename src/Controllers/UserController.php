@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Controllers;
 
 use Helpers\Helper;
-use Psr\Log\LoggerInterface;
 use Services\UserService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 final class UserController {
     public function __construct(
         private readonly UserService $service,
-        private readonly LoggerInterface $errorLog,
         private readonly Helper $helper
     ) {}
 

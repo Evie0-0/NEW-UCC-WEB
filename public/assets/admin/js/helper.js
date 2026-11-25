@@ -54,7 +54,7 @@ export function showChoice(title, message, okLabel, cancelLabel) {
 
     dialog.innerHTML = `
         <h2></h2>
-        <p></p2>
+        <p></p>
         <form method="dialog">
             <button type="submit" value="cancel" autofocus></button>
             <button type="submit" value="ok"></button>

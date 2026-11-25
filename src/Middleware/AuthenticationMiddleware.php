@@ -20,8 +20,7 @@ final class AuthenticationMiddleware implements MiddlewareInterface {
 
     public function handle(Request $request, Closure $next): Response {
         $isSignedIn = $request->hasPreviousSession() && $request->getSession()->has('user');
-        $security = $request->attributes->all('_security');
-        $redirectPath = $security['redirect_authenticated'] ?? null;
+        $redirectPath = $request->attributes->all('_security')['redirect_authenticated'] ?? null;
 
         if (is_string($redirectPath) && $redirectPath !== '') {
             if (!$isSignedIn) {
@@ -40,7 +39,9 @@ final class AuthenticationMiddleware implements MiddlewareInterface {
             status: $status,
             message: 'Please sign in to continue.',
             title: 'Sign-In Required',
-            hint: 'Your session may have expired, or you may not be sign in. Sign in to continue.'
+            additional: [
+                'hint' => 'Your session may have expired, or you may not be sign in. Sign in to continue.'
+            ]
         );
 
         $path = $request->getPathInfo();
@@ -49,6 +50,11 @@ final class AuthenticationMiddleware implements MiddlewareInterface {
             return new JsonResponse($responseData, $status);
         }
 
-        return new Response($this->view->renderError($responseData), $status);
+        $responseData['action'] = [
+            'label' => 'Login',
+            'url' => $request->getBasePath() . '/admin/login'
+        ];
+
+        return new Response($this->view->render('error', $responseData), $status);
     }
 }

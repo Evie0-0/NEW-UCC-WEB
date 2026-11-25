@@ -33,7 +33,9 @@ final class CsrfProtectionMiddleware implements MiddlewareInterface {
             status: $status,
             message: 'Please reload the page and try again.',
             title: 'Request Verification Failed',
-            hint: 'Reload the page and try again.'
+            additional: [
+                'hint' => 'Reload the page and try again.'
+            ]
         );
 
         $path = $request->getPathInfo();
@@ -42,6 +44,6 @@ final class CsrfProtectionMiddleware implements MiddlewareInterface {
             return new JsonResponse($responseData, $status);
         }
 
-        return new Response($this->view->renderError($responseData), $status);
+        return new Response($this->view->render('error', $responseData), $status);
     }
 }

@@ -46,7 +46,6 @@ class ComposerStaticInit4e3f788d709a6df68fd57a5d8e79662d
         ),
         'M' =>
         array (
-            'Monolog\\' => 8,
             'Middleware\\' => 11,
         ),
         'H' =>
@@ -144,10 +143,6 @@ class ComposerStaticInit4e3f788d709a6df68fd57a5d8e79662d
         'PhpOption\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
-        ),
-        'Monolog\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'Middleware\\' =>
         array (

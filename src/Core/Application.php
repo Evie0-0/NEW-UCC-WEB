@@ -6,8 +6,6 @@ namespace Core;
 use Helpers\Helper;
 use LogicException;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\HttpFoundation\Exception\JsonException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,15 +21,10 @@ use Throwable;
 final class Application {
     public function __construct(
         private readonly RouteCollection $routes,
-
         #[AutowireLocator('app.controller')]
         private readonly ContainerInterface $controllers,
-
         #[AutowireLocator('app.middleware')]
         private readonly ContainerInterface $middleware,
-
-        #[Autowire(service: 'logger.error')]
-        private readonly LoggerInterface $errorLogger,
         private readonly ViewRenderer $view,
         private readonly Helper $helper
     ) {}
@@ -46,81 +39,100 @@ final class Application {
 
             $request->attributes->add($parameters);
 
-            return $this->run($request, $parameters);
+            return $this->run($request);
         } catch (ResourceNotFoundException $e) {
-            $this->errorLogger->notice('No route matched the requested path.', [
-                'method' => $request->getMethod(),
-                'path' => $request->getPathInfo(),
-                'exception' => $e,
-            ]);
+            $this->helper->errorLog($e);
 
             return $this->errorResponse(
                 $request,
                 $this->helper->responseData(
                     status: Response::HTTP_NOT_FOUND,
                     message: 'The requested resource could not be found.',
-                    hint: 'Check the web address or try a different link.'
+                    additional: [
+                        'hint' => 'Check the web address or try a different link.'
+                    ]
                 )
             );
         } catch (MethodNotAllowedException $e) {
-            $allowedMethods = $e->getAllowedMethods();
-
-            $this->errorLogger->notice('The requested HTTP method is not allowed for this path.', [
-                'method' => $request->getMethod(),
-                'path' => $request->getPathInfo(),
-                'allowed_methods' => $allowedMethods,
-                'exception' => $e,
-            ]);
+            $this->helper->errorLog($e);
 
             $response = $this->errorResponse(
                 $request,
                 $this->helper->responseData(
                     status: Response::HTTP_METHOD_NOT_ALLOWED,
                     message: 'The requested HTTP method is not allowed.',
-                    hint: 'Try opening a page from a different link.'
+                    additional: [
+                        'hint' => 'Try opening a page from a different link.'
+                    ]
                 )
             );
 
-            $response->headers->set('Allow', implode(', ', $allowedMethods));
+            $response->headers->set('Allow', implode(', ', $e->getAllowedMethods()));
 
             return $response;
         } catch (JsonException $e) {
-            $this->errorLogger->warning('Rejected rejected because the JSON body could not be parsed.', [
-                'method' => $request->getMethod(),
-                'path' => $request->getPathInfo(),
-                'route' => $request->attributes->get('_route'),
-                'exception' => $e,
-            ]);
+            $this->helper->errorLog($e);
 
             return $this->errorResponse(
                 $request,
                 $this->helper->responseData(
                     status: Response::HTTP_BAD_REQUEST,
                     message: 'Invalid JSON request body.',
-                    hint: 'Reload the page and try again.'
+                    additional: [
+                        'hint' => 'Reload the page and try again.'
+                    ]
                 )
             );
         } catch (Throwable $e) {
-            $this->errorLogger->error('Unhandled application exception.', [
-                'method' => $request->getMethod(),
-                'path' => $request->getPathInfo(),
-                'route' => $request->attributes->get('_route'),
-                'exception' => $e
-            ]);
+            $this->helper->errorLog($e);
 
             return $this->errorResponse(
                 $request,
                 $this->helper->responseData(
                     status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    message: 'An unexpected error occurred. Please try again later.'
+                    message: 'An unexpected error occurred. Please try again later.',
+                    additional: [
+                        'hint' => 'Try again later. If the problem continues, contact an administrator.'
+                    ]
                 )
             );
         }
     }
 
+    // Runs middlewares first, controller after
+    private function run(Request $request): Response {
+        $stack = $request->attributes->get('_middlewares', []);
+
+        if (!is_array($stack)) {
+            throw new LogicException('Invalid middleware definition.');
+        }
+
+        $next = fn(Request $request): Response => $this->dispatch($request);
+
+        foreach (array_reverse($stack) as $middlewareKey) {
+            if (!is_string($middlewareKey)) {
+                throw new LogicException('Invalid middleware identifier.');
+            }
+
+            $following = $next;
+
+            $next = function (Request $request) use ($middlewareKey, $following): Response {
+                $middleware = $this->middleware->get($middlewareKey);
+
+                if (!($middleware instanceof MiddlewareInterface)) {
+                    throw new LogicException('Invalid middleware implementation.');
+                }
+
+                return $middleware->handle($request, $following);
+            };
+        }
+
+        return $next($request);
+    }
+
     // Executes the controller after the middlewares
-    private function dispatch(Request $request, array $parameters): Response {
-        $handler = $parameters['_controller'] ?? null;
+    private function dispatch(Request $request): Response {
+        $handler = $request->attributes->get('_controller');
 
         if (!is_array($handler) || count($handler) !== 1) {
             throw new LogicException('Invalid controller definition.');
@@ -148,45 +160,11 @@ final class Application {
         return $response;
     }
 
-    // Runs middlewares first, controller after
-    private function run(Request $request, array $parameters): Response {
-        $stack = $parameters['_middleware'] ?? [];
-
-        if (!is_array($stack)) {
-            throw new LogicException('Invalid middleware definition.');
-        }
-
-        $next = fn(Request $request): Response => $this->dispatch($request, $parameters);
-
-        foreach (array_reverse($stack) as $middlewareKey) {
-            if (!is_string($middlewareKey)) {
-                throw new LogicException('Invalid middleware identifier.');
-            }
-
-            $following = $next;
-
-            $next = function (Request $request) use ($middlewareKey, $following): Response {
-                $middleware = $this->middleware->get($middlewareKey);
-
-                if (!($middleware instanceof MiddlewareInterface)) {
-                    throw new LogicException('Invalid middleware implementation.');
-                }
-
-                return $middleware->handle($request, $following);
-            };
-        }
-
-        return $next($request);
-    }
-
     // Legacy URL normalization
     private function normalizePath(Request $request): string {
         $path = $request->getPathInfo();
 
-        if ($path === '/api'
-            || str_starts_with($path, '/api/')
-            || !in_array($request->getMethod(), ['GET', 'HEAD'], true)
-        ) {
+        if ($path === '/api' || str_starts_with($path, '/api/')) {
             return $path;
         }
 
@@ -197,15 +175,16 @@ final class Application {
         return preg_replace('~\.php\z~i', '', $path) ?? $path;
     }
 
+    // Changed responsedata into data for easy access for pages
     // Show error based on request type
-    private function errorResponse(Request $request, array $data): Response {
+    private function errorResponse(Request $request, array $responseData): Response {
         $path = $request->getPathInfo();
-        $status = $data['result']['status'];
+        $status = $responseData['result']['status'] ?? 500;
 
         if ($path === '/api' || str_starts_with($path, '/api/')) {
-            return new JsonResponse($data, $status);
+            return new JsonResponse($responseData, $status);
         }
 
-        return new Response($this->view->renderError($data), $status);
+        return new Response($this->view->render('error', $responseData), $status);
     }
 }

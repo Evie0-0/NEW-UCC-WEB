@@ -2,7 +2,7 @@ import { showResult, showUnexpectedError } from "./helper.js";
 
 const form = document.querySelector('#form');
 const message = document.querySelector('#message');
-const signinBtn = form.elements.namedItem('sign-in');
+const loginBtn = form.elements.namedItem('login_btn');
 const password = form.elements.namedItem('password');
 
 window.addEventListener('beforeunload', (event) => {
@@ -16,10 +16,10 @@ window.addEventListener('beforeunload', (event) => {
     }
 });
 
-async function signin() {
+async function login() {
     const fields = new FormData(form);
     message.textContent = '';
-    signinBtn.disabled = true;
+    loginBtn.disabled = true;
 
     let retry = false;
 
@@ -28,7 +28,6 @@ async function signin() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'Csrf-Token': fields.get('csrf_token')
             },
             body: JSON.stringify({
@@ -37,10 +36,10 @@ async function signin() {
             }),
         });
 
-        const { result, additional } = await response.json();
+        const { result, redo_password: redoPassword, redirect } = await response.json();
 
         if (!result.success) {
-            if (additional.redo_password != null) {
+            if (redoPassword === true) {
                 password.value = '';
             }
 
@@ -50,14 +49,14 @@ async function signin() {
 
         await showResult(result, 'OK', 5000);
 
-        if (additional.redirect != null) {
+        if (typeof redirect === 'string') {
             form.reset();
-            window.location.href = additional.redirect;
+            window.location.href = redirect;
         }
     } catch {
         retry = await showUnexpectedError();
     } finally {
-        signinBtn.disabled = false;
+        loginBtn.disabled = false;
     }
 
     if (retry) {
@@ -67,5 +66,5 @@ async function signin() {
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    signin();
+    login();
 });

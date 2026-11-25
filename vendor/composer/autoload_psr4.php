@@ -25,7 +25,6 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'PhpOption\\' => array($vendorDir . '/phpoption/phpoption/src/PhpOption'),
-    'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Middleware\\' => array($baseDir . '/src/Middleware'),
     'Helpers\\' => array($baseDir . '/src/Helpers'),
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),

@@ -20,10 +20,8 @@ final class AuthorizationMiddleware implements MiddlewareInterface {
     public function handle(Request $request, Closure $next): Response {
         $user = $request->getSession()->get('user', []);
         $role = $user['role'] ?? null;
-        $security = $request->attributes->all('_security');
-        $allowedRoles = $security['allowed_roles'] ?? [];
 
-        if ($user !== [] && $role !== null && in_array($role, $allowedRoles, true)) {
+        if ($user !== [] && in_array($role, $request->attributes->all('_security')['allowed_roles'] ?? [], true)) {
             return $next($request);
         }
 
@@ -32,7 +30,9 @@ final class AuthorizationMiddleware implements MiddlewareInterface {
             status: $status,
             message: 'Your account does not have permission to access this resource.',
             title: 'Access Denied',
-            hint: 'If you believe you should have access, contact an administrator.'
+            additional: [
+                'hint' => 'If you believe you should have access, contact an administrator.'
+            ]
         );
 
         $path = $request->getPathInfo();
@@ -41,6 +41,6 @@ final class AuthorizationMiddleware implements MiddlewareInterface {
             return new JsonResponse($responseData, $status);
         }
 
-        return new Response($this->view->renderError($responseData), $status);
+        return new Response($this->view->render('error', $responseData), $status);
     }
 }

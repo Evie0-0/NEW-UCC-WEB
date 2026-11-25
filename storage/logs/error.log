@@ -1,0 +1,54 @@
+[24-Nov-2026 19:12:28 Asia/Manila] [Symfony\Component\Routing\Exception\NoConfigurationException]  | UrlMatcher.php:88
+[24-Nov-2026 19:13:40 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[24-Nov-2026 19:21:30 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[24-Nov-2026 19:22:04 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "//ad". | UrlMatcher.php:91
+[24-Nov-2026 19:22:04 Asia/Manila] [Symfony\Component\Routing\Exception\NoConfigurationException]  | UrlMatcher.php:88
+[24-Nov-2026 19:46:35 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[24-Nov-2026 19:46:42 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[24-Nov-2026 19:47:08 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[24-Nov-2026 19:47:27 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 03:06:25 Asia/Manila] [InvalidArgumentException] Invalid view: /admin/login. | ViewRenderer.php:35
+[25-Nov-2026 03:06:30 Asia/Manila] [InvalidArgumentException] Invalid view: /admin/login. | ViewRenderer.php:35
+[25-Nov-2026 03:06:30 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 03:07:05 Asia/Manila] [ArgumentCountError] Too few arguments to function Core\ViewRenderer::asset(), 1 passed in /home/mky/Documents/cur_projects/ucc_cms/resources/views/admin/partials/head.php on line 20 and exactly 2 expected | ViewRenderer.php:28
+[25-Nov-2026 03:07:17 Asia/Manila] [ArgumentCountError] Too few arguments to function Core\ViewRenderer::asset(), 1 passed in /home/mky/Documents/cur_projects/ucc_cms/resources/views/admin/partials/head.php on line 20 and exactly 2 expected | ViewRenderer.php:28
+[25-Nov-2026 03:07:17 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 03:13:52 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/home/mky/Documents/cur_projects/ucc_cms/public/assets/admin/admin/js/login.js". | UrlMatcher.php:91
+[25-Nov-2026 03:13:56 Asia/Manila] [Symfony\Component\Routing\Exception\MethodNotAllowedException]  | UrlMatcher.php:91
+[25-Nov-2026 03:17:32 Asia/Manila] [Symfony\Component\Routing\Exception\MethodNotAllowedException]  | UrlMatcher.php:91
+[25-Nov-2026 03:17:39 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/home/mky/Documents/cur_projects/ucc_cms/public/assets/admin/js/login.js". | UrlMatcher.php:91
+[25-Nov-2026 03:17:42 Asia/Manila] [Symfony\Component\Routing\Exception\MethodNotAllowedException]  | UrlMatcher.php:91
+[25-Nov-2026 03:26:56 Asia/Manila] [Symfony\Component\Routing\Exception\MethodNotAllowedException]  | UrlMatcher.php:91
+[25-Nov-2026 03:27:10 Asia/Manila] [Symfony\Component\Routing\Exception\MethodNotAllowedException]  | UrlMatcher.php:91
+[25-Nov-2026 03:27:11 Asia/Manila] [Symfony\Component\Routing\Exception\MethodNotAllowedException]  | UrlMatcher.php:91
+[25-Nov-2026 03:27:11 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 09:33:48 Asia/Manila] [Symfony\Component\Routing\Exception\MethodNotAllowedException]  | UrlMatcher.php:91
+[25-Nov-2026 09:50:08 Asia/Manila] [Symfony\Component\Routing\Exception\NoConfigurationException]  | UrlMatcher.php:88
+[25-Nov-2026 10:05:37 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:05:59 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:06:01 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:06:13 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:38:12 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:38:13 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:38:14 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:38:14 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:38:15 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:40:27 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:44:25 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:44:35 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:56:46 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 10:57:20 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:03:37 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:03:47 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:03:48 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:11:19 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:11:24 Asia/Manila] [InvalidArgumentException] Entity ID must be at least 1. | AuditLogService.php:38
+[25-Nov-2026 11:11:42 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:11:48 Asia/Manila] [InvalidArgumentException] Invalid view: admin/post/. | ViewRenderer.php:35
+[25-Nov-2026 11:11:48 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:12:01 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:12:24 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:12:29 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:12:34 Asia/Manila] [InvalidArgumentException] Entity ID must be at least 1. | AuditLogService.php:38
+[25-Nov-2026 11:15:12 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91
+[25-Nov-2026 11:15:15 Asia/Manila] [Symfony\Component\Routing\Exception\ResourceNotFoundException] No routes found for "/favicon.ico". | UrlMatcher.php:91

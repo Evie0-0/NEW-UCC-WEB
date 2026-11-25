@@ -22,7 +22,7 @@ declare(strict_types=1);
                 <input id="password" name="password" type="password" autocomplete="current-password" required>
             </div>
 
-            <button type="submit" name="sign-in">Sign In</button>
+            <button type="submit" name="login_btn">Login</button>
         </form>
 
         <p id="message" role="status"></p>

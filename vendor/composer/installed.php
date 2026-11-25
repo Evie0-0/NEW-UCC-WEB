@@ -3,7 +3,7 @@
         'name' => 'ucc/ucc-cms',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'a3704a6097f3f43abbe07ac0fcca06ab27415226',
+        'reference' => 'df582a07fd922dbb8e028f03d6e7140a7d3c445e',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -16,15 +16,6 @@
             'reference' => 'adccca3324eece92ca35463648c12b9e6293c05b',
             'type' => 'library',
             'install_path' => __DIR__ . '/../graham-campbell/result-type',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'monolog/monolog' => array(
-            'pretty_version' => '3.13.0',
-            'version' => '3.13.0.0',
-            'reference' => '1f5f55bb4a9a230ff6d8a4ceccea31d10b0142ac',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../monolog/monolog',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -78,12 +69,6 @@
             'install_path' => __DIR__ . '/../psr/log',
             'aliases' => array(),
             'dev_requirement' => false,
-        ),
-        'psr/log-implementation' => array(
-            'dev_requirement' => false,
-            'provided' => array(
-                0 => '3.0.0',
-            ),
         ),
         'symfony/config' => array(
             'pretty_version' => 'v7.4.23',
@@ -235,7 +220,7 @@
         'ucc/ucc-cms' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'a3704a6097f3f43abbe07ac0fcca06ab27415226',
+            'reference' => 'df582a07fd922dbb8e028f03d6e7140a7d3c445e',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
